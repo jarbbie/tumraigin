@@ -1,6 +1,6 @@
 # UI specifications
 
-**Status:** UX-01 implements the map-first planning journey through computed shopping lists. LOC-01 supplies saved-place and map-tile fallbacks; preferences, meal ranking, recipe details and pantry-adjusted pack estimates are connected through shared in-memory session state. Store discovery and the full `/about` disclosure remain backlog work.
+**Status:** UX-01 implements the map-first planning journey through computed shopping lists. LOC-01 supplies saved-place and map-tile fallbacks; preferences, meal ranking, recipe details and pantry-adjusted pack estimates are connected through shared in-memory session state. GEO-01 supplies a local demo-store card and directions link; the full `/about` disclosure remains backlog work.
 
 ## Navigation and routes
 
@@ -37,6 +37,9 @@
 - A saved user pin is not a store, retailer branch, product offer, or proof of branch stock.
 - Empty filters, no recipe selection, no complete store candidate, missing data, and optional provider failures each need a helpful recovery action.
 - Store distance is labeled approximate straight-line distance. Directions links use validated coordinates and do not imply travel time or route optimization.
+- `/shops` reads the selected saved place from the versioned browser storage record; when no place is selected, storage is unavailable, or saved data is invalid, it names the demo-area fallback. The candidate card remains visible without loading a map or calling an API.
+- The current store fixture is explicitly a fictitious demo point, not a physical branch. Its offer coverage describes simulated fixture prices only; branch stock remains unknown. A saved pin is only a user-selected origin.
+- Opening a Google Maps directions link shares the selected origin and demo destination coordinates with Google Maps. The app does not call a directions API or report driving distance/time.
 
 ## Visual and accessibility rules
 

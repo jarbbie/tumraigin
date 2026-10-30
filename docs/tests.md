@@ -117,6 +117,15 @@ pnpm build
 - `pnpm lint`, `pnpm typecheck`, `pnpm test` (71 tests across 7 files), and `pnpm build` passed. All five implemented routes returned HTTP 200. No hydration errors or runtime warnings were observed after correcting Base UI link semantics. Vitest continues to print the existing Vite config-loader warning.
 - The existing LOC-01 walkthrough covers map-click saving, persistence, attribution and tile failure. UX-01 verified the map-first entry and continue action without adding a map-provider integration.
 
+## GEO-01 store discovery and directions verification (2026-10-31)
+
+- Added pure geospatial helpers for validated Haversine straight-line distance and Google Maps directions URL construction. Tests cover identical points, a known one-degree equatorial distance, symmetry, coordinate bounds, antipodes, required URL parameters, decoded origin/destination coordinates, and rejection of invalid points.
+- Added `/shops`, which reads the selected saved place from browser storage and falls back to the named demo area when none is selected, storage is blocked, or saved data is invalid. The local candidate card stays available without a map, API request, or GPS prompt.
+- The only store fixture is shown as a fictitious demo point, not a physical branch. Its 23 simulated offer records are described as catalog data, never as a branch price or stock claim. The directions disclosure states that the coordinates are shared with Google Maps only after the link is opened.
+- Added `/shopping-list` links to the store discovery page, including the empty-plan state.
+- Headless Firefox at 390 × 844 checked the selected saved-place origin, the demo fallback, malformed saved state, visible demo/stock/privacy labels, a map-independent store list, no horizontal overflow, and the link's separate-tab attributes and decoded Google Maps origin/destination. All 14 assertions passed; the external link itself was inspected without sending coordinates to Google Maps.
+- `pnpm lint`: passed without warnings. `pnpm typecheck`: passed. `pnpm test`: passed, 80 tests across 8 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed and generated `/shops` as a static route.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.

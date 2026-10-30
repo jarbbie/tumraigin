@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, ShoppingBasket, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, MapPin, ShoppingBasket, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DisclosureNote, formatBaht, formatGrams, PlannerShell } from "@/features/planning/PlannerShell";
@@ -73,7 +73,12 @@ export function ShoppingListScreen() {
           <ShoppingBasket aria-hidden="true" className="size-7 text-primary" />
           <h2 className="mt-3 text-xl font-semibold">ยังไม่ได้เลือกเมนู</h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">ดูตัวเลือกและรายละเอียดก่อนเลือกหนึ่งเมนูเป็นแผนทำอาหาร รายการซื้อจะคำนวณจากสูตรกับของที่คุณมี</p>
-          <Button nativeButton={false} render={<Link href="/meals" />} className="mt-5 h-10">ไปเลือกเมนู <ArrowRight aria-hidden="true" /></Button>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button nativeButton={false} render={<Link href="/meals" />} className="h-10">ไปเลือกเมนู <ArrowRight aria-hidden="true" /></Button>
+            <Button nativeButton={false} render={<Link href="/shops" />} variant="outline" className="h-10">
+              <MapPin aria-hidden="true" /> ดูจุดร้านตัวอย่าง
+            </Button>
+          </div>
         </div>
       </PlannerShell>
     );
@@ -155,6 +160,9 @@ export function ShoppingListScreen() {
           </dl>
           <div className="mt-5"><DisclosureNote /></div>
           <p className="mt-4 text-xs leading-5 text-muted-foreground">ราคากับขนาดแพ็กเป็นข้อมูลสาธิตระดับชุดข้อมูล ไม่ใช่ราคาหรือสต็อกของร้านจริง</p>
+          <Button nativeButton={false} render={<Link href="/shops" />} variant="outline" className="mt-4 h-10 w-full">
+            <MapPin aria-hidden="true" /> ดูจุดร้านตัวอย่างและการเดินทาง
+          </Button>
           <Button
             type="button"
             variant="ghost"

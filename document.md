@@ -100,9 +100,9 @@ People who cook at home juggle where they shop, what they like to eat, what they
 | FR-10 | Responsive usable UI | On a small phone, core journey is complete without horizontal overflow. |
 | FR-11 | Deployable | Production build, deployment, and README/setup instructions verified. |
 | FR-12 | Map and location fallback | Map tiles are client-rendered and attributed; saved-location and demo-area choices remain usable if map tiles fail. |
-| FR-13 | Candidate stores | When shown, candidate stores use the selected location or demo area; saved pins remain separate from store records and stock claims. |
+| FR-13 | Candidate stores | Candidate cards use the selected location or demo area; saved pins remain separate from store records and stock claims. Directions URLs use validated coordinates; opening one shares those coordinates with the external map provider. |
 | NFR-01 | Reliability | Meal calculations and shopping lists use local data; tile failure does not block saved locations, demo-area fallback, or later planning. |
-| NFR-02 | Privacy | No account, GPS-on-launch, telemetry, or server sync for saved locations. Explicitly saved map pins and names stay in browser storage and can be edited or deleted. |
+| NFR-02 | Privacy | No account, GPS-on-launch, telemetry, or server sync for saved locations. Explicitly saved map pins and names stay in browser storage and can be edited or deleted. Opening an external directions link sends its origin and destination coordinates to that map provider. |
 | NFR-03 | Correctness | Money in integer satang; amounts in standardized grams/mL; automated edge-case tests. |
 | NFR-04 | Accessibility | Semantic buttons/forms, keyboard flow, labels, contrast, focus feedback, reduced-motion support. |
 | NFR-05 | Security | Validate inputs, avoid secrets in frontend, render user text safely, avoid untrusted URL injection. |
