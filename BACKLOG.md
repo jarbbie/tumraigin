@@ -198,11 +198,15 @@
 
 # Phase 4 — Verification, deployment and handoff
 
-### [ ] QA-01 (P0) Full verification and regression
+### [x] QA-01 (P0) Full verification and regression
 - **Dependencies:** UX-02, ENG-01..04, LOC-01, GEO-01.
 - **Deliverables:** Passing lint, typecheck, unit tests and production build; complete manual golden path; fix blockers.
 - **Acceptance:** No major console errors; mobile end-to-end flow works; arithmetic and provenance labels correct; offline/location-denied fallback demonstrated.
 - **Record evidence:** Commands run, result, browser/device tested, known limitations.
+- **Verification evidence (2026-10-31):** `pnpm lint`, `pnpm typecheck`, `pnpm test` (80 passing tests across 8 files), and `pnpm build` passed on the production-preview branch. Headless Chromium Playwright completed 38 assertions at 390 × 844 across the four-step map → optional preferences → meals/details → shopping-list journey, including saved location reuse, pantry arithmetic, filters, store directions, disclosures, and no horizontal overflow. Blocked OpenStreetMap tiles displayed the map fallback while location entry, saving, and planning remained usable; no geolocation call, uncaught browser error, unexpected JavaScript console error, or failed request other than deliberately blocked tiles was observed. Full evidence and viewport corrections are in [`docs/tests.md`](docs/tests.md#qa-01-full-verification-2026-10-31).
+- **Files changed:** `BACKLOG.md`, `docs/tests.md`.
+- **Known limitations:** Browser verification used a local production build and headless Chromium at a mobile-sized viewport, not a hosted release or physical phone. Location permission is not requested by the P0 flow, so the safe fallback is the saved/demo location path; the tile failure simulated unavailable map imagery rather than taking the local app server fully offline. Vitest continues to print its existing Vite config-loader warning.
+- **Owner teach-back:** The browser takes a saved map pin and preference inputs, the app runs its existing ranking and package/pantry calculations, then renders a recipe plan and a shopping list. The 120 g rice example checks that 100 g in the pantry leaves a 20 g shortage and rounds that to one simulated 1 kg pack; at 120 g owned, the rice purchase disappears. Invalid or missing measurements remain disclosed as unknown, and the app does not infer branch stock from a map point. The E2E run checks visible outcomes at each step; its cost is proportional to the number of browser steps and assertions.
 
 ### [ ] REL-01 (P0) Deploy public app and publish GitHub source
 - **Dependencies:** QA-01.
