@@ -1,6 +1,6 @@
 # UI specifications
 
-**Status:** Requirements for the planned interface. The current app is only a bootstrap page; these screens and interactions are not yet implemented.
+**Status:** Requirements for the planned interface. The current app has an initialized shadcn/ui foundation and a representative component preview on `/`; the routes and meal-planning interactions below are not yet implemented.
 
 ## Navigation and routes
 
@@ -32,3 +32,4 @@
 - No retailer logos or arbitrary hotlinked product images. Do not claim medical or allergy-safe results.
 
 The six-step golden path and full edge-state matrix are maintained in [`../document.md`](../document.md) §5.
+

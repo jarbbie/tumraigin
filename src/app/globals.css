@@ -1,20 +1,136 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   color-scheme: light;
-  --background: #fffaf2;
-  --foreground: #213329;
+  --background: #f0f4f2;
+  --foreground: #283437;
+  --card: #fffefa;
+  --card-foreground: #283437;
+  --popover: #fffefa;
+  --popover-foreground: #283437;
+  --primary: #2e6756;
+  --primary-foreground: #fffefa;
+  --secondary: #e4ece7;
+  --secondary-foreground: #29433a;
+  --muted: #e8eeea;
+  --muted-foreground: #53645e;
+  --accent: #e6ad45;
+  --accent-foreground: #283437;
+  --destructive: #bd4b3a;
+  --border: #cfd9d5;
+  --input: #bdcbc6;
+  --ring: #2e6756;
+  --chart-1: #2e6756;
+  --chart-2: #9cac73;
+  --chart-3: #e6ad45;
+  --chart-4: #688c91;
+  --chart-5: #bd4b3a;
+  --radius: 0.9rem;
+  --sidebar: #e8eeea;
+  --sidebar-foreground: #283437;
+  --sidebar-primary: #2e6756;
+  --sidebar-primary-foreground: #fffefa;
+  --sidebar-accent: #e4ece7;
+  --sidebar-accent-foreground: #29433a;
+  --sidebar-border: #cfd9d5;
+  --sidebar-ring: #2e6756;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Tahoma", "Noto Sans Thai", sans-serif;
+  --font-sans: "Noto Sans Thai", "Tahoma", system-ui, sans-serif;
+  --font-heading: "Noto Sans Thai", "Tahoma", system-ui, sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--foreground);
-  font-family: "Tahoma", "Noto Sans Thai", sans-serif;
+  font-family: "Noto Sans Thai", "Tahoma", system-ui, sans-serif;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #1c2928;
+  --foreground: #eff4f1;
+  --card: #253332;
+  --card-foreground: #eff4f1;
+  --popover: #253332;
+  --popover-foreground: #eff4f1;
+  --primary: #96c4b1;
+  --primary-foreground: #1b302a;
+  --secondary: #2b403b;
+  --secondary-foreground: #eaf1ed;
+  --muted: #293735;
+  --muted-foreground: #bdcbc4;
+  --accent: #e6ad45;
+  --accent-foreground: #283437;
+  --destructive: #ef9b8d;
+  --border: #ffffff24;
+  --input: #ffffff2e;
+  --ring: #96c4b1;
+  --chart-1: #96c4b1;
+  --chart-2: #c2d591;
+  --chart-3: #e6ad45;
+  --chart-4: #8eb8bd;
+  --chart-5: #ef9b8d;
+  --sidebar: #202f2e;
+  --sidebar-foreground: #eff4f1;
+  --sidebar-primary: #96c4b1;
+  --sidebar-primary-foreground: #1b302a;
+  --sidebar-accent: #2b403b;
+  --sidebar-accent-foreground: #eaf1ed;
+  --sidebar-border: #ffffff24;
+  --sidebar-ring: #96c4b1;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
