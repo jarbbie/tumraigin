@@ -1,6 +1,6 @@
 # Test and verification plan
 
-**Status:** Verification plan only. Test infrastructure is configured in the scaffold, but dependencies could not be installed in the current environment and no application tests have run yet. See current evidence in [`../BACKLOG.md`](../BACKLOG.md).
+**Status:** Verification plan. Test infrastructure is configured and dependencies are installed, but no application test files exist yet. `pnpm test` exits successfully with an empty suite. See current evidence in [`../BACKLOG.md`](../BACKLOG.md).
 
 ## Project checks
 
@@ -14,6 +14,15 @@ pnpm build
 ```
 
 `pnpm test` may pass with an empty initial suite; once domain functions exist, add meaningful numeric and behavior tests before marking those tasks complete.
+
+## Bootstrap verification (2026-10-30)
+
+- `pnpm install`: passed; generated `pnpm-lock.yaml`.
+- `pnpm lint`: passed after configuring the React plugin with the installed React version.
+- `pnpm typecheck`: passed with explicit `ReactNode` layout props.
+- `pnpm test`: exited 0; Vitest reported no test files.
+- `pnpm build`: passed with `next build --webpack`; the static `/` route was generated and its HTML contains the expected page text.
+- Live server smoke: blocked because the sandbox returned `EPERM` when Next tried to listen on both `0.0.0.0:3100` and `127.0.0.1:3100`. Run `pnpm start` in an environment that permits local port binding before marking DES-01 complete.
 
 ## P0 domain coverage
 
