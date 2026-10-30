@@ -461,6 +461,7 @@ Never create a `verified_catalog` claim without an actual retrievable URL, obser
 
 ### 8.2 External sources and safeguards
 - **USDA FoodData Central**: CC0/public-domain data; include attribution and source-specific `fdcId` in seed records. API requires a key; seed from reviewed records **before** demo and do not depend on live nutrient calls for user navigation. https://fdc.nal.usda.gov/api-guide/
+- **ASEANFOODS Concise ASEAN Food Composition Tables (2014)**: DAT-01 uses selected, source-coded typical food values with attribution and `curated_estimate` provenance; no FDC IDs are claimed for these records. The source states noncommercial use is allowed with acknowledgement; reproduction for resale or other commercial uses, including educational purposes, may incur fees. Confirm permission or replace these values before commercial/educational product use or broader redistribution. https://inmu.mahidol.ac.th/aseanfoods/doc/OnlineASEAN_FCD_V1_2014.pdf
 - **OpenStreetMap data**: ODbL attribution and license notice; distinguish data license from map tile service policy. https://www.openstreetmap.org/copyright
 - **OSM tiles**: obey tile usage and attribution; do not bulk prefetch/scrape. https://operations.osmfoundation.org/policies/tiles/
 - **Overpass**: small, throttled bounded queries only and fallbacks; public instances are best-effort. https://wiki.openstreetmap.org/wiki/Overpass_API

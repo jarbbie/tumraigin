@@ -68,6 +68,15 @@ pnpm build
 - At a 390 px phone viewport, document scroll width was 378 px, so the page had no horizontal overflow. Reviewed a phone screenshot with loaded tiles and the OpenStreetMap attribution link visible.
 - Remaining UI walkthrough coverage: after the later preferences, meal, recipe, store and shopping-list tasks are implemented, run the complete golden path in the P0 UI checklist below.
 
+## DAT-01 curated seed-data verification (2026-10-31)
+
+- Added 23 runtime-validated ingredient records, eight two-serving Thai-oriented recipe examples, simulated integer-satang pack offers, three distinct preference input profiles, and one visibly fictitious demo-store point. Every recipe-used ingredient has a simulated offer; no recommendation or nutrition output is stored.
+- Cross-checked the ASEAN Food IDs and values used in the fixtures against the official Concise ASEAN Food Composition Tables (2014). Per-100-mL light soy sauce is converted to per-100-g with the recorded density; presumed-zero (`0p`), trace, and missing fields remain `null` when not measured/reported.
+- Added fixture tests for entity counts, references, raw ingredient weights per serving, nullable nutrient coverage, simulated price/unknown stock labels, demo-store label, offer coverage, and distinct scenario inputs.
+- Documented source attribution and reuse terms in `src/data/README.md`; no USDA FDC ID is claimed. The generic cooking oil estimate cites USDA SR28 NDB No. 42289.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 27 tests across 3 files. Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
+- Remaining limitation: before commercial or broader redistribution, confirm permission or replace the ASEANFOODS values; its source notes that educational product/service use may incur fees. Recipe instructions are editorial prototype examples and have not undergone independent recipe review.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.

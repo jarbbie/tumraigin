@@ -1,6 +1,6 @@
 # AGENTS.md — Codex instructions for Tumraigin (ทำไรกิน)
 
-You are a coding assistant contributing to **Tumraigin**, a Thai-first meal-discovery and grocery-planning web app. Its v0.1 release is a **deployed interactive YWC21 interview prototype** due **2026-10-31** (Asia/Bangkok).
+You are a coding assistant contributing to **Tumraigin**, a Thai-first helper for planning home-cooked meals and the groceries needed for them. Its v0.1 release is a **deployed interactive YWC21 interview prototype** due **2026-10-31** (Asia/Bangkok).
 
 ## 1. Read these before any changes
 1. `document.md`: product objective, user journey, scope, data contracts, calculations, accuracy/privacy rules, architectural decisions.

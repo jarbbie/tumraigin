@@ -22,7 +22,7 @@ export default function Home() {
           </a>
           <div className="hidden items-center gap-2 text-sm text-muted-foreground sm:flex">
             <MapPin aria-hidden="true" className="size-4 text-primary" />
-            วางแผนทำอาหารกินเอง
+            ตัวช่วยการวางแผนทำอาหารกินเองของคุณ
           </div>
         </div>
       </header>
