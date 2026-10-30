@@ -226,10 +226,13 @@
 - **Partial preparation (2026-10-31):** Drafted the Thai 90-second demo, a concise architecture/data-flow overview, and answers to all 10 questions in [`docs/interview-guide.md`](docs/interview-guide.md). It follows the four-step map → skippable preferences → meal choices/details → shopping-list flow and uses the QA-verified rice example.
 - **Remaining:** REL-01 has no public URL yet, and the owner has not personally rehearsed the demo or answered the questions. Keep this task partial until both occur.
 
-### [ ] REL-03 (P1) E2E automated smoke tests
+### [x] REL-03 (P1) E2E automated smoke tests
 - **Dependencies:** QA-01.
 - **Deliverables:** Small browser suite for discover/filter -> select -> pantry -> plan.
 - **Acceptance:** Runs against production build or development server and asserts computed values, not screenshots alone.
+- **Verification evidence (2026-10-31):** `pnpm lint`, `pnpm typecheck`, and `pnpm build` passed. `pnpm test` passed with 80 unit tests across eight files (existing Vite config-loader warning). `pnpm test:e2e` passed against the static production export using the `/tumraigin` base path: the test applied a pork exclusion, verified the meal list, selected the egg-and-basil fried rice plan, observed 100 g pantry rice leave a 20 g shortage and one simulated 1,000 g pack with 980 g leftover, then observed 120 g owned rice remove that pack and reduce checkout from ฿160.00 to ฿105.00. No uncaught page errors. The test is wired into GitHub Actions for PRs/pushes to `staging` and `main`.
+- **Files changed:** `package.json`, `pnpm-lock.yaml`, `.gitignore`, `vitest.config.ts`, `playwright.config.ts`, `tests/e2e/planning.spec.ts`, `.github/workflows/e2e.yml`, `README.md`, `docs/tests.md`, and `BACKLOG.md`.
+- **Trade-off:** The smoke test performs a full static build before each run, so it takes longer than a component test but exercises the same exported routes and base-path behavior intended for hosting.
 
 # Phase 5 — Post-interview backlog (not for Oct 31)
 

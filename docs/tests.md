@@ -153,6 +153,15 @@ pnpm build
 - Release is not deployed: the source repository is private and its reachable history has a non-noreply personal author email. No known provider-token patterns or credential files were found in reachable history, but changing visibility now would disclose the email and prior private issue/PR history. GitHub CLI auth is invalid, the browser-control host is unavailable, and the connected GitHub tools cannot modify repository visibility or Pages settings. No Vercel CLI/token is configured. Keep the repo private until a sanitized public source path and authenticated Pages setup are available; do not claim a live URL.
 - The ASEANFOODS table retains its copyright and reuse terms. The project has source attribution, but its repository does not grant a separate open-data license; commercial use and educational products/services require reviewing the source terms and may incur fees.
 
+## REL-03 automated production-browser smoke test (2026-10-31)
+
+- Added `tests/e2e/planning.spec.ts` and `playwright.config.ts`. `pnpm test:e2e` builds the static export with the GitHub Pages `/tumraigin` base path, serves it on loopback, and runs one Chromium journey against the production artifact.
+- The test applies the pork exclusion, verifies six remaining meal choices and no pork result, opens the egg-and-basil fried rice details, selects that plan, then checks the rendered shopping values. With 100 g rice owned it shows a 20 g shortage, one simulated 1,000 g pack, 980 g remaining and ฿160.00 checkout. At 120 g owned it shows no rice purchase and ฿105.00 checkout.
+- The test passed using Playwright Test 1.64.1 and Chromium 156.0.8078.4. It recorded no uncaught page errors. It begins at the preferences step, so it makes no map-tile request and does not replace the separate QA-01 map/fallback walkthrough.
+- Added `.github/workflows/e2e.yml` to run the production smoke test for pull requests and pushes to `staging` and `main`; the workflow installs the matching Chromium browser before running it.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 80 tests across eight files (Vitest still prints the existing config-loader warning). `pnpm build`: passed. `pnpm test:e2e`: passed, one browser test after a successful static build.
+- The sandbox denied loopback binding with `EPERM`; the verification was rerun with permission to bind only to `127.0.0.1`. The test server and browser remained local.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.
