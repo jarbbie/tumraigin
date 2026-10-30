@@ -22,9 +22,9 @@ Develop each backlog feature on a `feature/<task-id>-<short-name>` branch from `
 
 ## Current implementation
 
-The `/` page implements the first step of the map-first flow: browse an OpenStreetMap view, click to choose a point or enter coordinates, name and save it, and select, rename or delete saved places. Places and the selected place are stored in this browser only. No GPS permission, geocoding, account or app API is used. If tile loading fails, coordinate entry, saved places and the demo-area option remain available.
+The `/` page implements the first step of the map-first flow: browse an OpenStreetMap view, click to choose a point or enter coordinates, name and save it, and select, rename or delete saved places. Places and the selected place are stored in this browser only. No GPS permission, geocoding, account or app API is used. If tile loading fails, coordinate entry, saved places and the demo-area option remain available. DAT-01 now adds a validated local dataset with 23 ingredients, eight Thai-oriented recipes, three preference input profiles, synthetic product offers and a fictitious demo-store point.
 
-Preferences, meal choices, recipe details, shopping-list calculations, recipe/ingredient fixtures and store suggestions are still in progress. The current map pin is a user-selected place, not a store or a stock claim.
+Preferences, meal choices, recipe details, shopping-list calculations, and store suggestions are still in progress. The fixtures provide inputs for later domain calculations; they do not store calculated nutrition totals, recommendations or basket outcomes. The current map pin is a user-selected place, not a store or a stock claim.
 
 ## UI foundation
 
@@ -56,6 +56,8 @@ The lockfile is present. Install, lint, typecheck, the current test suite, and t
 
 ## Data and limitations
 
-No recipe, nutrition, price, product or store fixtures have been added yet. Shared entity types are defined under `src/types/`, with runtime fixture, planning-input and saved-location validation under `src/lib/data/`. Validation requires explicit units and provenance, preserves unknown nutrients as `null`, rejects invalid saved coordinates, and rejects unverified branch-stock claims. Future curated recipes and simulated retailer offers must be labeled; do not interpret this prototype as evidence of live prices, stock or nutritional measurements.
+Fixture data lives under `src/data/` and is runtime-validated against shared contracts in `src/types/` and `src/lib/data/`. Most nutrition values are curated from the Concise ASEAN Food Composition Tables (2014); one generic oil estimate uses USDA SR28. Unknown nutrients remain `null`, including source entries marked presumed-zero or missing. The source and reuse terms are documented in [`src/data/README.md`](./src/data/README.md). Prices and pack sizes are invented, visibly simulated inputs and do not represent current retailer prices or branch stock. The demo-store point is fictitious. Do not interpret the prototype as evidence of live prices, stock, medically precise nutrition or allergy safety.
+
+The ASEANFOODS 2014 source permits attributed noncommercial use, while reproduction for resale or other commercial uses (including educational purposes) may incur fees. Confirm permission or replace these values before public/commercial redistribution or an educational product/service. USDA FoodData Central data are public domain/CC0; the oil profile is still labeled as a curated proxy and does not claim a verified FDC ID.
 
 Saved locations and future meal calculations are designed to work without an account, GPS, application API, or hosted database. Map tiles are external and may fail; coordinate entry, saved locations and the demo area provide a fallback. Tile requests reveal the viewed map area to the provider. OSM attribution and the ODbL notice are linked on the map. Data sources, licenses, calculation assumptions and known limitations must be documented as each feature is implemented.
