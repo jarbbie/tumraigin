@@ -1,6 +1,6 @@
 # UI specifications
 
-**Status:** LOC-01 implements the first-step map, manually saved places, and demo/tile fallbacks. Preferences through shopping-list interactions remain backlog work; this document still specifies their target behavior.
+**Status:** UX-01 implements the map-first planning journey through computed shopping lists. LOC-01 supplies saved-place and map-tile fallbacks; preferences, meal ranking, recipe details and pantry-adjusted pack estimates are connected through shared in-memory session state. Store discovery and the full `/about` disclosure remain backlog work.
 
 ## Navigation and routes
 
@@ -18,17 +18,20 @@
 
 - Open `/` with a map centered on a neutral, labeled demo area. Never request GPS on launch.
 - Let the user choose a map point, enter a name, and explicitly save it. Show saved locations on the same screen with select, rename, delete-one, and clear-all actions.
+- The home screen carries the promise **“ตัวช่วยการวางแผนทำอาหารกินเองของคุณ”** and an explicit continue action after the map and saved-place controls.
 - Store only user-submitted names and manually selected coordinates in this browser. Explain that the tile provider receives requests for the visible map area; no saved-location record is sent to the app server.
 - Current implementation uses Leaflet 1.9.4 directly in a client-only module and the OpenStreetMap standard tile endpoint. It does not prefetch or download offline tiles and shows Leaflet's visible attribution link to the OpenStreetMap copyright/ODbL page.
 - Current implementation stores versioned `SavedLocationState` at `tumraigin.saved-locations.v1`. If storage is unavailable or malformed, the screen reports the state and keeps coordinate entry available; malformed prior data can be explicitly cleared.
 - If tiles fail, keep saved locations and a demo-area path visible. The map must not block preferences, meal choices, or the shopping list.
 - Give keyboard users a labeled coordinate-entry option alongside map clicking; validate latitude and longitude before saving.
 - Preferences are skippable. If skipped, show all available meal choices without silently applying default budget, protein, exclusions, or pantry quantities.
-- Meal choices show why each result is eligible when constraints are set; details provide a way to select a plan.
+- Meal choices are calculated from recipe and offer fixtures. Show why each result fits or why constrained evidence is unknown. Hide known ineligible recipes while keeping a currently selected recipe visible. When preferences are skipped, show all available choices without a hidden filter.
+- Recipe details show per-serving nutrient estimates, null/partial coverage, the raw edible ingredient weights used for calculations, preparation instructions, and grouped source references before a plan is selected.
 - Budget means estimated checkout cash and is displayed in baht. Protein goal means grams per serving. Exclusions are hard filters.
 - Keep the selected meal plan visible when preferences change; explain when it becomes over-budget or unknown. Selecting a new recipe replaces the current single batch; removing it returns the Shopping List to an empty state.
 - Pantry inputs use labeled edible grams. Invalid values show an inline error and do not produce a misleading new total.
 - Distinguish required, owned, shortage and leftover grams. Show whole packs and checkout cash; display consumption cost separately.
+- Planning preferences, selection and pantry quantities are held in shared React state across routes. A page refresh resets this planning session; explicitly saved places remain in browser storage.
 - Display **“ราคาสาธิต · ไม่ได้ตรวจสอบสต็อกสาขา”** (“Demo prices · branch stock not checked”) near prices and store coverage. Do not claim guaranteed inventory.
 - Missing offer: show the unpriced ingredient and mark the total incomplete. Missing nutrients: show unknown/partial coverage, never zero by default.
 - A saved user pin is not a store, retailer branch, product offer, or proof of branch stock.

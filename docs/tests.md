@@ -88,7 +88,7 @@ pnpm build
 - Added unit tests for shared ingredients across recipe batches, repeated rows within one batch, stable ingredient-ID sorting, empty plans, and malformed/overflowing quantities.
 - Tests aggregate two recipe batches that need 150 g and 100 g of rice to 250 g, subtract one 100 g pantry quantity to leave 150 g, and clamp oversupplied pantry to zero shortage. They also cover missing/zero pantry quantities and duplicate planning-input rows.
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 46 tests across 5 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
-- The functions remain pure domain logic and are not wired to a page or persistence.
+- At the ENG-02 checkpoint these functions were pure domain logic with no page wiring or persistence. UX-01 later consumes them; planning state remains in React memory.
 
 ## ENG-03 package purchase and basket verification (2026-10-31)
 
@@ -96,7 +96,7 @@ pnpm build
 - Basket tests cover separate checkout/consumed costs across multiple ingredients, per-chain coverage, a positive shortage with a missing offer (null full totals and a known subtotal), pantry-satisfied demand without an offer, and choosing the lower checkout outlay when a bulk pack has a cheaper per-gram price.
 - Offers are validated for positive usable pack size, safe integer satang price, and `unknown` stock; no branch stock claim is inferred. Chain and ingredient output ordering is deterministic.
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 61 tests across 6 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
-- The functions remain pure domain logic; the shopping-list page and visible simulated-price disclosure are still pending UX-01.
+- At the ENG-03 checkpoint these functions were pure domain logic and shopping-list UI was pending. UX-01 now uses the basket output on the shopping-list route; branch stock remains unknown.
 
 ## ENG-04 recipe ranking verification (2026-10-31)
 
@@ -104,7 +104,18 @@ pnpm build
 - Ranking reuses the same nutrition, pantry, and package-cost functions. Incomplete checkout or unknown constrained protein produces `unknown`; neither is treated as a passing constraint. Results remain available with explicit Thai reason strings.
 - Extended `PlanningInput` with optional `excludedTags` and updated runtime validation to reject duplicate and unsupported tags while preserving omitted preferences as unset.
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 71 tests across 7 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
-- The ranker is pure domain logic and is not wired to the meal-choice page yet.
+- The ranker is wired to meal choices and the shopping-plan summary; preferences and pantry changes recalculate its results.
+
+## UX-01 planning journey verification (2026-10-31)
+
+- Connected the map-first screen to skippable preferences, calculated meal choices, recipe details and a pantry-adjustable shopping list. Planning state survives route navigation but resets on refresh; saved map locations retain their existing browser-only persistence.
+- Firefox 159 headless Marionette walkthrough: open the map-first screen, continue to preferences, skip, verify all eight recipe fixtures appear, inspect a recipe's ingredients/nutrition/source coverage, select the plan and open its shopping list.
+- Pantry arithmetic walkthrough: for a 120 g rice demand, entering 100 g owned left 20 g to buy, one simulated 1,000 g pack and 980 g remaining. Entering 120 g left zero to buy, removed the rice pack, and reduced checkout cash from ฿160.00 to ฿105.00. This confirms the page uses the shared pantry and whole-pack functions.
+- Preference walkthrough: set a ฿170 checkout budget, 10 g protein goal and pork exclusion. Meal choices reflected the budget/protein reasons and removed pork recipes, while keeping the previously selected recipe visible.
+- Removal walkthrough: removing the selected meal returned `/shopping-list` to its empty state and recovery link.
+- Headless Firefox screenshots at 390 × 844 were reviewed for preferences, meals and recipe details. A browser layout check at a 488 px content width reported equal viewport, document and body widths on the shopping-list and filtered meal screens. No horizontal overflow was visible in the 390 px screenshots.
+- `pnpm lint`, `pnpm typecheck`, `pnpm test` (71 tests across 7 files), and `pnpm build` passed. All five implemented routes returned HTTP 200. No hydration errors or runtime warnings were observed after correcting Base UI link semantics. Vitest continues to print the existing Vite config-loader warning.
+- The existing LOC-01 walkthrough covers map-click saving, persistence, attribution and tile failure. UX-01 verified the map-first entry and continue action without adding a map-provider integration.
 
 ## P0 domain coverage
 
