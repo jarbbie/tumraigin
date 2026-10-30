@@ -22,9 +22,15 @@ Develop each backlog feature on a `feature/<task-id>-<short-name>` branch from `
 
 ## Current implementation
 
-The `/` page implements the first step of the map-first flow: browse an OpenStreetMap view, click to choose a point or enter coordinates, name and save it, and select, rename or delete saved places. Places and the selected place are stored in this browser only. No GPS permission, geocoding, account or app API is used. If tile loading fails, coordinate entry, saved places and the demo-area option remain available. DAT-01 now adds a validated local dataset with 23 ingredients, eight Thai-oriented recipes, three preference input profiles, synthetic product offers and a fictitious demo-store point.
+The app implements the core map-first cooking-planning flow:
 
-Preferences, meal choices, recipe details, shopping-list UI, and store suggestions are still in progress. Pure domain functions calculate recipe batch/per-serving nutrients, aggregate recipe demand before subtracting pantry grams once, estimate whole-pack purchases by candidate retailer chain, and rank recipes from optional checkout-budget, protein, exclusion, and pantry inputs. Unknown protein or incomplete checkout stays explicitly unknown; these calculations are not wired to a page yet. Fixtures do not store recommendation or basket outcomes. The current map pin is a user-selected place, not a store or a stock claim.
+- `/` opens on an interactive OpenStreetMap view. Click to choose a point or enter coordinates, name and save it, then select, rename or delete saved places. Places are stored in this browser only. There is no GPS prompt, geocoding, account or app API. If tiles fail, coordinate entry, saved places and the demo-area option remain available.
+- `/preferences` accepts optional checkout budget, protein goal, exclusions and pantry quantities. Every field can be left blank, or the whole step can be skipped.
+- `/meals` calculates and ranks meal choices from the fixture recipes and current planning inputs. It shows why a result fits or why evidence remains unknown. Existing selections stay visible when preferences change.
+- `/recipes/[slug]` shows recipe quantities, preparation steps, per-serving nutrition calculated from ingredient data, missing nutrient coverage, source attribution and a simulated checkout estimate.
+- `/shopping-list` shows one selected recipe batch, required/owned/shortage grams, pack counts, checkout cash and consumed-portion estimates. Editing pantry grams recalculates the basket.
+
+DAT-01 contributes a validated local dataset with 23 ingredients, eight Thai-oriented recipes, synthetic product offers and a fictitious demo-store point. All recipe nutrition, recommendation and shopping outputs are calculated from fixture inputs using the pure domain functions; fixtures do not store precomputed outcomes. Product offers and prices are simulated and branch stock is unknown. Store suggestions and the `/about` disclosure page are still pending. The selected planning session is held in React memory and resets on refresh; saved locations persist in this browser. A map pin remains a user-selected place, not a store or a stock claim.
 
 ## UI foundation
 
