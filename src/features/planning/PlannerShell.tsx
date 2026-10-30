@@ -14,7 +14,7 @@ export function PlannerShell({
   description,
   children,
 }: {
-  step: 0 | 1 | 2 | 3;
+  step: 0 | 1 | 2 | 3 | null;
   title: string;
   description: string;
   children: ReactNode;
@@ -27,7 +27,12 @@ export function PlannerShell({
             <span className="block text-lg font-bold tracking-tight">ทำไรกิน</span>
             <span className="block text-xs text-muted-foreground">Tumraigin</span>
           </Link>
-          <p className="max-w-[13rem] text-right text-xs leading-5 text-muted-foreground sm:max-w-none sm:text-sm">ตัวช่วยการวางแผนทำอาหารกินเองของคุณ</p>
+          <div className="max-w-[13rem] shrink-0 text-right">
+            <p className="text-xs leading-5 text-muted-foreground sm:text-sm">ตัวช่วยการวางแผนทำอาหารกินเองของคุณ</p>
+            <Link href="/about" className="mt-1 inline-block rounded-sm text-xs font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+              ข้อมูลและแหล่งอ้างอิง
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -35,8 +40,8 @@ export function PlannerShell({
         <nav aria-label="ขั้นตอนวางแผนอาหาร" className="mb-9 border-b border-border pb-5">
           <ol className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-4 sm:gap-5">
             {journey.map((item, index) => {
-              const current = index === step;
-              const complete = index < step;
+              const current = step !== null && index === step;
+              const complete = step !== null && index < step;
               return (
                 <li key={item.href} className="min-w-0">
                   <Link
@@ -57,7 +62,9 @@ export function PlannerShell({
         </nav>
 
         <section aria-labelledby="page-heading" className="mb-7 max-w-3xl">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">ขั้นตอน {step + 1} / 4</p>
+          {step !== null ? (
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">ขั้นตอน {step + 1} / 4</p>
+          ) : null}
           <h1 id="page-heading" className="text-[clamp(1.85rem,4vw,3.15rem)] font-semibold leading-tight tracking-tight">{title}</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">{description}</p>
         </section>
