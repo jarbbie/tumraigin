@@ -154,11 +154,14 @@
 
 # Phase 3 — Stores, provenance and product polish
 
-### [ ] GEO-01 (P0) Demo-area store discovery and directions
+### [x] GEO-01 (P0) Demo-area store discovery and directions
 - **Dependencies:** UX-01, LOC-01, DAT-01.
 - **Deliverables:** Candidate store cards for the selected saved location or named demo area, approximate straight-line distances and external directions links.
 - **Acceptance:** No geolocation prompt at launch; saved user pins and physical store fixtures are distinct; no false branch-stock claims; store fixture provenance is explicit; directions link uses validated coordinates. Tile/map failure never hides the store list.
 - **Tests:** Coordinates validated; link opens intended map; no API connection needed for demo.
+- **Implementation:** Added `/shops` with a candidate card sourced from the validated store fixture, selected-location lookup using the shared localStorage key, and named demo-area fallback for missing, blocked, or malformed saved state. Added pure `haversineMeters` and validated Google Maps directions URL helpers, and a shopping-list link to store discovery. The only store remains an explicitly fictitious demo point; its offer count is labeled simulated and branch stock is unknown. Opening directions shares both coordinates with Google Maps.
+- **Verification evidence (2026-10-31):** `pnpm lint` and `pnpm typecheck` passed; `pnpm test` passed (80 tests / 8 files); `pnpm build` passed and emitted `/shops`. Headless Firefox at 390 × 844 passed 14 assertions for saved origin, demo fallback, malformed storage fallback, map-independent list visibility, disclosures, no horizontal overflow, and validated directions URL/target. The external link was inspected but not opened, so coordinates were not sent to Google Maps. The only remaining tool warning is Vitest's existing Vite config-loader warning.
+- **Owner teach-back / trade-off:** The selected origin comes from a validated browser-saved location; if none is usable, the named demo point is used. The pure Haversine function validates latitude/longitude bounds, converts degrees to radians, computes great-circle distance using the mean Earth radius, and returns meters; invalid coordinates yield `null`. The URL helper rejects invalid points before encoding origin/destination into a Google Maps directions URL. Both calculations are O(1); tests prove zero distance, a known distance, symmetry, bounds, and URL parameters. The trade-off is that the card is a static fictitious point with simulated catalog coverage, so it demonstrates the flow without pretending to identify a nearby physical branch or its inventory.
 
 ### [ ] UX-02 (P0) Data transparency, fallback states and accessibility
 - **Dependencies:** UX-01, GEO-01, LOC-01.

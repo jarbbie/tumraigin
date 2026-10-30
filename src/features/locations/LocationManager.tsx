@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { SavedLocation, SavedLocationState } from "@/types";
 import { validateSavedLocationState } from "@/lib/data/validate-saved-locations";
+import { SAVED_LOCATIONS_STORAGE_KEY } from "./constants";
 
 type Coordinate = { lat: number; lon: number };
 type PersistenceMode = "loading" | "ready" | "unavailable" | "invalid" | "failed";
@@ -22,7 +23,6 @@ const LocationMap = dynamic(() => import("./LeafletMap"), {
   ),
 });
 
-const STORAGE_KEY = "tumraigin.saved-locations.v1";
 const DEMO_AREA: Coordinate = { lat: 13.7563, lon: 100.5018 };
 const EMPTY_STATE: SavedLocationState = {
   version: 1,
@@ -86,7 +86,7 @@ export function LocationManager() {
       if (!active) return;
       let raw: string | null;
       try {
-        raw = window.localStorage.getItem(STORAGE_KEY);
+        raw = window.localStorage.getItem(SAVED_LOCATIONS_STORAGE_KEY);
       } catch {
         setStorageMode("unavailable");
         setHydrated(true);
@@ -121,7 +121,7 @@ export function LocationManager() {
   useEffect(() => {
     if (!hydrated || storageMode !== "ready") return;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(savedState));
+      window.localStorage.setItem(SAVED_LOCATIONS_STORAGE_KEY, JSON.stringify(savedState));
     } catch {
       queueMicrotask(() => setStorageMode("failed"));
     }
