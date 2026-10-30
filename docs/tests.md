@@ -1,6 +1,6 @@
 # Test and verification plan
 
-**Status:** Verification plan. Test infrastructure is configured and dependencies are installed, but no application test files exist yet. `pnpm test` exits successfully with an empty suite. See current evidence in [`../BACKLOG.md`](../BACKLOG.md).
+**Status:** Verification plan with implemented fixture-contract coverage. Test infrastructure is configured and dependencies are installed; see current evidence in [`../BACKLOG.md`](../BACKLOG.md).
 
 ## Project checks
 
@@ -23,6 +23,17 @@ pnpm build
 - `pnpm test`: exited 0; Vitest reported no test files.
 - `pnpm build`: passed with `next build --webpack`; the static `/` route was generated and its HTML contains the expected page text.
 - Live server smoke: `pnpm start --hostname 127.0.0.1 --port 3100` started the production server. An HTTP request to `/` returned 200, and the response included the expected Thai heading and page copy.
+
+## DES-02 data-contract verification (2026-10-31)
+
+- Added shared TypeScript contracts for ingredients, nutrients, provenance, recipes, recipe ingredients, product offers, stores, pantry items, planning input and the fixture dataset.
+- Added runtime validation for fixture shape, canonical grams/satang fields, positive servings/pack sizes/prices, nullable nutrients, HTTPS provenance, dates, coordinate bounds, uniqueness and ingredient references. Planning-input references are checked against the validated recipe and ingredient collections.
+- `pnpm install --offline --frozen-lockfile`: passed in the isolated feature worktree.
+- `pnpm lint`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm test`: passed; 11 tests cover accepted unknown nutrients and rejection of zero pack size, invalid coordinates, duplicate IDs, unknown recipe/offer/planning references, fractional satang, claimed stock and invalid pantry/budget values. Vitest printed a Vite config-loader warning.
+- `pnpm build`: passed with Webpack.
+- No production fixture data was added; test-only data is explicitly labeled as test/simulated.
 
 ## P0 domain coverage
 

@@ -44,12 +44,12 @@ pnpm test
 pnpm build
 ```
 
-The test command currently exits successfully with no test files. Add meaningful tests as domain logic is implemented.
+Vitest runs the repository unit tests. Add focused domain and interaction coverage as each backlog item is implemented.
 
-The bootstrap lockfile is present. `pnpm install`, lint, typecheck, the empty-suite test command, and the Webpack production build have been verified. The production server returned HTTP 200 for `/`, and the response contained the expected Thai heading and page copy; see [`docs/tests.md`](./docs/tests.md) for the exact evidence.
+The bootstrap lockfile is present. Install, lint, typecheck, the current test suite, and the Webpack production build have been verified. The production server returned HTTP 200 for `/` during bootstrap verification, and the response contained the expected Thai heading and page copy; see [`docs/tests.md`](./docs/tests.md) for the exact evidence.
 
 ## Data and limitations
 
-No recipe, nutrition, price, product or store fixtures have been added yet. The approved prototype scope plans curated ingredient and recipe data, simulated retailer offers with unknown branch stock, and clearly labeled demo locations. Do not interpret this scaffold as evidence of live prices, stock or nutritional measurements.
+No recipe, nutrition, price, product or store fixtures have been added yet. Shared entity types are defined under `src/types/`, with runtime fixture and planning-input validation under `src/lib/data/`. Validation requires explicit units and provenance, preserves unknown nutrients as `null`, and rejects unverified branch-stock claims. The approved prototype scope plans curated ingredient and recipe data, simulated retailer offers with unknown branch stock, and clearly labeled demo locations. Do not interpret this scaffold as evidence of live prices, stock or nutritional measurements.
 
 The core journey is planned to work from local data without an account, location permission, network API or hosted database. Data sources, licenses, calculation assumptions and known limitations must be documented when those fixtures and features are implemented.

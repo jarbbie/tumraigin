@@ -62,11 +62,14 @@
 - **Tests:** `pnpm lint`, `pnpm typecheck`, `pnpm build` (where configured), plus manual keyboard/mobile check on the representative UI. Record real results; never mark done on configuration alone.
 - **Owner teach-back:** Explain how shadcn/ui differs from a component package, where generated component code lives, how `cn` and Tailwind class tokens work, and why the app still uses Next.js App Router.
 
-### [ ] DES-02 (P0) Typed schema, fixture contracts and validation
+### [x] DES-02 (P0) Typed schema, fixture contracts and validation
 - **Dependencies:** DES-01, REQ-01.
 - **Deliverables:** `Ingredient`, `Recipe`, `RecipeIngredient`, `ProductOffer`, `Store`, `PantryItem`, `PlanningInput`, `Provenance` types and Zod/validation where appropriate.
 - **Acceptance:** Explicit units and satang; no implicit stock; unknown nutrients nullable; all IDs and links validated. Separate `Store` from `ProductOffer` and `Ingredient`.
 - **Tests:** Invalid pack size, malformed coordinates, duplicate IDs and unknown ingredient references rejected.
+- **Progress (2026-10-31):** Added typed domain contracts in `src/types/` and pure runtime validators in `src/lib/data/`; no new dependency or production fixture values were introduced.
+- **Verification evidence (2026-10-31):** `pnpm install --offline --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` passed in the isolated DES-02 worktree. Vitest ran 11 tests and printed the existing Vite config-loader warning. Coverage includes pack size, coordinates, duplicate IDs, unknown recipe/offer/planning references, integer satang, unknown nutrients, stock status, and invalid pantry/budget inputs.
+- **Owner teach-back:** Raw fixture or planning input enters as `unknown`; parsing checks shape, units, provenance and numeric bounds, then a reference pass checks IDs and links. Success returns typed records; failure returns path-specific issues and no partial dataset. Unknown nutrient values stay `null`. Validation is linear in entities plus references, using `Set` lookups for uniqueness and links; tests prove both accepted unknowns and rejected malformed values/links.
 
 ### [ ] DAT-01 (P0) Curate seed data with provenance
 - **Dependencies:** DES-02.
