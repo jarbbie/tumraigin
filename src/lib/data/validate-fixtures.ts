@@ -649,6 +649,9 @@ export function validatePlanningInput(
 
   const recipeIds = readStringArray(record.recipeIds, "recipeIds", issues);
   const pantry = parseEntityArray(record.pantry, "pantry", parsePantryItem, issues);
+  const excludedTags = hasOwn(record, "excludedTags")
+    ? readStringArray(record.excludedTags, "excludedTags", issues)
+    : undefined;
   const maxCheckoutBudgetSatang = hasOwn(record, "maxCheckoutBudgetSatang")
     ? readNumber(record, "maxCheckoutBudgetSatang", "maxCheckoutBudgetSatang", issues, {
         integer: true,
@@ -662,6 +665,7 @@ export function validatePlanningInput(
     : undefined;
 
   if (recipeIds) reportDuplicateValues(recipeIds, "recipeIds", undefined, issues);
+  if (excludedTags) reportDuplicateValues(excludedTags, "excludedTags", undefined, issues);
   reportDuplicateValues(
     pantry.map((item) => item.ingredientId),
     "pantry",
@@ -687,10 +691,21 @@ export function validatePlanningInput(
       );
     }
   });
+  if (excludedTags) {
+    const knownExclusionTags = new Set(
+      references.recipes.flatMap((recipe) => recipe.exclusionTags),
+    );
+    excludedTags.forEach((tag, index) => {
+      if (!knownExclusionTags.has(tag)) {
+        addIssue(issues, `excludedTags[${index}]`, `Unsupported exclusion tag: ${tag}`);
+      }
+    });
+  }
 
   if (
     issues.length > 0 ||
     recipeIds === null ||
+    excludedTags === null ||
     maxCheckoutBudgetSatang === null ||
     minProteinGPerServing === null
   ) {
@@ -698,6 +713,9 @@ export function validatePlanningInput(
   }
 
   const planningInput: PlanningInput = { recipeIds, pantry };
+  if (excludedTags !== undefined) {
+    planningInput.excludedTags = excludedTags;
+  }
   if (maxCheckoutBudgetSatang !== undefined) {
     planningInput.maxCheckoutBudgetSatang = maxCheckoutBudgetSatang;
   }

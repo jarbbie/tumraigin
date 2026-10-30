@@ -98,6 +98,14 @@ pnpm build
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 61 tests across 6 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
 - The functions remain pure domain logic; the shopping-list page and visible simulated-price disclosure are still pending UX-01.
 
+## ENG-04 recipe ranking verification (2026-10-31)
+
+- Added ranking tests for skipped preferences, exact checkout-budget threshold, per-serving protein threshold, hard exclusion tags, unknown protein and incomplete prices, pantry-covered zero-budget baskets, deterministic ranking, empty recipe sets, invalid preferences, and broken ingredient references.
+- Ranking reuses the same nutrition, pantry, and package-cost functions. Incomplete checkout or unknown constrained protein produces `unknown`; neither is treated as a passing constraint. Results remain available with explicit Thai reason strings.
+- Extended `PlanningInput` with optional `excludedTags` and updated runtime validation to reject duplicate and unsupported tags while preserving omitted preferences as unset.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 71 tests across 7 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
+- The ranker is pure domain logic and is not wired to the meal-choice page yet.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.

@@ -84,6 +84,7 @@ export type PantryItem = {
 export type PlanningInput = {
   recipeIds: string[];
   pantry: PantryItem[];
+  excludedTags?: string[];
   maxCheckoutBudgetSatang?: number;
   minProteinGPerServing?: number;
 };
