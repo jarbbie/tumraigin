@@ -28,10 +28,10 @@ If the codebase contradicts these documents, **report the conflict before changi
 - A **modular monolith**. No microservices, separate Rust/Go server, auth, payments, queues, Kafka, Kubernetes, model training, or managed DB in v0.1.
 - Domain functions under `src/lib/domain/` are **pure**, typed, deterministic, and independent of React, fetch, browser state, and external providers.
 - Static reviewed fixture data under `src/data/`; validate shape, uniqueness, references and provenance.
-- Client state is enough for v0.1. If persistence is added, use localStorage only for nonsensitive preferences and selected recipe IDs, not exact GPS/home coordinates.
+- Client state is enough for v0.1. Per the owner's explicit updated requirement, browser `localStorage` may retain only locations that a user manually picked and explicitly named on the map, plus the selected saved-location ID; never retain device GPS coordinates. Provide rename, delete-one, and clear-all actions. Keep preferences and selected recipe IDs local as before.
 - Use integer `priceSatang` internally and raw edible grams for calculations; convert for display at the edges.
 - Use `null` for unavailable nutrients, never automatic zero. Missing-priced ingredients cause an **incomplete** basket total.
-- A map is progressive enhancement: render store cards when Leaflet/tiles fail. Leaflet must be client-rendered to avoid SSR issues.
+- The map is the P0 first step and must be client-rendered to avoid SSR issues. If Leaflet/tiles fail, render the saved-location list and named demo-area path so the user can continue; store cards remain available when relevant.
 - Prefer no new dependency if a small, well-tested pure function suffices.
 
 ## 4. How to work on each backlog item
@@ -81,15 +81,17 @@ Core domain tests must cover these scenarios:
 If adding UI tests, assert visible labels and user interaction outcomes rather than internal implementation details.
 
 ## 7. External data and location safety
-- Default experience uses a named **demo area**, not immediate geolocation prompt.
-- `navigator.geolocation` only on user click, with denied/timeout fallbacks; never collect or log precise address without need.
+- First screen opens on an interactive map centered on a named **demo area**, not an immediate geolocation prompt. The map is a P0 step; if tiles fail, keep the saved-location list and demo-area path usable.
+- `navigator.geolocation` is not used on launch. The owner explicitly requested that users may manually pick, name, and save map locations for future use. Store those user-submitted names and coordinates in browser `localStorage` only, with select, rename, delete-one, and clear-all controls. Do not sync or log saved locations. A map tile provider receives requests for the visible viewport; disclose that external map tiles are loaded.
+- Never store device GPS coordinates. If a current-location action is considered later, request it only on user click and provide denied/timeout fallbacks.
+- A user-saved pin is not a `Store` fixture and does not establish a retailer, offer, or inventory fact.
 - OSM requires attribution and ODbL license link. Public tile servers and Overpass/Nominatim have policies, best-effort availability, and request constraints.
 - **No client-side autocomplete against public Nominatim**; if ever used, identify the app, cache, obey aggregate 1 request/second limit and get explicit owner approval for the integration.
 - Do not expose USDA or other API keys via `NEXT_PUBLIC_*` or commits. Review `.gitignore` and `.env.example`.
 - Do not hotlink arbitrary retailer product images or claim brand affiliation.
 
 ## 8. Release and version-control rules
-- The priority is a functional deployed v0.1 for Oct 31; **protect the vertical slice**. Defer optional maps, extra nutrient categories, scraping, route optimization, user accounts, or multi-store solvers if P0 is incomplete.
+- The priority is a functional deployed v0.1 for Oct 31; **protect the vertical slice**. The map-first saved-location chooser is P0. Defer live place lookup, extra nutrient categories, scraping, route optimization, user accounts, or multi-store solvers if P0 is incomplete.
 - Follow [`docs/development-workflow.md`](docs/development-workflow.md): use `main` for releases, `staging` for integration, and one `feature/<task-id>-<short-name>` branch from the latest `staging` for each feature. Commit and push feature work on its feature branch, then propose it to `staging` by pull request; do not develop directly on `main` or `staging`.
 - The owner has authorized this branch workflow for project development. Merging to `main`, deploying, changing repository visibility/settings, modifying remote infrastructure, or exposing a key still requires explicit owner authorization.
 - Avoid destructive commands or overwriting unrelated local changes. Inspect status/diff before broad edits.

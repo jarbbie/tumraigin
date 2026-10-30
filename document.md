@@ -1,7 +1,7 @@
 # Tumraigin (ทำไรกิน) — Product & Engineering Specification
 
 > Status: **YWC21 interview prototype (v0.1)**  
-> Prepared: **2026-10-29 (Asia/Bangkok)**; UI stack updated **2026-10-30**  
+> Prepared: **2026-10-29 (Asia/Bangkok)**; product journey revised **2026-10-31**
 > Target: A public, interactive, testable deployment and GitHub source for the **2026-10-31** interview.  
 > Audience: Owner/developer, Codex, reviewers, and YWC interviewers.  
 > Authority: This document defines **what and why**. `BACKLOG.md` defines **when and acceptance criteria**. `AGENTS.md` defines **how Codex works**.
@@ -10,25 +10,26 @@ Supporting implementation references are maintained in `docs/specification.md`, 
 
 ## 0. Executive summary
 
-**Tumraigin** helps people who cook several times per week decide **what to cook, what it will approximately cost, what nutrition it provides, what to purchase, and which nearby stores are plausible shopping stops**.
+**Tumraigin** is **your helper for planning home-cooked meals**. It brings the places that matter to you, your optional preferences, meal choices and details, and a practical shopping list into one flow.
 
 **Interview deliverable:** a deployed Next.js web app with a genuinely functioning end-to-end journey. Use a curated recipe and ingredient dataset, real arithmetic, real or source-attributed store locations where feasible, and **clearly identified demo assumptions** for retailer catalogs and inventory. Do **not** claim to track live branch stock or real-time prices.
 
-**User promise:** "Pick meals that fit your budget and nutrition preferences, then get one consolidated shopping list and nearby store suggestions."  
-**Prototype limitation:** The app produces **estimates and candidate shopping locations**, not a confirmed real-world fulfillment plan.
+**User promise:** "ตัวช่วยการวางแผนทำอาหารกินเองของคุณ" — choose and save places on a map, optionally share what you prefer, explore meal choices and plans with their details, then get a shopping list for what you choose to cook.
+
+**Prototype limitation:** Nutrition and grocery prices are estimates; saved map pins are user-selected places, and nearby store suggestions do not confirm branch inventory or a real-world fulfillment plan.
 
 ### Product principles
 1. **Honesty over realism:** distinguish measured/verified, curated/estimated, and simulated data everywhere relevant.
 2. **Actual calculations:** no fixed recommendations or pre-baked totals masquerading as computation.
-3. **Complete journey over breadth:** finish one usable vertical slice before maps, micro-nutrients, AI, or multi-store optimization.
+3. **Plan from the places that matter:** start with a map and saved user-selected locations, then carry the chosen place through meal planning and shopping.
 4. **Explainability:** every nutrient total and cost can be traced to quantities, products, units, and data sources.
 5. **Local Thai relevance:** Thai-first labels and plausible Thai meals, with clear currency and serving sizes.
-6. **Resilient demo:** the core journey works without external services or location permission.
+6. **Resilient demo:** never request GPS on launch; keep saved locations and planning usable when map tiles or external services fail.
 
 ## 1. Context, problem, and user
 
 ### 1.1 Problem statement
-Urban home cooks encounter menu indecision, budget uncertainty, conflicting nutrition goals, leftover ingredients, and multiple nearby grocery options. A recipe site gives cooking instructions but generally does not translate a chosen meal into a coherent **purchasing plan** based on available package sizes and existing pantry stock.
+People who cook at home juggle where they shop, what they like to eat, what they have on hand, how much a plan may cost, and what they need to buy. Tumraigin helps them plan that whole cooking process, from places they choose on a map through meal options and details to a consolidated shopping list.
 
 ### 1.2 Target audience
 - Residents of Bangkok and similar Thai urban areas who cook ~3 days/week.
@@ -37,14 +38,16 @@ Urban home cooks encounter menu indecision, budget uncertainty, conflicting nutr
 - Comfortable using a mobile web app before/after work.
 
 ### 1.3 Primary persona and journey
-**Mr. A**, an office worker, commutes by BTS between an apartment and office. Before returning home, he can stop at several supermarkets or convenience stores. His goal is to select a few dishes he wants to cook this week and buy only what he needs while respecting nutrition and budget preferences.
+**Mr. A**, an office worker who cooks at home, wants one place to organize familiar shopping locations and plan meals around optional budget, nutrition, and ingredient preferences. He can choose a place on the map, save it for later, review meal choices and details, and finish with only the shopping items his plan needs.
 
-**Ideal future journey:** detect candidate stores near current and home locations -> specify constraints and pantry -> explore recipes -> choose up to 3 meals -> compute quantities/nutrients/prices -> consolidate basket -> compare shopping stops -> navigate to stores.
+**Product journey:** open to a map -> choose a point and save one or more named locations -> optionally add or skip preferences -> compare meal choices and plans, then inspect recipe details -> generate a consolidated shopping list from the selected plan and pantry.
 
-**YWC v0.1 journey:** choose one of **two named demo location anchors** ("near work/current" and "near home"), or optionally use current location -> browse curated recipes -> set basic constraints -> select a recipe (and, if ready, up to 3) -> compute real ingredient/nutrition totals -> subtract pantry -> build shopping basket from demo pack offers -> display candidate stores and directions, with availability disclaimer.
+**YWC v0.1 journey:** view a map centered on a neutral Bangkok demo area -> add, name, save, select, rename, or remove manually chosen map locations -> optionally set budget, protein, exclusions, and pantry (or skip) -> compare available meal choices and inspect plan and recipe details -> calculate ingredient, nutrition, and pack estimates -> produce a shopping list with missing prices and simulated offers clearly marked.
 
 ### 1.4 Jobs to be done
-- "Help me figure out what I can cook tonight without spending too much."
+- "Help me plan the meals I want to cook at home."
+- "Keep the places I choose on a map so I can use them again."
+- "Let me explore meal options before I commit to preferences."
 - "Show whether a meal fits my protein and calorie goals."
 - "Don't tell me to buy ingredients I already have."
 - "When planning multiple meals, don't make me buy the same ingredient three times."
@@ -54,9 +57,10 @@ Urban home cooks encounter menu indecision, budget uncertainty, conflicting nutr
 
 ### 2.1 Release success (must be observable)
 - Public HTTPS URL reachable without an account; source repo available on GitHub.
-- User can choose between demo **work/current and home** anchors without giving location permission.
+- First visit opens on an interactive map centered on a neutral demo area. The user can add, name, select, edit, and remove manually chosen locations and reuse saved locations in the same browser.
+- Location permission is not requested on launch. A first-time visitor can continue with the demo area if they skip adding a location or map tiles fail.
 - At least **8 reviewed Thai-inspired recipes** and **20 normalized ingredients**; real calculations using quantities rather than fixed recipe nutrition/cost totals.
-- User can adjust at least **budget**, **minimum protein**, and **pantry**; results respond deterministically.
+- User can optionally adjust **budget**, **minimum protein**, **exclusions**, and **pantry**, or skip preferences and see unfiltered choices.
 - User can select a recipe, see nutrition estimates and provenance, and generate a consolidated list of **needed ingredient quantities**.
 - When demo product offers are available, checkout cost accounts for real pack sizes and leftover quantity. Every displayed demo price/stock assumption is labeled.
 - Show candidate store locations and an external directions link, backed by real OSM data if available and a reliable demo fallback otherwise.
@@ -66,13 +70,13 @@ Urban home cooks encounter menu indecision, budget uncertainty, conflicting nutr
 | Category | P0: interview must-have | P1: only after P0 | Post-interview |
 | --- | --- | --- | --- |
 | Recipes | Search/browse 8+, recipe details | Add up to 3 meals; preparation instructions | Personalization / content tools |
-| Preferences | Budget, protein, exclusions; optional kcal | Cooking time, calorie range | Advanced health profiles |
+| Preferences | Skippable budget, protein, exclusions and pantry | Cooking time, calorie range | Advanced health profiles |
 | Pantry | Quantities of common owned ingredients | Pantry editing/persistence | Inventory expiration tracking |
 | Nutrition | Calories, protein, carbs, fat | A few traceable micro-nutrients with unknown handling | Full nutrient coverage / cooking yield models |
 | Pricing | Curated **demo offers**, package purchasing arithmetic | Compare 1-store vs up to 2-store plans | Real authorized retail integrations |
-| Location | Demo area + nearby candidates and links | Explicit geolocation, manual home anchor | Real commute-route optimization |
+| Location | Interactive map; manually chosen named locations saved locally; demo-area fallback | Explicit geolocation, sourced store lookup | Real commute-route optimization |
 | Data | Local static source-attributed fixtures | Optional cached OSM discovery | Scheduled ingestion / versioned catalog |
-| Account | None | None | Auth/profile persistence |
+| Account | None; saved locations stay in this browser | Optional local preference memory | Auth/profile sync |
 
 ### 2.3 Explicit non-goals
 - No scraping retailer sites by default; no bypass of rate limits, robots, authentication, or anti-bot controls.
@@ -85,49 +89,52 @@ Urban home cooks encounter menu indecision, budget uncertainty, conflicting nutr
 
 | ID | Requirement | Acceptance criterion |
 | --- | --- | --- |
-| FR-01 | Select location | Two named demo anchors (work/current and home) work; denial of GPS does not block app. |
-| FR-02 | Browse and filter recipes | Filtering budget/protein/dietary exclusions has immediate, explainable results and useful empty state. |
-| FR-03 | Select a recipe | Details contain ingredient amounts in standardized units, servings, nutrients and source coverage. |
+| FR-01 | Choose and save locations | The first screen shows an interactive map; the user can add, name, select, edit, and remove map-picked locations saved in this browser. No GPS prompt is required. |
+| FR-02 | Skippable preferences | Budget, protein, exclusions, and pantry can be entered or skipped; skipping imposes no hidden filter. |
+| FR-03 | Explore meal choices and details | Show available meal choices and plans; recipe details include standardized ingredient amounts, servings, nutrient estimates, and source coverage. |
 | FR-04 | Pantry awareness | Entering 100 g of owned rice reduces required purchased rice by 100 g, never below zero. |
 | FR-05 | Shopping aggregation | Repeated ingredients aggregate before pack selection; use remaining pantry once. |
 | FR-06 | Pack pricing | For each purchased ingredient, choose enough whole packs; show checkout cost and amount left after cooking. |
 | FR-07 | Nutrition arithmetic | Scale per-100-g nutrients by raw edible grams; handle missing values as **unknown/partial**, not zero. |
-| FR-08 | Candidate stores | Show location, attribution and directions; mark price/stock as demo/unverified. |
 | FR-09 | Provenance disclosure | Every product price identifies `simulated`, `estimate`, or `verified_catalog`; no implicit live-stock claim. |
 | FR-10 | Responsive usable UI | On a small phone, core journey is complete without horizontal overflow. |
 | FR-11 | Deployable | Production build, deployment, and README/setup instructions verified. |
-| NFR-01 | Reliability | Core flow operates with no external calls; store lookup gracefully falls back. |
-| NFR-02 | Privacy | No account or telemetry by default; geolocation only on explicit action; don't persist precise home/current coordinates. |
+| FR-12 | Map and location fallback | Map tiles are client-rendered and attributed; saved-location and demo-area choices remain usable if map tiles fail. |
+| FR-13 | Candidate stores | When shown, candidate stores use the selected location or demo area; saved pins remain separate from store records and stock claims. |
+| NFR-01 | Reliability | Meal calculations and shopping lists use local data; tile failure does not block saved locations, demo-area fallback, or later planning. |
+| NFR-02 | Privacy | No account, GPS-on-launch, telemetry, or server sync for saved locations. Explicitly saved map pins and names stay in browser storage and can be edited or deleted. |
 | NFR-03 | Correctness | Money in integer satang; amounts in standardized grams/mL; automated edge-case tests. |
 | NFR-04 | Accessibility | Semantic buttons/forms, keyboard flow, labels, contrast, focus feedback, reduced-motion support. |
 | NFR-05 | Security | Validate inputs, avoid secrets in frontend, render user text safely, avoid untrusted URL injection. |
 
 ### 3.1 Acceptance walkthrough (golden path)
-1. Start with a **clearly labeled Bangkok demo area**. Explore available recipes; view a recipe's calories/macros.
-2. Set a budget and protein goal; see rankings/eligibility change for understandable reasons.
-3. Mark rice or eggs already owned with a quantity; select a recipe.
-4. Open "Shopping list"; verify shortage, number of packages, checkout cost, and leftovers change.
-5. View nearby stores; distinguish real mapped store places from demo offers and unverified inventory. Open a directions link.
-6. Disconnect external APIs or deny location access; repeat the main flow successfully.
+1. Open the app and see an interactive map. Choose a point, add a name, and save it; return later and select, rename, or remove a saved location.
+2. Continue to preferences. Enter budget, protein, exclusions, or pantry quantities, or skip the step without hidden constraints.
+3. Compare the available meal choices and plans; open details to review portions, ingredients, nutrition estimates, and provenance before choosing.
+4. Generate the shopping list. Verify quantities, pantry deductions, whole-pack checkout estimates, leftovers, and incomplete-price labels.
+5. If map tiles fail or the app is offline, continue from saved locations or the named demo area; no GPS or account is needed.
 
 ## 4. UX / information architecture
 
 **Primary sections (mobile-first):**
-1. **Discover** `/`: work/current vs home demo-area picker, quick goals, curated recipe cards, estimates.
-2. **Recipe details** `/recipes/[slug]`: servings, raw-ingredient quantities, macros, known micro-nutrient coverage, cost breakdown.
-3. **Plan** `/plan`: selected recipes, pantry editor, consolidated shortage and package basket.
-4. **Shops** `/shops`: candidate store cards/map; external navigation links; no guaranteed stock.
-5. **About data** `/about`: what is real vs simulated, source/license acknowledgments, calculation limitations.
+1. **Places** `/`: an interactive map, map-picked location editor, and saved-location list. Start centered on a named demo area without requesting GPS.
+2. **Preferences** `/preferences`: optional budget, protein, exclusions, and pantry controls with a clear skip action.
+3. **Meal choices and plans** `/meals`: browsable eligible meals and plan options, with an unfiltered state when preferences are skipped.
+4. **Meal details** `/recipes/[slug]`: servings, raw-ingredient quantities, macros, known micro-nutrient coverage, and cost estimate.
+5. **Shopping list** `/shopping-list`: selected plan, pantry-adjusted shortages, pack quantities, checkout estimate, and leftovers.
+6. **About data** `/about`: what is real vs simulated, source/license acknowledgments, calculation limitations, and location storage behavior.
 
 **Navigation rule:** no required sign-up. Keep the entire core journey accessible in 3–5 meaningful user actions. Expose a "Demo data" marker clearly throughout cost/store views.
 
 **UI language:** Thai-first, with optional English strings only if easily supported. Currency ฿, mass g, volume mL, servings clearly defined. Label *ingredient consumption cost* separately from *checkout cash required*.
 
-**States to design explicitly:** loading, empty results, no suitable product offers, GPS denied, external map unavailable, missing nutrient data, insufficient budget, and stale demo catalog.
+**States to design explicitly:** map loading/unavailable, no saved locations, selected-location edit/remove, preferences skipped, empty meal results, no suitable product offers, missing nutrient data, insufficient budget, and stale demo catalog.
 
 ## 5. Proposed architecture
 
-### REQ-02 interaction contract — 2026-10-30
+### REQ-02 historical interaction contract — 2026-10-30 (superseded by REQ-03)
+
+The following interaction record documents the earlier demo-area-first proposal. It is retained for history only; the REQ-03 contract below is authoritative for current implementation.
 
 This defines intended behavior for implementation and QA; these screens are not yet built. Primary navigation exposes Discover (`/`), Plan (`/plan`), Shops (`/shops`) and About data (`/about`). Recipe cards link to `/recipes/[slug]`; details link back to Discover and forward to Plan. No sign-up or permission dialog interrupts navigation.
 
@@ -168,13 +175,35 @@ Shared session state consists of the selected demo anchor, valid budget/protein/
 
 **Design trade-off:** a single shared session state and shared domain calculations prevent the recipe card and final basket from disagreeing after pantry edits. P0 accepts a session reset on refresh to avoid adding persistence before the core journey is proven.
 
+### REQ-03 current interaction contract — 2026-10-31
+
+The first screen is Places (`/`) and opens with an interactive map centered on a neutral, clearly named demo area. The map lets the user choose a point, name it, and save it to a local list. Saved locations can be selected, renamed, and deleted. The map pin is a user-selected coordinate, not device GPS, a verified store, or evidence of retailer inventory. Do not add geocoding or an account requirement.
+
+The ordered flow is: **map and saved locations -> optional preferences -> meal choices, plans and details -> shopping list**. Preferences include checkout budget, minimum protein, exclusions, and pantry quantities. Skipping preferences leaves constraints unset and displays all available choices. Meal calculations and shopping amounts continue to come from validated fixtures and pure domain functions.
+
+| Step / route | Visible result and acceptance check |
+| --- | --- |
+| Open Places `/` | Show the map first, a neutral demo-area label, saved-location list, and a clear add-location action. Do not request GPS. Include OSM attribution and a link to its license when OSM data is shown. |
+| Select and save a map point | A user can place a marker, enter a human-readable name, and save it. Explain that the name and coordinates stay in this browser. The saved entry can be selected, renamed, and removed. |
+| Continue when the map fails | Keep saved locations and the demo-area choice visible; allow the user to continue planning. A first-time visitor can use the named demo area without saving a point. |
+| Open Preferences `/preferences` | Show budget, protein, exclusions, and pantry as optional controls. “ข้ามก่อน” continues with no hidden filter; invalid values are not applied. |
+| Open Meal choices `/meals` | Show available choices, eligibility reasons when preferences were set, and plan actions. If preferences were skipped, label that results are unfiltered. |
+| Inspect `/recipes/[slug]` | Show servings, ingredient amounts, estimated nutrition with provenance/unknown flags, and a selection action. An unknown slug has a useful return path. |
+| Open Shopping list `/shopping-list` | Recompute required and pantry quantities, shortage, whole packs, estimated checkout cash, and leftovers. Missing offers keep the basket visibly incomplete. |
+| Return to Places or another step | Keep the saved-location list in browser storage and the current planning session intact. Selecting a different saved location does not silently replace the chosen meals or pantry. |
+| Use any step on phone or keyboard | Controls remain labeled and focusable; map selection also has a keyboard-accessible location-entry fallback; no horizontal overflow or color-only status. |
+
+**Privacy and map fallback:** only a user-submitted map pin and its name are saved in `localStorage`; the app does not send the saved-location record to its server or log it. Map tile requests reveal the viewed map area to the tile provider, so disclose external tiles. Provide edit, delete-one, and clear-all controls. Never request `navigator.geolocation` on launch. Request only tiles for the visible map, honor the selected tile provider's usage policy, and do not offer tile downloads or prefetch. If tiles are unavailable, saved-location selection and the named demo area still work.
+
+**Design trade-off:** the map is now the first screen as requested, but tile delivery remains an external dependency. Keeping saved pins and the meal-planning data local means a tile outage does not erase locations or block the rest of the flow.
+
 ### 5.1 Engineering decisions
 - **Modular monolith** using Next.js App Router + TypeScript + Tailwind CSS + **shadcn/ui** for the application UI, with Lucide icons.
 - Use shadcn/ui as **owned component source** generated into the repository, not as a remotely hosted theme or a replacement for the calculation engine. Adapt components to the product design, but keep domain logic separate.
 - **Deterministic domain functions** under `src/lib/domain/` independent of React and network APIs.
 - **Static reviewed JSON/TS fixtures** for recipe, ingredient, nutrient and offer records: easiest to test and deploy without a database.
-- **Local React state** for the prototype, optionally `localStorage` for *non-sensitive* preferences and selected recipe IDs only.
-- **Leaflet / react-leaflet** for store map; load client-side, with list fallback when map cannot render.
+- **Local React state** for preferences, selected meals, and pantry; `localStorage` stores only explicitly saved, manually map-picked location names and coordinates plus the selected saved-location ID. No server sync or telemetry.
+- **Leaflet / react-leaflet** for the first-step location map; load client-side to avoid SSR issues. Request only visible tiles, display provider attribution/license, and follow the provider's usage policy. No geocoding is needed to save a pin.
 - **Optional Next.js Route Handler** for OSM/Overpass store discovery with explicit endpoint validation, bounded radius, caching and graceful fallback. This is P1 if it threatens P0.
 - **Vitest** for numeric domain tests; TypeScript strict; ESLint. E2E may be a stretch goal.
 - Set a small, consistent design system using Tailwind CSS variables (background/foreground, primary, muted, border, destructive) and shadcn/ui components. Focus on mobile-first, Thai text legibility, accessibility, and visible estimates/provenance; do not simply copy a generic dashboard style.
@@ -346,6 +375,14 @@ export type Store = {
   osmUrl?: string;
 };
 
+// User-submitted map pins; persisted only in this browser, separate from Store.
+export type SavedLocation = {
+  id: string;
+  label: string;
+  lat: number;
+  lon: number;
+};
+
 export type PantryItem = { ingredientId: string; edibleGrams: number };
 export type PlanningInput = {
   recipeIds: string[];
@@ -400,7 +437,8 @@ For a product offer, `packsNeeded = ceil(shortageGrams / edibleQuantityGrams)` (
 **Important UX rule:** budget must clearly mean **checkout budget** or **ingredient consumption budget**; v0.1 defaults to **checkout budget** and uses the same metric in filtering, recipe cards, and shopping plan.
 
 ### 7.5 Store discovery and assignment
-- For P0, provide **two preset location anchors** representing work/current and home, each with a small list of labeled demo store fixtures. They are example areas, **not inferred user addresses**. Optionally also show real OSM store locations if preverified and attributed.
+- Use the selected user-saved location as the planning origin where store candidates are shown. A saved pin is a user-selected place, not a physical store record. Provide a clearly named demo-area origin when the user has no saved location or tiles are unavailable.
+- Keep physical `Store` records separate from user `SavedLocation` records, retailer chains, and offers. Show candidate cards and directions from validated coordinates; do not claim a map pin is a nearby shop.
 - If live OSM lookup is implemented, user explicitly triggers it; server-side bounded search by `shop=supermarket|convenience|greengrocer` and other relevant tags, cap results, validate coordinates/radius, cache responses, and observe provider usage policies. Do not harvest full Thai store directories.
 - Use `haversineMeters` for **straight-line distance**, not walking/driving ETA. Display label "approx. straight-line distance".
 - Open a directions URL using a safe, validated map provider or OSM directions link; do not imply route optimization.
@@ -417,7 +455,7 @@ For a product offer, `packsNeeded = ceil(shortageGrams / edibleQuantityGrams)` (
 | Nutrients | Verified USDA FDC records with `fdcId` and record date, optionally source-labeled estimates | Ingredient composition, approximate cooking outcome |
 | Prices/products | Small synthetic catalog, optional manually linked authorized public examples | **Simulated retailer-level offers**, not quotes/availability |
 | Store points | Optional OSM results or visibly marked static demo points | Locations may be real, inventory unverified |
-| User data | Ephemeral session; optionally preferences/selected recipe IDs locally | No personal tracking |
+| User data | Session planning state; explicitly saved named map pins stored in this browser only | No account, server sync, or location analytics |
 
 Never create a `verified_catalog` claim without an actual retrievable URL, observed price and unit, and permission or permissible usage determination. Never present AI-generated nutrient numbers as verified measurements.
 
@@ -436,14 +474,14 @@ Show a shortened version on cards/plan and a complete version on `/about`.
 
 ## 9. Security, privacy, safety, and reliability
 
-- Location permission must be user-triggered and optional; app must start in demo mode. Do not request/stash a user's exact home address; do not log precise coordinates, and do not save them to localStorage by default.
+- Never request geolocation on launch. The user may manually choose a map point and explicitly save its name and coordinates in browser `localStorage` for future use. Provide rename, delete-one, and clear-all actions. Do not send saved-location records to the app server or log them; do not store device GPS coordinates. Tile requests reveal the viewed area to the map provider, as disclosed in §5. Keep a named demo-area option for visitors who skip location setup.
 - Validate and clamp numeric constraints (`budget`, `grams`, `radius`, `lat`, `lon`, `servings`) with Zod at input/API boundaries. Reject NaN, infinities, negative masses/prices, zero pack sizes/servings, unreasonable search radius.
 - Use server-side proxy only for external calls that need security/usage controls. Keep API keys in private environment variables; never expose a USDA key via `NEXT_PUBLIC_`.
 - Do not treat client-supplied product prices as authoritative when serving computations from an API; P0 pure client domain functions only consume immutable reviewed fixture records.
 - Safely build external navigation URLs; validate numeric lat/lon; default to HTTPS; do not interpolate unchecked values into HTML.
 - Keep unit conversions explicit; handle incomplete nutrition and unpriced ingredients gracefully.
 - Support reduced motion and readable contrast; avoid medical claims or unsupported allergen guarantees.
-- Build without live API dependencies; expose a visible recovery message if external store discovery or maps fail.
+- Meal calculations use local fixtures without live API dependencies. Map tiles may require network access; on failure show the saved-location list and demo-area fallback with a clear recovery message.
 
 ## 10. Verification plan
 
@@ -457,10 +495,10 @@ Show a shortened version on cards/plan and a complete version on `/about`.
 - Dataset validation: all IDs unique; all referenced ingredient IDs exist; positive serving counts, prices and pack amounts; source provenance present.
 
 ### 10.2 Integration/manual tests (P0)
-- Browser: load without user account; demo area selected; filter -> recipe -> pantry -> plan -> shops -> directions.
+- Browser: open to map without a user account or GPS prompt; choose/name/save a pin; reload and select it; rename and delete; then skip preferences -> compare meal choices/plans -> inspect details -> generate the shopping list.
 - Responsive: narrow phone viewport and desktop. Keyboard interaction, visible focus, labels, readable error states.
-- Permission denied: no uncaught error; user can continue via demo area.
-- Offline/external API failure: local recipes, calculations and store fixtures still usable.
+- Permission denied: irrelevant to the default flow because GPS is never requested; saved pins and the demo area remain selectable.
+- Map tiles unavailable or offline: existing saved locations and demo area remain visible, and meal calculations continue locally.
 - Data labeling: sampled offer says simulated; no branch "in stock" claims; nutrition source/unknown fields visible.
 - `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build` (configure scripts if missing).
 - Smoke-test deployed HTTPS URL and open GitHub repo with source code & setup instructions.
@@ -479,7 +517,7 @@ A task is done when code, tests, accessible states, provenance labels (if data-r
 | Deployment | Vercel live build + public repo | URL works on phone and desktop; no secrets exposed |
 | Maintenance | README known limitations + future backlog | Future capabilities clearly separate from shipped claims |
 
-**Schedule reality (as of Oct 29 night):** October 30 is the principal build/test day; October 31 is interview/demo day. Protect a release candidate before the interview. If behind, cut optional map API, extra recipes, micros, multi-meal selection, multi-store optimization before cutting the core calculation journey.
+**Schedule reality (as of Oct 29 night):** October 30 is the principal build/test day; October 31 is interview/demo day. Protect a release candidate before the interview. If behind, cut live place lookup, extra micronutrients, multi-meal selection, and multi-store optimization before cutting the map-first saved-location flow or core calculations.
 
 ## 12. Main risks & decisions
 
@@ -488,7 +526,7 @@ A task is done when code, tests, accessible states, provenance labels (if data-r
 | Retail inventory data inaccessible | Very high | Synthetic catalog with prominent disclaimers; never promise live availability |
 | Wrong nutrition totals | High | Reviewed data, standardized grams, provenance, unit tests, unknown handling |
 | Cost calculation mismatch | High | Separate consumption vs pack checkout; integer satang; aggregation first |
-| External location service fails | Medium | Demo area and store fixtures, basic list/directions |
+| Map tile provider fails | Medium | Keep saved-location list and named demo-area fallback usable; do not make tile success a prerequisite for meal planning |
 | Scope expansion | Very high | P0 freeze; P1 only after vertical slice passes |
 | API/legal misuse | High | No default scraping; honor OSM/USDA terms; no retailer affiliation |
 | Developer cannot explain AI code | High | Codex must explain decisions, tests, alternatives; owner reviews each task |
@@ -500,6 +538,7 @@ A task is done when code, tests, accessible states, provenance labels (if data-r
 - **ADR-004**: Candidate store recommendations only. *Reason:* chain-level demo prices cannot establish branch inventory.
 - **ADR-005**: No AI in critical numerical calculations. *Reason:* deterministic, explainable and testable results; AI may help writing/ideation but not fabricate source data.
 - **ADR-006**: shadcn/ui + Tailwind CSS for UI primitives (not a separate framework). *Reason:* accessible, customizable, locally owned components accelerate a coherent interview-quality interface. *Trade-off:* generated source and dependencies must be maintained; install only what is used.
+- **ADR-007**: Explicitly saved, manually map-picked locations live in browser `localStorage`, separate from store fixtures. *Reason:* users asked to reuse places without accounts. *Trade-off:* places are not synced across devices, and the external tile provider sees the viewed map area.
 
 ## 13. Interview preparation / developer understanding
 
@@ -512,16 +551,16 @@ The owner must be able to answer, without Codex:
 6. How do exclusions and hard/soft constraints work? Can recommendations be reproduced?
 7. What exactly is simulated versus verified? Why isn't branch availability guaranteed?
 8. Why is straight-line distance different from route distance/ETA?
-9. How does the app work with geolocation denied or Overpass down?
+9. How do saved places and the demo-area fallback work when map tiles are unavailable?
 10. What tests protect the core calculations? What would change when moving to production?
 
-**90-second suggested demo:** state the persona/problem -> select demo area -> set a budget/protein goal -> open a recipe -> show nutrient calculation -> add pantry rice -> show shopping quantities/checkout change -> view candidate shops and demo disclaimer -> finish with architecture trade-offs.
+**90-second suggested demo:** state the home-cooking planning problem -> choose and save a map location -> skip or set preferences -> compare meal choices and inspect details -> show the pantry-adjusted shopping list and demo-data disclosure -> finish with privacy and calculation trade-offs.
 
 ## 14. Open decisions / assumptions
 
-### REQ-01 agreed scope — 2026-10-30
+### REQ-01 historical scope approval — 2026-10-30 (superseded by REQ-03)
 
-The owner agreed to this scope and the two demo areas on 2026-10-30 (“I agree, you may start now”). This records requirements approval; application functionality is not yet implemented.
+The owner agreed to the then-current scope and two demo areas on 2026-10-30 (“I agree, you may start now”). This is a historical approval record. Its demo-area-first journey and optional-map decision were revised by REQ-03 on 2026-10-31.
 
 - **Problem/persona:** Mr. A is a Bangkok office worker who cooks several times per week and needs to choose an affordable meal, use pantry ingredients, and understand what to buy before stopping at a candidate shop.
 - **P0 journey:** choose a demo area -> browse at least 8 reviewed Thai-inspired recipes -> filter by checkout budget, minimum protein per serving and exclusions -> select one recipe batch -> enter pantry quantities -> see calculated nutrients, shortages, whole packs, checkout cost and leftovers -> inspect candidate store cards and directions. At least 20 normalized ingredients support the recipes. Unknown nutrients remain unknown; missing offers make the basket incomplete.
@@ -530,15 +569,29 @@ The owner agreed to this scope and the two demo areas on 2026-10-30 (“I agree,
 - **Anchor boundary:** these are illustrative Bangkok areas, not a detected current position or the user's actual workplace/home. Exact preset coordinates and store points will be recorded and validated in `DAT-01`/`GEO-01`; no verified branch or coordinate is asserted here. Any fictitious store point must visibly say it is fictitious.
 - **Budget:** maximum cash required to buy whole packs after pantry subtraction, stored in integer satang. Use the same checkout calculation in filtering and the final basket. Show consumption cost separately as informational.
 - **Data disclosure:** all initial product offers are `simulated`; branch stock is `unknown`. Display **“ราคาสาธิต · ไม่ได้ตรวจสอบสต็อกสาขา”** (“Demo prices · branch stock not checked”) alongside prices and store coverage, with the full notice from §8.3 on `/about`. Label nutrition estimates and show provenance/unknown coverage.
-- **Resilience/privacy:** the core journey uses local fixtures without GPS, external APIs or a database. GPS is optional P1, only after an explicit user action; it is never requested at launch. No precise personal locations are needed for P0.
+- **Resilience/privacy:** meal planning uses local fixtures without GPS, app APIs, or a database. The user may explicitly save manually selected pins in browser storage. The map tile provider receives visible map-tile requests; the app server receives no saved-location record. GPS is not used in the P0 flow.
 - **Implementation boundary:** Next.js App Router, strict TypeScript, pnpm, Tailwind CSS, shadcn/ui and Lucide; pure domain functions consume reviewed static fixtures. Bootstrap in `DES-01`, then run the shadcn CLI and verify generated primitives in `DES-UI-01`.
 - **Deferred:** three-meal selection, multiple-store comparison, live OSM lookup/geolocation, optional map and extra micronutrients. Accounts, payments, scraping, live inventory, medical/allergen certification and route optimization remain outside v0.1.
 
 **Trade-off for owner review:** local fixtures and simulated offers keep the interview flow reproducible and allow real arithmetic without network access. Catalog coverage is limited and cannot establish actual branch prices or availability.
 
-**REQ-01 approval recorded:** P0 scope, Phaya Thai and On Nut demo areas, checkout-budget semantics, optional GPS, the 8-recipe/20-ingredient minimum and explicit simulated-price/unknown-stock disclosure are agreed. Dependent tasks may proceed in backlog order.
+**REQ-01 approval recorded:** the original P0 scope, Phaya Thai and On Nut demo areas, checkout-budget semantics, optional GPS, the 8-recipe/20-ingredient minimum and simulated-price/unknown-stock disclosure were agreed on 2026-10-30. Current requirements are recorded below.
 
-Decisions assumed for MVP; owner may revise **before coding**, not halfway through a vertical slice:
+### REQ-03 current product direction — 2026-10-31
+
+The owner revised the product promise to **“ตัวช่วยการวางแผนทำอาหารกินเองของคุณ”** (“your helper for planning home-cooked meals”) and specified this ordered journey: **(1) open to a map, choose and save named locations for future use; (2) ask preferences, but allow skipping; (3) offer choices, plans, and details; (4) produce the shopping list.** This supersedes the earlier demo-anchor-first flow.
+
+- **Location choice:** map points are manually selected and named by the user; no launch-time GPS. The browser retains only the saved names and coordinates and the selected saved-location ID. The user can select, rename, delete one, or clear all saved locations. The app does not send the saved-location record to its server or log it. Map tile requests reveal the viewed map area to the tile provider.
+- **Map fallback:** show a neutral demo-area map on first visit. If map tiles fail, the saved list and demo-area option remain usable, and the user can continue. Tile requests are limited to the visible map; provider policies and attribution/licensing are mandatory. No geocoding is required.
+- **Preferences:** budget, minimum protein, exclusions, and pantry can be set or skipped; skip means no hidden filter.
+- **Choices and plans:** show recipe choices, explain eligibility when preferences exist, and expose servings, ingredients, nutrition estimates, and provenance before a plan is selected.
+- **Shopping list:** compute quantities from selected meals and pantry, then show whole-pack purchase estimates, checkout cash, leftovers, and incomplete price coverage honestly.
+- **Data boundary:** saved user locations are not `Store` fixtures. A user pin does not prove a shop, offer, stock, or retailer relationship.
+- **Unchanged domain rules:** nutrition remains source-backed or explicitly estimated, unknown stays `null`, money remains integer satang, and simulated retailer offers never claim branch availability.
+
+**Trade-off:** a live tile map provides the first-step location experience while relying on an external service. Saved coordinates and all meal calculations stay client-local, so tile failure does not erase places or prevent planning.
+
+These assumptions describe the original MVP scope approved 2026-10-30; REQ-03 records the owner's later amendment:
 - Demo locations: select two reproducible Bangkok-area anchors representing work/current and home (they may be near a BTS route); fixture locations must be real sourced OSM locations or **clearly fictitious** demo points. Do not imply these are the user's actual office/apartment.
 - Recipe batch amount: ingredients refer to a defined batch; nutrition displayed per serving. Multi-meal planning (P1) uses one batch per selected recipe unless the user adjusts counts.
 - Language: Thai-first UI; code, types and documentation in English.
