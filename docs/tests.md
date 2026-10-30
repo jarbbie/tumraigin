@@ -1,6 +1,6 @@
 # Test and verification plan
 
-**Status:** Verification plan. Test infrastructure is configured and dependencies are installed, but no application test files exist yet. `pnpm test` exits successfully with an empty suite. See current evidence in [`../BACKLOG.md`](../BACKLOG.md).
+**Status:** Verification plan. The DES-UI-01 preview and browser checks are recorded below; domain test coverage will be added with the related backlog tasks. See current evidence in [`../BACKLOG.md`](../BACKLOG.md).
 
 ## Project checks
 
@@ -23,6 +23,29 @@ pnpm build
 - `pnpm test`: exited 0; Vitest reported no test files.
 - `pnpm build`: passed with `next build --webpack`; the static `/` route was generated and its HTML contains the expected page text.
 - Live server smoke: `pnpm start --hostname 127.0.0.1 --port 3100` started the production server. An HTTP request to `/` returned 200, and the response included the expected Thai heading and page copy.
+
+## DES-UI-01 verification (2026-10-30)
+
+- Ran the official shadcn CLI `init --defaults`, then `add button card input label badge checkbox`; it created `components.json`, `src/lib/utils.ts`, and the six local primitives under `src/components/ui/`.
+- Customized the generated theme with Tumraigin cream/green tokens and retained the system Thai font stack; removed the generated Google font import to keep builds independent of remote font fetches.
+- `pnpm lint`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm test`: exited 0; Vitest reported no test files.
+- `pnpm build`: passed with Webpack.
+- Production route smoke: `/` returned HTTP 200 and included the representative card, labeled budget input, pantry checkbox, and prototype notice.
+- Owner-provided narrow-screen screenshot shows the heading, card, and controls fitting without horizontal overflow. The keyboard check (visible focus through Tab/Shift+Tab and checkbox toggling with Space) is still awaiting confirmation; the CUA browser access host remains unavailable in this session.
+
+## DES-UI-01 visual refinement (2026-10-31)
+
+- Reworked the representative `/` page with a Thai-first “market ledger” direction: cool blue-green surfaces, pandan-green actions, a restrained papaya-gold marker and a single form surface instead of a decorative gradient and repeated card styling.
+- Kept all controls visibly labeled and marked the form as a nonfunctional preview; no meal, nutrition, price or store results are fabricated.
+- `pnpm lint`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm test`: exited 0; Vitest reported no test files (and printed a Vite config-loader warning).
+- `pnpm build`: passed with Webpack.
+- Production smoke: `/` returned HTTP 200.
+- Headless Firefox screenshots at 1440 × 1000 and 390 × 844 were reviewed. Content stacks without horizontal overflow; the form appears before the explanatory steps on mobile.
+- Headless Chromium verified keyboard navigation in production: Tab reached each control in order with a visible focus indicator, Shift+Tab returned to the preceding field, and Space toggled the checkbox false → true → false. At a 390 × 844 viewport, document and body widths were both 390px with no horizontal overflow. The browser automation host was unavailable, so this check used the cached local Chromium binary through its DevTools protocol.
 
 ## P0 domain coverage
 

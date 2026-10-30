@@ -22,11 +22,15 @@ Develop each backlog feature on a `feature/<task-id>-<short-name>` branch from `
 
 ## Current implementation
 
-The repository currently contains the Next.js App Router and Tailwind CSS project bootstrap. The meal planning journey, calculations, fixtures, prices, store suggestions and shadcn/ui components are not implemented yet. No nutrition or retailer data is included in this scaffold.
+The repository contains the Next.js App Router and Tailwind CSS bootstrap, plus an initialized shadcn/ui foundation. The `/` page is a representative UI preview: its form controls are examples and do not calculate or filter meals. The meal planning journey, domain calculations, fixtures, prices and store suggestions are not implemented. No nutrition or retailer data is included.
+
+## UI foundation
+
+`components.json` records the shadcn/ui Base UI/Nova setup. Generated, locally owned primitives live in `src/components/ui/` (`button`, `card`, `input`, `label`, `badge`, and `checkbox`); `src/lib/utils.ts` exports the `cn` class-merging helper. The UI dependencies include `@base-ui/react`, `class-variance-authority`, `cn`, `shadcn`, `tw-animate-css`, and `lucide-react`. The global theme uses cool blue-green surfaces, pandan-green actions, a restrained papaya-gold accent and local Thai font fallbacks; it does not fetch a web font at runtime or during build.
 
 ## Run locally
 
-Requires Node.js 20.9 or newer and pnpm 10.14 or newer.
+Requires Node.js 22 or newer and pnpm 10.14 or newer. The current shadcn-generated `cn` utility requires Node.js 22.
 
 ```bash
 pnpm install
