@@ -107,12 +107,15 @@
 
 # Phase 2 — Domain implementation (highest-priority coding)
 
-### [ ] ENG-01 (P0) Nutrition calculation engine
+### [x] ENG-01 (P0) Nutrition calculation engine
 - **Dependencies:** DAT-01.
 - **Deliverables:** `calculateRecipeNutrients(recipe, ingredients)` returning batch/per-serving totals plus completeness flags and source references.
 - **Acceptance:** Scale quantities from 100 g values; divide by servings; never convert unknown to zero; distinguish kcal, grams and milligrams.
 - **Tests:** 100 g/250 g examples, two servings, unknown sodium/iron; zero/invalid quantity handling.
 - **Owner teach-back:** Formula, missing nutrient semantics, raw-vs-cooked limitations.
+- **Implementation:** Added a pure domain function that validates serving count, positive finite edible grams, ingredient references and source nutrient values; returns batch and per-serving totals, per-nutrient completeness, and stable source references. Unknown required or optional nutrients remain `null`; measured zero remains `0`. No UI or recommendation result is added in this task.
+- **Verification evidence (2026-10-31):** `pnpm lint` passed; `pnpm typecheck` passed; `pnpm test` passed (35 tests across 4 files, including 8 nutrition-engine tests; Vitest printed the existing Vite config-loader warning); `pnpm build` passed with Webpack.
+- **Owner teach-back / trade-off:** For each raw edible amount `q` grams and a source value `n` per 100 g, the function adds `(q / 100) * n` to the batch; per serving is batch divided by the positive integer serving count. If any used ingredient lacks a nutrient, that nutrient's result is `null` and its completeness flag is false, while complete nutrients still calculate normally. Validation and scaling take O(R × K + N) plus O(U log U) to sort source references, where R is recipe items, K is the fixed eight nutrients, N is the ingredient list, and U is unique used ingredients. Tests verify the 100 g and 250 g scales, serving split, missing micro propagation, known zero, invalid inputs, duplicate entries and sources. The trade-off is that the report preserves source-basis raw values and does not model cooking yield, retention or cooked weight.
 
 ### [ ] ENG-02 (P0) Pantry shortage & multi-recipe aggregator
 - **Dependencies:** DAT-01.
