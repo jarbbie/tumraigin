@@ -57,12 +57,14 @@ To preview the production static export locally, run `pnpm build` and then `pnpm
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm exec playwright install chromium # one time before the browser test
+pnpm test:e2e
 pnpm build
 ```
 
-Vitest runs the repository unit tests. Add focused domain and interaction coverage as each backlog item is implemented.
+Vitest runs the repository unit tests under `src/`. `pnpm test:e2e` builds the static export with the `/tumraigin` base path and uses Playwright Chromium against the production preview server; it verifies meal filtering, selection, pantry subtraction, pack rounding and recalculated checkout totals. Install the Playwright browser once with the command above; the GitHub Actions workflow installs it automatically. The runner builds and serves on loopback, and its smoke path does not load map tiles. Add focused domain and interaction coverage as each backlog item is implemented.
 
-The lockfile is present. Install, lint, typecheck, the current test suite, and the Webpack production build have been verified; see [`docs/tests.md`](./docs/tests.md) for task-specific evidence.
+The lockfile is present. Lint, typecheck, 80 unit tests, the Playwright production-browser smoke test, and the Webpack production build have been verified; see [`docs/tests.md`](./docs/tests.md) for task-specific evidence.
 
 ## Static deployment
 
