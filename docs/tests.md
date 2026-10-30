@@ -1,6 +1,6 @@
 # Test and verification plan
 
-**Status:** Verification plan. The DES-UI-01 preview and browser checks are recorded below; domain test coverage will be added with the related backlog tasks. See current evidence in [`../BACKLOG.md`](../BACKLOG.md).
+**Status:** Verification plan with implemented fixture-contract coverage. Test infrastructure is configured and dependencies are installed; see current evidence in [`../BACKLOG.md`](../BACKLOG.md).
 
 ## Project checks
 
@@ -46,6 +46,17 @@ pnpm build
 - Production smoke: `/` returned HTTP 200.
 - Headless Firefox screenshots at 1440 × 1000 and 390 × 844 were reviewed. Content stacks without horizontal overflow; the form appears before the explanatory steps on mobile.
 - Headless Chromium verified keyboard navigation in production: Tab reached each control in order with a visible focus indicator, Shift+Tab returned to the preceding field, and Space toggled the checkbox false → true → false. At a 390 × 844 viewport, document and body widths were both 390px with no horizontal overflow. The browser automation host was unavailable, so this check used the cached local Chromium binary through its DevTools protocol.
+
+## DES-02 data-contract verification (2026-10-31)
+
+- Added shared TypeScript contracts for ingredients, nutrients, provenance, recipes, recipe ingredients, product offers, stores, pantry items, planning input and the fixture dataset.
+- Added runtime validation for fixture shape, canonical grams/satang fields, positive servings/pack sizes/prices, nullable nutrients, HTTPS provenance, dates, coordinate bounds, uniqueness and ingredient references. Planning-input references are checked against the validated recipe and ingredient collections.
+- `pnpm install --offline --frozen-lockfile`: passed in the isolated feature worktree.
+- `pnpm lint`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm test`: passed; 11 tests cover accepted unknown nutrients and rejection of zero pack size, invalid coordinates, duplicate IDs, unknown recipe/offer/planning references, fractional satang, claimed stock and invalid pantry/budget values. Vitest printed a Vite config-loader warning.
+- `pnpm build`: passed with Webpack.
+- No production fixture data was added; test-only data is explicitly labeled as test/simulated.
 
 ## P0 domain coverage
 
