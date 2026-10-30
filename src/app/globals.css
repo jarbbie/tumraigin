@@ -1,20 +1,249 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   color-scheme: light;
-  --background: #fffaf2;
-  --foreground: #213329;
+  --background: #f0f4f2;
+  --foreground: #283437;
+  --card: #fffefa;
+  --card-foreground: #283437;
+  --popover: #fffefa;
+  --popover-foreground: #283437;
+  --primary: #2e6756;
+  --primary-foreground: #fffefa;
+  --secondary: #e4ece7;
+  --secondary-foreground: #29433a;
+  --muted: #e8eeea;
+  --muted-foreground: #53645e;
+  --accent: #e6ad45;
+  --accent-foreground: #283437;
+  --destructive: #bd4b3a;
+  --border: #cfd9d5;
+  --input: #bdcbc6;
+  --ring: #2e6756;
+  --chart-1: #2e6756;
+  --chart-2: #9cac73;
+  --chart-3: #e6ad45;
+  --chart-4: #688c91;
+  --chart-5: #bd4b3a;
+  --radius: 0.9rem;
+  --sidebar: #e8eeea;
+  --sidebar-foreground: #283437;
+  --sidebar-primary: #2e6756;
+  --sidebar-primary-foreground: #fffefa;
+  --sidebar-accent: #e4ece7;
+  --sidebar-accent-foreground: #29433a;
+  --sidebar-border: #cfd9d5;
+  --sidebar-ring: #2e6756;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Tahoma", "Noto Sans Thai", sans-serif;
+  --font-sans: "Noto Sans Thai", "Tahoma", system-ui, sans-serif;
+  --font-heading: "Noto Sans Thai", "Tahoma", system-ui, sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 body {
   margin: 0;
-  background: var(--background);
+  font-family: "Noto Sans Thai", "Tahoma", system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #1c2928;
+  --foreground: #eff4f1;
+  --card: #253332;
+  --card-foreground: #eff4f1;
+  --popover: #253332;
+  --popover-foreground: #eff4f1;
+  --primary: #96c4b1;
+  --primary-foreground: #1b302a;
+  --secondary: #2b403b;
+  --secondary-foreground: #eaf1ed;
+  --muted: #293735;
+  --muted-foreground: #bdcbc4;
+  --accent: #e6ad45;
+  --accent-foreground: #283437;
+  --destructive: #ef9b8d;
+  --border: #ffffff24;
+  --input: #ffffff2e;
+  --ring: #96c4b1;
+  --chart-1: #96c4b1;
+  --chart-2: #c2d591;
+  --chart-3: #e6ad45;
+  --chart-4: #8eb8bd;
+  --chart-5: #ef9b8d;
+  --sidebar: #202f2e;
+  --sidebar-foreground: #eff4f1;
+  --sidebar-primary: #96c4b1;
+  --sidebar-primary-foreground: #1b302a;
+  --sidebar-accent: #2b403b;
+  --sidebar-accent-foreground: #eaf1ed;
+  --sidebar-border: #ffffff24;
+  --sidebar-ring: #96c4b1;
+}
+
+.tm-map-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: #dce7e1;
+}
+
+.tm-map,
+.tm-map--loading {
+  width: 100%;
+  height: clamp(22rem, 57vh, 37rem);
+}
+
+.tm-map--loading {
+  display: grid;
+  place-items: center;
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+
+.tm-map .leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: #dce7e1;
   color: var(--foreground);
-  font-family: "Tahoma", "Noto Sans Thai", sans-serif;
+  font-family: "Noto Sans Thai", Tahoma, system-ui, sans-serif;
+}
+
+.tm-map .leaflet-control-zoom a {
+  color: var(--foreground);
+}
+
+.tm-map .leaflet-control-attribution {
+  max-width: calc(100vw - 4rem);
+  font-size: 0.68rem;
+}
+
+.tm-map .leaflet-control-attribution a {
+  color: var(--primary);
+}
+
+.tm-map-caption {
+  position: absolute;
+  z-index: 500;
+  top: 0.85rem;
+  left: 0.85rem;
+  max-width: calc(100% - 5.5rem);
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #cfd9d5;
+  border-radius: 0.45rem;
+  background: #fffefaed;
+  color: #283437;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.tm-map-notice {
+  border-left: 3px solid var(--accent);
+  padding: 0.65rem 0.8rem;
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  color: var(--foreground);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.tm-saved-place--selected {
+  border-left: 3px solid var(--primary);
+  padding-left: 0.65rem;
+}
+
+.tumraigin-map-pin {
+  display: grid;
+  place-items: start center;
+  border: 0;
+  background: none;
+}
+
+.tumraigin-map-pin__shape {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 2px solid #fffefa;
+  border-radius: 50% 50% 50% 0;
+  background: #71887d;
+  box-shadow: 0 1px 5px #28343766;
+  transform: rotate(-45deg);
+}
+
+.tumraigin-map-pin--selected .tumraigin-map-pin__shape {
+  width: 1.6rem;
+  height: 1.6rem;
+  background: #2e6756;
+}
+
+.tumraigin-map-pin--draft .tumraigin-map-pin__shape {
+  width: 1.6rem;
+  height: 1.6rem;
+  background: #e6ad45;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }

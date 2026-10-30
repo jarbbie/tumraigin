@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
+import { PlanningProvider } from "@/features/planning/PlanningProvider";
 
 export const metadata: Metadata = {
   title: "Tumraigin (ทำไรกิน)",
-  description: "วางแผนมื้ออาหารและรายการซื้อของจากวัตถุดิบที่มี",
+  description: "ตัวช่วยการวางแผนทำอาหารกินเองของคุณ ตั้งแต่เลือกสถานที่ วางแผนเมนู ไปจนถึงรายการซื้อของ",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="th" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <PlanningProvider>{children}</PlanningProvider>
+      </body>
     </html>
   );
 }
