@@ -24,7 +24,7 @@ Develop each backlog feature on a `feature/<task-id>-<short-name>` branch from `
 
 The `/` page implements the first step of the map-first flow: browse an OpenStreetMap view, click to choose a point or enter coordinates, name and save it, and select, rename or delete saved places. Places and the selected place are stored in this browser only. No GPS permission, geocoding, account or app API is used. If tile loading fails, coordinate entry, saved places and the demo-area option remain available. DAT-01 now adds a validated local dataset with 23 ingredients, eight Thai-oriented recipes, three preference input profiles, synthetic product offers and a fictitious demo-store point.
 
-Preferences, meal choices, recipe details, pack pricing, shopping-list UI, and store suggestions are still in progress. Pure domain functions calculate recipe batch/per-serving nutrients and aggregate recipe ingredient demand before subtracting pantry grams once; neither calculation is wired to a page yet. Fixtures do not store recommendation or basket outcomes. The current map pin is a user-selected place, not a store or a stock claim.
+Preferences, meal choices, recipe details, shopping-list UI, and store suggestions are still in progress. Pure domain functions calculate recipe batch/per-serving nutrients, aggregate recipe demand before subtracting pantry grams once, and estimate whole-pack purchases by candidate retailer chain. Missing offers keep full basket totals unknown; the calculations are not wired to a page yet. Fixtures do not store recommendation or basket outcomes. The current map pin is a user-selected place, not a store or a stock claim.
 
 ## UI foundation
 
