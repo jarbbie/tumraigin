@@ -90,6 +90,14 @@ pnpm build
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 46 tests across 5 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
 - The functions remain pure domain logic and are not wired to a page or persistence.
 
+## ENG-03 package purchase and basket verification (2026-10-31)
+
+- Added tests for 0, 250, 251, and 500 g shortages against a 250 g simulated pack; positive subnormal demand still buys one pack. Consumed-portion estimates round to integer satang.
+- Basket tests cover separate checkout/consumed costs across multiple ingredients, per-chain coverage, a positive shortage with a missing offer (null full totals and a known subtotal), pantry-satisfied demand without an offer, and choosing the lower checkout outlay when a bulk pack has a cheaper per-gram price.
+- Offers are validated for positive usable pack size, safe integer satang price, and `unknown` stock; no branch stock claim is inferred. Chain and ingredient output ordering is deterministic.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 61 tests across 6 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
+- The functions remain pure domain logic; the shopping-list page and visible simulated-price disclosure are still pending UX-01.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.
