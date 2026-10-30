@@ -83,6 +83,13 @@ pnpm build
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 35 tests across 4 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
 - The calculation remains a pure domain function and is not wired to a screen in this task. It uses raw edible grams and the source's per-100-g values; cooked yield/retention is not modeled.
 
+## ENG-02 pantry aggregation verification (2026-10-31)
+
+- Added unit tests for shared ingredients across recipe batches, repeated rows within one batch, stable ingredient-ID sorting, empty plans, and malformed/overflowing quantities.
+- Tests aggregate two recipe batches that need 150 g and 100 g of rice to 250 g, subtract one 100 g pantry quantity to leave 150 g, and clamp oversupplied pantry to zero shortage. They also cover missing/zero pantry quantities and duplicate planning-input rows.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 46 tests across 5 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
+- The functions remain pure domain logic and are not wired to a page or persistence.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.

@@ -117,12 +117,14 @@
 - **Verification evidence (2026-10-31):** `pnpm lint` passed; `pnpm typecheck` passed; `pnpm test` passed (35 tests across 4 files, including 8 nutrition-engine tests; Vitest printed the existing Vite config-loader warning); `pnpm build` passed with Webpack.
 - **Owner teach-back / trade-off:** For each raw edible amount `q` grams and a source value `n` per 100 g, the function adds `(q / 100) * n` to the batch; per serving is batch divided by the positive integer serving count. If any used ingredient lacks a nutrient, that nutrient's result is `null` and its completeness flag is false, while complete nutrients still calculate normally. Validation and scaling take O(R × K + N) plus O(U log U) to sort source references, where R is recipe items, K is the fixed eight nutrients, N is the ingredient list, and U is unique used ingredients. Tests verify the 100 g and 250 g scales, serving split, missing micro propagation, known zero, invalid inputs, duplicate entries and sources. The trade-off is that the report preserves source-basis raw values and does not model cooking yield, retention or cooked weight.
 
-### [ ] ENG-02 (P0) Pantry shortage & multi-recipe aggregator
+### [x] ENG-02 (P0) Pantry shortage & multi-recipe aggregator
 - **Dependencies:** DAT-01.
 - **Deliverables:** `aggregateRequiredIngredients`, `subtractPantry` pure functions.
 - **Acceptance:** Shared ingredient quantities combine across selected recipe batches; subtract pantry **once**; shortages are >= 0; stable ordering by ingredient ID.
 - **Tests:** Two recipes each use rice; pantry removes amount only once; oversupplied pantry gives zero shortage.
-- **Owner teach-back:** Why doing subtraction recipe-by-recipe causes double counting.
+- **Implementation:** Added pure functions in `src/lib/domain/pantry.ts`. Recipe ingredient rows aggregate by ID across recipe batches before pantry is applied. Pantry and aggregate demand IDs must be unique; malformed, negative, non-finite, and overflowing quantities return explicit errors. Shortages preserve required/owned grams and clamp at zero; output order is stable by ingredient ID. No UI wiring or persistence was added.
+- **Verification evidence (2026-10-31):** `pnpm lint` passed; `pnpm typecheck` passed; `pnpm test` passed (46 tests across 5 files, including 11 pantry tests; Vitest printed the existing Vite config-loader warning); `pnpm build` passed with Webpack.
+- **Owner teach-back / trade-off:** Each selected recipe batch supplies raw edible grams per ingredient; a `Map` sums repeated IDs, then the combined totals are sorted for deterministic output. `subtractPantry` receives that unique demand and a unique pantry list, then calculates `max(requiredGrams - pantryGrams, 0)` once per ingredient. Aggregation is O(T + U log U), where T is recipe ingredient rows and U is unique ingredients; subtraction is O(R + P + R log R), where R is required ingredients and P is pantry rows. Tests show two rice demands of 150 g and 100 g become 250 g, then 100 g in pantry leaves 150 g to buy; a larger pantry amount leaves zero shortage. The trade-off is strict rejection of duplicate pantry/demand rows so callers must preserve the validated planning-input contract.
 
 ### [ ] ENG-03 (P0) Package purchase / cost engine
 - **Dependencies:** ENG-02, DAT-01.
