@@ -12,8 +12,13 @@ The canonical source repository is the private GitHub project at <https://github
 - [`docs/api-spec.md`](./docs/api-spec.md): API boundary and contract status.
 - [`docs/ui-specs.md`](./docs/ui-specs.md): routes, user-visible states, and UI/accessibility rules.
 - [`docs/tests.md`](./docs/tests.md): verification plan and test coverage expectations.
+- [`docs/development-workflow.md`](./docs/development-workflow.md): GitHub branch roles and feature-to-staging release flow.
 
 `document.md` remains authoritative for product goals, domain calculations, data truth and privacy. Supporting docs add details for their area and must stay consistent with it.
+
+## GitHub workflow
+
+Develop each backlog feature on a `feature/<task-id>-<short-name>` branch from `staging`, then open a pull request into `staging`. Promote reviewed and verified release candidates from `staging` to `main` through a separate pull request. See [`docs/development-workflow.md`](./docs/development-workflow.md) for the full process.
 
 ## Current implementation
 

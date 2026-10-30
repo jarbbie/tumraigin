@@ -90,7 +90,8 @@ If adding UI tests, assert visible labels and user interaction outcomes rather t
 
 ## 8. Release and version-control rules
 - The priority is a functional deployed v0.1 for Oct 31; **protect the vertical slice**. Defer optional maps, extra nutrient categories, scraping, route optimization, user accounts, or multi-store solvers if P0 is incomplete.
-- Never create a Git commit, push, open PR, deploy, modify remote infrastructure, or expose a key without explicit owner authorization.
+- Follow [`docs/development-workflow.md`](docs/development-workflow.md): use `main` for releases, `staging` for integration, and one `feature/<task-id>-<short-name>` branch from the latest `staging` for each feature. Commit and push feature work on its feature branch, then propose it to `staging` by pull request; do not develop directly on `main` or `staging`.
+- The owner has authorized this branch workflow for project development. Merging to `main`, deploying, changing repository visibility/settings, modifying remote infrastructure, or exposing a key still requires explicit owner authorization.
 - Avoid destructive commands or overwriting unrelated local changes. Inspect status/diff before broad edits.
 - If a task demands a risky change, explain options and ask for approval. Keep feature flags or an easy fallback when appropriate.
 - README must state **what is implemented**, **what is simulated**, **how to run/test**, **data sources/licenses**, and **known limitations**.
