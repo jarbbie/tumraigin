@@ -22,7 +22,7 @@ pnpm build
 - `pnpm typecheck`: passed with explicit `ReactNode` layout props.
 - `pnpm test`: exited 0; Vitest reported no test files.
 - `pnpm build`: passed with `next build --webpack`; the static `/` route was generated and its HTML contains the expected page text.
-- Live server smoke: blocked because the sandbox returned `EPERM` when Next tried to listen on both `0.0.0.0:3100` and `127.0.0.1:3100`. Run `pnpm start` in an environment that permits local port binding before marking DES-01 complete.
+- Live server smoke: `pnpm start --hostname 127.0.0.1 --port 3100` started the production server. An HTTP request to `/` returned 200, and the response included the expected Thai heading and page copy.
 
 ## P0 domain coverage
 

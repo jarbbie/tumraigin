@@ -46,14 +46,13 @@
 
 # Phase 1 — System and data design
 
-### [ ] [~] DES-01 (P0) Bootstrap strict TypeScript Next.js project
+### [x] DES-01 (P0) Bootstrap strict TypeScript Next.js project
 - **Dependencies:** REQ-01.
 - **Deliverables:** pnpm Next.js App Router project, Tailwind, ESLint, `typecheck` and test scripts, Vitest setup, `@/*` alias pointing to `./src/*`, `.gitignore`, basic README. Component library is initialized in `DES-UI-01`.
 - **Acceptance:** Local page renders; `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` are defined and can run (empty initial test suite okay if configured responsibly); no secrets committed.
 - **Tests:** Production build and smoke open.
 - **Progress (2026-10-30):** Added the Next.js App Router, strict TypeScript, Tailwind CSS v4/PostCSS, `@/*` alias, ESLint/Vitest configs, package scripts and a Thai-first scaffold page. Dependency installation now succeeds and `pnpm-lock.yaml` is present. Added a direct `ReactNode` layout prop type so standalone typechecking works, and set ESLint's React version from the installed React package to avoid its ESLint 10 auto-detection incompatibility. The build script uses Next's supported Webpack mode.
-- **Verification evidence:** `pnpm install`, `pnpm lint`, `pnpm typecheck`, and `pnpm build` pass. `pnpm test` exits 0 but reports no test files. The production build generates the static `/` route and its HTML contains the expected page text. `pnpm start` could not bind to either `0.0.0.0:3100` or `127.0.0.1:3100` (`EPERM`), so a live browser smoke check remains unverified in this sandbox. `pnpm build` uses Webpack because this sandbox denies the worker-port binding Turbopack requests.
-- **Status:** Partial; complete the live route smoke check in an environment that permits local port binding before marking DES-01 Done.
+- **Verification evidence:** `pnpm install`, `pnpm lint`, `pnpm typecheck`, and `pnpm build` pass. `pnpm test` exits 0; Vitest reports no test files, which is acceptable for this bootstrap task. `pnpm start --hostname 127.0.0.1 --port 3100` started the production server; an HTTP smoke request returned 200 and the response contained the expected Thai heading and page copy. `pnpm build` uses Webpack because this sandbox denies the worker-port binding Turbopack requests.
 - **Owner understanding / trade-off:** Next.js App Router owns page routing and rendering; Tailwind utilities style the minimal Thai-first shell. The layout uses the stable React `ReactNode` type rather than a Next-generated global so `pnpm typecheck` works before a build. The lint config reads React's installed version instead of duplicating it. Webpack keeps the production build working in this restricted workspace, with a slower build than Turbopack. The starter avoids remote font fetching; the trade-off is relying on system Thai fonts until product typography is chosen.
 
 ### [ ] DES-UI-01 (P0) Initialize shadcn/ui and establish Tumraigin UI primitives

@@ -46,7 +46,7 @@ pnpm build
 
 The test command currently exits successfully with no test files. Add meaningful tests as domain logic is implemented.
 
-The bootstrap lockfile is present. `pnpm install`, lint, typecheck, and the Webpack production build have been verified. The production server could not be smoke-tested in the restricted workspace because local port binding is denied; see [`docs/tests.md`](./docs/tests.md) for the exact evidence.
+The bootstrap lockfile is present. `pnpm install`, lint, typecheck, the empty-suite test command, and the Webpack production build have been verified. The production server returned HTTP 200 for `/`, and the response contained the expected Thai heading and page copy; see [`docs/tests.md`](./docs/tests.md) for the exact evidence.
 
 ## Data and limitations
 
