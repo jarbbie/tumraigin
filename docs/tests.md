@@ -126,6 +126,14 @@ pnpm build
 - Headless Firefox at 390 × 844 checked the selected saved-place origin, the demo fallback, malformed saved state, visible demo/stock/privacy labels, a map-independent store list, no horizontal overflow, and the link's separate-tab attributes and decoded Google Maps origin/destination. All 14 assertions passed; the external link itself was inspected without sending coordinates to Google Maps.
 - `pnpm lint`: passed without warnings. `pnpm typecheck`: passed. `pnpm test`: passed, 80 tests across 8 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed and generated `/shops` as a static route.
 
+## UX-02 transparency, fallback, and accessibility verification (2026-10-31)
+
+- Added `/about` with live fixture counts; the required demo notice; nutrition sources, unknown-value handling and calculation method; simulated offers/store point; pack and pantry calculations; source and reuse terms; location storage and external directions privacy; and medical, allergy, inventory and route limitations. Shared navigation exposes it on every route without presenting it as a fifth planning step.
+- Added a global reduced-motion media rule and audited the existing labeled inputs, demo-price disclosures, nutrition unknown/source states, empty-filter recovery, unselected shopping-list recovery, and visible error regions.
+- Headless Firefox at 390 × 844 passed 20 checks covering the disclosure content/counts, source/license/reuse terms, location privacy, calculation notes, no horizontal overflow, four-step navigation, reduced-motion CSS, keyboard-visible focus, header access from `/meals` and `/shopping-list`, labeled preference controls, empty-filter recovery, and invalid-budget error announcement.
+- Theme contrast checks for light muted text/background, primary/background, foreground/card and primary button text/background measured 5.65:1, 5.93:1, 12.71:1 and 6.52:1. Dark muted text/background and primary button pairs measured 8.95:1 and 7.20:1.
+- `pnpm lint`, `pnpm typecheck`, `pnpm test` (80 tests / 8 files), and `pnpm build` passed; the build generated `/about`. Vitest printed the existing Vite config-loader warning.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.
