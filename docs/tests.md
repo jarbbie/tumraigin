@@ -77,6 +77,12 @@ pnpm build
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 27 tests across 3 files. Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
 - Remaining limitation: before commercial or broader redistribution, confirm permission or replace the ASEANFOODS values; its source notes that educational product/service use may incur fees. Recipe instructions are editorial prototype examples and have not undergone independent recipe review.
 
+## ENG-01 nutrition calculation verification (2026-10-31)
+
+- Added unit tests for per-100-g scaling at 100 g and 250 g, two-serving division, per-nutrient completeness, null/unreported sodium and iron, known-zero distinction, duplicate recipe entries, stable source references, missing IDs, duplicate ingredient IDs, negative source values, and zero/non-finite quantities or invalid servings.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 35 tests across 4 files; Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
+- The calculation remains a pure domain function and is not wired to a screen in this task. It uses raw edible grams and the source's per-100-g values; cooked yield/retention is not modeled.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.
