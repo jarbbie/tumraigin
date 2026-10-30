@@ -219,10 +219,12 @@
 - **Data license disclosure:** ASEANFOODS data remains attributed and is limited to the source's noncommercial terms; this repository does not relicense those values. Commercial uses or educational products/services may incur fees. Do not present the dataset as freely reusable under a new project license.
 - **Files prepared:** `next.config.ts`, `src/app/recipes/[slug]/page.tsx`, `scripts/serve-static.mjs`, `package.json`, `.github/workflows/deploy-pages.yml`, `README.md`, `docs/tests.md`, and `BACKLOG.md`.
 
-### [ ] REL-02 (P0) YWC interview demonstration and knowledge check
+### [~] REL-02 (P0) YWC interview demonstration and knowledge check
 - **Dependencies:** REL-01.
 - **Deliverables:** 90-second demo script, one-page architecture overview, answer sheet for 10 technical questions in `document.md` §13.
 - **Acceptance:** Owner personally demonstrates and explains: entity model, nutrition computation, pack rounding, pantry aggregation, rank rules, data provenance, mapping limitations, testing and trade-offs.
+- **Partial preparation (2026-10-31):** Drafted the Thai 90-second demo, a concise architecture/data-flow overview, and answers to all 10 questions in [`docs/interview-guide.md`](docs/interview-guide.md). It follows the four-step map → skippable preferences → meal choices/details → shopping-list flow and uses the QA-verified rice example.
+- **Remaining:** REL-01 has no public URL yet, and the owner has not personally rehearsed the demo or answered the questions. Keep this task partial until both occur.
 
 ### [ ] REL-03 (P1) E2E automated smoke tests
 - **Dependencies:** QA-01.
