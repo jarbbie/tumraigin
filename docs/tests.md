@@ -144,6 +144,15 @@ pnpm build
 - This checks the P0 fallback when external map imagery is unavailable; it does not claim an end-to-end test with the local app server offline. The core flow intentionally never requests device location, so denied permission is not a step users encounter. QA used a local production preview and headless Chromium, not a hosted release or a physical phone.
 - Screenshot evidence from the true 390 × 844 Chromium viewport: `/tmp/tumraigin-qa-shops-real-390.png` and `/tmp/tumraigin-qa-about-real-390.png`.
 
+## REL-01 static release preparation (2026-10-31; partial)
+
+- Next.js now builds static output to `out/`. `generateStaticParams()` emits one recipe details page per validated fixture slug, and `trailingSlash` creates directory-index routes for static hosting. `GITHUB_PAGES_BASE_PATH=/tumraigin` prefixes the generated route links and assets for an account-level GitHub Pages project URL. No runtime API, database, or location service was introduced.
+- Added a main-branch GitHub Actions workflow with separate build/deploy jobs and only the Pages permissions required for deployment. Updated `pnpm start` to serve the built static files on loopback, and documented the production preview workflow in README.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 80 tests across 8 files (existing Vite config-loader warning). `GITHUB_PAGES_BASE_PATH=/tumraigin pnpm build`: passed and generated all app routes plus all eight `/recipes/[slug]/` pages.
+- Headless Chromium at 390 × 844 passed 13 assertions against the static artifact served through `pnpm start` with the `/tumraigin` base path. It loaded the home route/assets, saved a map-picked location despite deliberately blocked tiles, navigated through preferences and all eight meal choices to a pre-rendered recipe and the shopping list, and reported no overflow, browser errors, or HTTP error responses. Network errors were limited to blocked OpenStreetMap imagery; route prefetches canceled after navigation were `net::ERR_ABORTED` while their server responses were HTTP 200.
+- Release is not deployed: the source repository is private and its reachable history has a non-noreply personal author email. No known provider-token patterns or credential files were found in reachable history, but changing visibility now would disclose the email and prior private issue/PR history. GitHub CLI auth is invalid, the browser-control host is unavailable, and the connected GitHub tools cannot modify repository visibility or Pages settings. No Vercel CLI/token is configured. Keep the repo private until a sanitized public source path and authenticated Pages setup are available; do not claim a live URL.
+- The ASEANFOODS table retains its copyright and reuse terms. The project has source attribution, but its repository does not grant a separate open-data license; commercial use and educational products/services require reviewing the source terms and may incur fees.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.
