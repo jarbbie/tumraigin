@@ -1,6 +1,6 @@
 # UI specifications
 
-**Status:** Requirements for the map-first planning flow. The current app has an initialized shadcn/ui foundation; saved locations and planning interactions are not yet implemented.
+**Status:** LOC-01 implements the first-step map, manually saved places, and demo/tile fallbacks. Preferences through shopping-list interactions remain backlog work; this document still specifies their target behavior.
 
 ## Navigation and routes
 
@@ -19,6 +19,8 @@
 - Open `/` with a map centered on a neutral, labeled demo area. Never request GPS on launch.
 - Let the user choose a map point, enter a name, and explicitly save it. Show saved locations on the same screen with select, rename, delete-one, and clear-all actions.
 - Store only user-submitted names and manually selected coordinates in this browser. Explain that the tile provider receives requests for the visible map area; no saved-location record is sent to the app server.
+- Current implementation uses Leaflet 1.9.4 directly in a client-only module and the OpenStreetMap standard tile endpoint. It does not prefetch or download offline tiles and shows Leaflet's visible attribution link to the OpenStreetMap copyright/ODbL page.
+- Current implementation stores versioned `SavedLocationState` at `tumraigin.saved-locations.v1`. If storage is unavailable or malformed, the screen reports the state and keeps coordinate entry available; malformed prior data can be explicitly cleared.
 - If tiles fail, keep saved locations and a demo-area path visible. The map must not block preferences, meal choices, or the shopping list.
 - Give keyboard users a labeled coordinate-entry option alongside map clicking; validate latitude and longitude before saving.
 - Preferences are skippable. If skipped, show all available meal choices without silently applying default budget, protein, exclusions, or pantry quantities.

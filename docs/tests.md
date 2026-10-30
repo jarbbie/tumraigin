@@ -58,6 +58,16 @@ pnpm build
 - `pnpm build`: passed with Webpack.
 - No production fixture data was added; test-only data is explicitly labeled as test/simulated.
 
+## LOC-01 map and saved-location verification (2026-10-31)
+
+- Added ten validator tests for empty and populated state, trimmed labels, valid coordinate boundaries, wrong schema version, duplicate IDs, invalid latitude/longitude, non-finite coordinates, blank labels, missing selected IDs, and malformed input.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 21 total tests. `pnpm build`: passed with Webpack.
+- Firefox production-preview walkthrough: map click populated coordinate fields; a named place saved to localStorage and remained selected after reload; another place was added, selected, renamed, and deleted; clear-all asked for confirmation and persisted an empty state. A preload spy recorded zero GPS calls.
+- Simulated map failure by intercepting four OpenStreetMap tile requests. The failure status appeared while the map region, coordinate entry, saved-location list, and demo-area control remained usable.
+- Keyboard walkthrough: Tab reached the map region/zoom controls and coordinate fields. Typed a coordinate value through browser keyboard actions and observed the visible focus ring.
+- At a 390 px phone viewport, document scroll width was 378 px, so the page had no horizontal overflow. Reviewed a phone screenshot with loaded tiles and the OpenStreetMap attribution link visible.
+- Remaining UI walkthrough coverage: after the later preferences, meal, recipe, store and shopping-list tasks are implemented, run the complete golden path in the P0 UI checklist below.
+
 ## P0 domain coverage
 
 - Nutrition: per-100-g source values, scaling at 250 g, division by servings, and unknown nutrient propagation.

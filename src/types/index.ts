@@ -8,5 +8,7 @@ export type {
   Provenance,
   Recipe,
   RecipeIngredient,
+  SavedLocation,
+  SavedLocationState,
   Store,
 } from "./domain";

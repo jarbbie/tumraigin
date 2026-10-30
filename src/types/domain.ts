@@ -63,6 +63,19 @@ export type Store = {
   osmUrl?: string;
 };
 
+export type SavedLocation = {
+  id: string;
+  label: string;
+  lat: number;
+  lon: number;
+};
+
+export type SavedLocationState = {
+  version: 1;
+  locations: SavedLocation[];
+  selectedLocationId: string | null;
+};
+
 export type PantryItem = {
   ingredientId: string;
   edibleGrams: number;

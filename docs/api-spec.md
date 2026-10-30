@@ -24,6 +24,7 @@ All monetary inputs and outputs use integer satang; food quantities use edible g
 - Do not request GPS in the P0 flow. The user manually selects, names, and saves a map point; only that user-submitted record is kept in browser `localStorage`.
 - Saved locations are never sent to an app server or logged. Map tile requests reveal the viewed map viewport to the tile provider; disclose this external request in the UI.
 - The client requests only tiles needed for the visible map. Follow the provider's current usage and caching policies; do not prefetch or offer offline tile downloads. With OSM data, show visible `© OpenStreetMap contributors` attribution and link the ODbL/license page.
+- LOC-01 uses `https://tile.openstreetmap.org/{z}/{x}/{y}.png` with Leaflet 1.9.4, `keepBuffer: 0`, and no tile prefetch. User data is versioned as `SavedLocationState` (`version: 1`, named `locations`, and a nullable `selectedLocationId`) under the browser key `tumraigin.saved-locations.v1`; runtime validation rejects malformed IDs, labels, selection references, and out-of-range coordinates.
 - No geocoder is needed for map-pin selection. Do not add client-side autocomplete against public Nominatim.
 - Any future OSM store lookup must be bounded, validated, cached, attributed, and compliant with the selected service policy. Store places and retailer-level offers are separate data; a user pin or location result never proves branch inventory.
 

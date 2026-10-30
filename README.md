@@ -22,11 +22,13 @@ Develop each backlog feature on a `feature/<task-id>-<short-name>` branch from `
 
 ## Current implementation
 
-The repository contains the Next.js App Router, shadcn/ui foundation, shared data contracts, and fixture validators. The current `/` page is still a representative UI preview; its controls do not calculate meals. The map-first saved-location journey, meal-planning calculations, fixtures, prices, and store suggestions are not implemented yet. No nutrition or retailer data is included.
+The `/` page implements the first step of the map-first flow: browse an OpenStreetMap view, click to choose a point or enter coordinates, name and save it, and select, rename or delete saved places. Places and the selected place are stored in this browser only. No GPS permission, geocoding, account or app API is used. If tile loading fails, coordinate entry, saved places and the demo-area option remain available.
+
+Preferences, meal choices, recipe details, shopping-list calculations, recipe/ingredient fixtures and store suggestions are still in progress. The current map pin is a user-selected place, not a store or a stock claim.
 
 ## UI foundation
 
-`components.json` records the shadcn/ui Base UI/Nova setup. Generated, locally owned primitives live in `src/components/ui/` (`button`, `card`, `input`, `label`, `badge`, and `checkbox`); `src/lib/utils.ts` exports the `cn` class-merging helper. The UI dependencies include `@base-ui/react`, `class-variance-authority`, `cn`, `shadcn`, `tw-animate-css`, and `lucide-react`. The global theme uses cool blue-green surfaces, pandan-green actions, a restrained papaya-gold accent and local Thai font fallbacks; it does not fetch a web font at runtime or during build.
+`components.json` records the shadcn/ui Base UI/Nova setup. Generated, locally owned primitives live in `src/components/ui/` (`button`, `card`, `input`, `label`, `badge`, and `checkbox`); `src/lib/utils.ts` exports the `cn` class-merging helper. The UI dependencies include `@base-ui/react`, `class-variance-authority`, `cn`, `shadcn`, `tw-animate-css`, and `lucide-react`. The map uses Leaflet directly, loaded client-side to avoid server-rendering browser APIs. The global theme uses cool blue-green surfaces, pandan-green actions, a restrained papaya-gold pin and local Thai font fallbacks; it does not fetch a web font at runtime or during build.
 
 ## Run locally
 
@@ -50,10 +52,10 @@ pnpm build
 
 Vitest runs the repository unit tests. Add focused domain and interaction coverage as each backlog item is implemented.
 
-The bootstrap lockfile is present. Install, lint, typecheck, the current test suite, and the Webpack production build have been verified. The production server returned HTTP 200 for `/` during bootstrap verification, and the response contained the expected Thai heading and page copy; see [`docs/tests.md`](./docs/tests.md) for the exact evidence.
+The lockfile is present. Install, lint, typecheck, the current test suite, and the Webpack production build have been verified; see [`docs/tests.md`](./docs/tests.md) for task-specific evidence.
 
 ## Data and limitations
 
-No recipe, nutrition, price, product or store fixtures have been added yet. Shared entity types are defined under `src/types/`, with runtime fixture and planning-input validation under `src/lib/data/`. Validation requires explicit units and provenance, preserves unknown nutrients as `null`, and rejects unverified branch-stock claims. The revised prototype plans locally saved user-selected map places, curated ingredients and recipes, and simulated retailer offers with unknown branch stock. Do not interpret this scaffold as evidence of live prices, stock or nutritional measurements.
+No recipe, nutrition, price, product or store fixtures have been added yet. Shared entity types are defined under `src/types/`, with runtime fixture, planning-input and saved-location validation under `src/lib/data/`. Validation requires explicit units and provenance, preserves unknown nutrients as `null`, rejects invalid saved coordinates, and rejects unverified branch-stock claims. Future curated recipes and simulated retailer offers must be labeled; do not interpret this prototype as evidence of live prices, stock or nutritional measurements.
 
-Meal calculations and saved locations are planned to work without an account, GPS, application API, or hosted database. Map tiles are external and may fail; the saved-location list and demo area provide a fallback. Map tile requests reveal the viewed map area to the tile provider. Data sources, licenses, calculation assumptions and known limitations must be documented when those features are implemented.
+Saved locations and future meal calculations are designed to work without an account, GPS, application API, or hosted database. Map tiles are external and may fail; coordinate entry, saved locations and the demo area provide a fallback. Tile requests reveal the viewed map area to the provider. OSM attribution and the ODbL notice are linked on the map. Data sources, licenses, calculation assumptions and known limitations must be documented as each feature is implemented.

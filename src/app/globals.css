@@ -123,6 +123,108 @@ body {
   --sidebar-ring: #96c4b1;
 }
 
+.tm-map-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: #dce7e1;
+}
+
+.tm-map,
+.tm-map--loading {
+  width: 100%;
+  height: clamp(22rem, 57vh, 37rem);
+}
+
+.tm-map--loading {
+  display: grid;
+  place-items: center;
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+
+.tm-map .leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: #dce7e1;
+  color: var(--foreground);
+  font-family: "Noto Sans Thai", Tahoma, system-ui, sans-serif;
+}
+
+.tm-map .leaflet-control-zoom a {
+  color: var(--foreground);
+}
+
+.tm-map .leaflet-control-attribution {
+  max-width: calc(100vw - 4rem);
+  font-size: 0.68rem;
+}
+
+.tm-map .leaflet-control-attribution a {
+  color: var(--primary);
+}
+
+.tm-map-caption {
+  position: absolute;
+  z-index: 500;
+  top: 0.85rem;
+  left: 0.85rem;
+  max-width: calc(100% - 5.5rem);
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #cfd9d5;
+  border-radius: 0.45rem;
+  background: #fffefaed;
+  color: #283437;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.tm-map-notice {
+  border-left: 3px solid var(--accent);
+  padding: 0.65rem 0.8rem;
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  color: var(--foreground);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.tm-saved-place--selected {
+  border-left: 3px solid var(--primary);
+  padding-left: 0.65rem;
+}
+
+.tumraigin-map-pin {
+  display: grid;
+  place-items: start center;
+  border: 0;
+  background: none;
+}
+
+.tumraigin-map-pin__shape {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 2px solid #fffefa;
+  border-radius: 50% 50% 50% 0;
+  background: #71887d;
+  box-shadow: 0 1px 5px #28343766;
+  transform: rotate(-45deg);
+}
+
+.tumraigin-map-pin--selected .tumraigin-map-pin__shape {
+  width: 1.6rem;
+  height: 1.6rem;
+  background: #2e6756;
+}
+
+.tumraigin-map-pin--draft .tumraigin-map-pin__shape {
+  width: 1.6rem;
+  height: 1.6rem;
+  background: #e6ad45;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
