@@ -4,7 +4,7 @@ Tumraigin is **ตัวช่วยการวางแผนทำอาห�
 
 ## Source repository
 
-The canonical source repository is the private GitHub project at <https://github.com/jarbbie/tumraigin>.
+The canonical source repository is <https://github.com/jarbbie/tumraigin>. It remains private until the REL-01 privacy and publishing gates are complete.
 
 ## Project references
 
@@ -49,6 +49,8 @@ pnpm dev
 
 The development server is available at `http://localhost:3000`.
 
+To preview the production static export locally, run `pnpm build` and then `pnpm start`. The preview server binds only to `127.0.0.1`; it is not used by the GitHub Pages deployment.
+
 ## Checks
 
 ```bash
@@ -61,6 +63,10 @@ pnpm build
 Vitest runs the repository unit tests. Add focused domain and interaction coverage as each backlog item is implemented.
 
 The lockfile is present. Install, lint, typecheck, the current test suite, and the Webpack production build have been verified; see [`docs/tests.md`](./docs/tests.md) for task-specific evidence.
+
+## Static deployment
+
+The production build exports the App Router pages to `out/` for static hosting. Recipe slugs are rendered at build time from the reviewed fixture list; the app has no runtime server API or database. GitHub Pages deployment is defined by [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml) and runs only from `main` (or when started manually). The workflow prefixes routes and assets with `/tumraigin` for the account Pages URL. Set `GITHUB_PAGES_BASE_PATH` to another path only when publishing under a different project subpath. Hosting is not live until the repository and Pages settings are explicitly enabled and a deployment succeeds.
 
 ## Data and limitations
 
