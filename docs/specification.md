@@ -1,19 +1,18 @@
 # Product specification summary
 
-**Status:** P0 scope agreed on 2026-10-30. This is a supporting implementation reference; [`../document.md`](../document.md) remains the product and domain source of truth.
+**Status:** P0 product direction revised on 2026-10-31. This is a supporting implementation reference; [`../document.md`](../document.md) remains the product and domain source of truth.
 
 ## Problem and user
 
-Tumraigin helps Bangkok home cooks choose meals that fit a checkout budget, account for ingredients they already own, and plan a grocery stop. The primary prototype persona is Mr. A, an office worker who cooks several times per week.
+Tumraigin is **“ตัวช่วยการวางแผนทำอาหารกินเองของคุณ”**: a Thai-first helper for planning home-cooked meals from user-selected places through optional preferences and meal choices to a practical shopping list. The primary prototype persona is Mr. A, an office worker who cooks several times per week.
 
-## Agreed v0.1 journey
+## Current v0.1 journey
 
-1. Start in a named demo area without asking for location permission. The default is Phaya Thai work/current; On Nut is the home option. Neither represents the user's actual address.
-2. Browse at least 8 reviewed Thai-inspired recipes supported by at least 20 normalized ingredients.
-3. Set maximum checkout cash, minimum protein per serving, and hard dietary exclusions. Recommendations must respond to the input and explain eligibility.
-4. Select one recipe batch, inspect per-serving nutrition estimates and provenance, then enter pantry quantities.
-5. Calculate shortages, whole-pack purchases, checkout cash, and package leftovers from ingredient quantities and reviewed simulated offers.
-6. Inspect candidate store cards and directions. Label demo price/offer assumptions; branch stock stays unknown.
+1. Open to an interactive map centered on a neutral named demo area. Choose, name, and save one or more map points. Saved locations remain in this browser and can be selected, renamed, or deleted; do not request GPS on launch.
+2. Offer budget, minimum protein, exclusions, and pantry preferences, all skippable. Skipping means no hidden filter.
+3. Show meal choices and plan options, with eligibility reasons when preferences exist. Let the user inspect portions, ingredients, nutrition estimates, and provenance before choosing.
+4. Generate a shopping list from the selected plan and pantry, calculating shortages, whole-pack purchases, checkout cash, and leftovers.
+5. If tiles fail, keep saved locations and the demo area usable. If data is incomplete, show unknown or incomplete values.
 
 ## Product rules
 
@@ -22,11 +21,13 @@ Tumraigin helps Bangkok home cooks choose meals that fit a checkout budget, acco
 - Money uses integer satang internally; quantities use edible grams.
 - Unknown nutrients remain unknown. A missing offer makes the basket incomplete rather than free.
 - Demo retailer offers do not establish real retailer pricing or branch availability. Locations do not prove stock.
-- The journey runs from local fixtures without account, GPS, external APIs, or a hosted database.
+- A user-saved pin is separate from a physical `Store`; it does not prove a shop, offer, or stock.
+- Saved location names and manually selected coordinates stay in browser storage. Tile requests reveal the viewed map area to the tile provider; disclose this external request. No location record is sent to the app server.
+- Meal planning uses local fixtures without an account, GPS, business API, or hosted database. Map tiles are an external progressive enhancement with a named demo-area fallback.
 - Nutrition is approximate and not medical advice or allergy certification.
 
 ## P0 boundaries
 
-One selected recipe batch is in scope. Three-meal selection, live OSM lookup and geolocation, map rendering, multi-store optimization, and additional micronutrients are deferred to P1 or later as listed in [`../BACKLOG.md`](../BACKLOG.md).
+One selected recipe batch is in scope. Three-meal weekly planning, live store lookup, geolocation, multi-store optimization, and additional micronutrients are deferred to P1 or later as listed in [`../BACKLOG.md`](../BACKLOG.md). Interactive map-based location selection is P0.
 
 Detailed routes and visible states are in [`ui-specs.md`](./ui-specs.md). Domain entities, calculations, provenance, and privacy requirements remain in [`../document.md`](../document.md).

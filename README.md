@@ -1,6 +1,6 @@
 # Tumraigin (ทำไรกิน)
 
-Tumraigin is a Thai-first meal discovery and grocery planning prototype. Product and domain requirements live in [`document.md`](./document.md), implementation status lives in [`BACKLOG.md`](./BACKLOG.md), and supporting references live in [`docs/`](./docs/).
+Tumraigin is **ตัวช่วยการวางแผนทำอาหารกินเองของคุณ** — a Thai-first helper for planning home-cooked meals. The planned flow is map and saved places -> optional preferences -> meal choices, plans and details -> shopping list. Product and domain requirements live in [`document.md`](./document.md), implementation status lives in [`BACKLOG.md`](./BACKLOG.md), and supporting references live in [`docs/`](./docs/).
 
 ## Source repository
 
@@ -22,7 +22,7 @@ Develop each backlog feature on a `feature/<task-id>-<short-name>` branch from `
 
 ## Current implementation
 
-The repository contains the Next.js App Router and Tailwind CSS bootstrap, plus an initialized shadcn/ui foundation. The `/` page is a representative UI preview: its form controls are examples and do not calculate or filter meals. The meal planning journey, domain calculations, fixtures, prices and store suggestions are not implemented. No nutrition or retailer data is included.
+The repository contains the Next.js App Router, shadcn/ui foundation, shared data contracts, and fixture validators. The current `/` page is still a representative UI preview; its controls do not calculate meals. The map-first saved-location journey, meal-planning calculations, fixtures, prices, and store suggestions are not implemented yet. No nutrition or retailer data is included.
 
 ## UI foundation
 
@@ -54,6 +54,6 @@ The bootstrap lockfile is present. Install, lint, typecheck, the current test su
 
 ## Data and limitations
 
-No recipe, nutrition, price, product or store fixtures have been added yet. Shared entity types are defined under `src/types/`, with runtime fixture and planning-input validation under `src/lib/data/`. Validation requires explicit units and provenance, preserves unknown nutrients as `null`, and rejects unverified branch-stock claims. The approved prototype scope plans curated ingredient and recipe data, simulated retailer offers with unknown branch stock, and clearly labeled demo locations. Do not interpret this scaffold as evidence of live prices, stock or nutritional measurements.
+No recipe, nutrition, price, product or store fixtures have been added yet. Shared entity types are defined under `src/types/`, with runtime fixture and planning-input validation under `src/lib/data/`. Validation requires explicit units and provenance, preserves unknown nutrients as `null`, and rejects unverified branch-stock claims. The revised prototype plans locally saved user-selected map places, curated ingredients and recipes, and simulated retailer offers with unknown branch stock. Do not interpret this scaffold as evidence of live prices, stock or nutritional measurements.
 
-The core journey is planned to work from local data without an account, location permission, network API or hosted database. Data sources, licenses, calculation assumptions and known limitations must be documented when those fixtures and features are implemented.
+Meal calculations and saved locations are planned to work without an account, GPS, application API, or hosted database. Map tiles are external and may fail; the saved-location list and demo area provide a fallback. Map tile requests reveal the viewed map area to the tile provider. Data sources, licenses, calculation assumptions and known limitations must be documented when those features are implemented.

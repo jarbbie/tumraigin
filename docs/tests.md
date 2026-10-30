@@ -71,9 +71,12 @@ pnpm build
 
 ## P0 UI and manual coverage
 
-- Golden path: demo area -> preferences -> recipe details -> select -> pantry -> basket -> stores -> directions -> About.
+- Golden path: open map -> choose/name/save a place -> reload and select it -> skip or set preferences -> compare meal choices/plans -> inspect details -> generate shopping list.
+- Location controls: map click sets a marker; coordinate entry works by keyboard; saved place can be selected, renamed, deleted, and cleared. Verify the app stores the pin locally and does not call geolocation or send the saved-location list to an app API.
+- Map failure/offline: show a clear tile failure message, retain saved places, and allow the demo area and later meal-planning steps.
 - Empty filters, missing offer, unknown nutrients, invalid pantry/budget values, no selection, no complete store candidate and data loading/error states.
-- GPS is not requested at launch. If an optional P1 location action is later added, test denied, unavailable and timeout recovery to the selected demo area.
+- GPS is not used in the P0 map-first flow. If a separate P1 current-location action is later added, test denied, unavailable, and timeout recovery.
+- Keep map attribution and the ODbL/license link visible at phone and desktop sizes; confirm the configured tile provider's policies are followed.
 - Narrow phone and desktop layout, keyboard-only navigation, visible focus, input labels, reduced motion, and no horizontal overflow.
 - Core fixtures/calculations remain usable when external APIs are unavailable.
 

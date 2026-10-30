@@ -41,11 +41,11 @@ export default function Home() {
               id="home-heading"
               className="mt-6 text-[clamp(3rem,6vw,5.25rem)] font-semibold leading-[1.08] tracking-tight text-foreground"
             >
-              <span className="block">คิดมื้อถัดไป</span>
-              <span className="block">จากของในครัว</span>
+              <span className="block">ตัวช่วยวางแผน</span>
+              <span className="block">ทำอาหารกินเอง</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
-              ตั้งงบและเป้าหมายโปรตีนก่อนเลือกเมนู แล้วค่อยดูว่าต้องซื้ออะไรเพิ่ม
+              เลือกสถานที่ ตั้งหรือข้ามความชอบ แล้วไปต่อจากแผนอาหารถึงรายการซื้อของ
             </p>
           </section>
 

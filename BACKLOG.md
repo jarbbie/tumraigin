@@ -1,6 +1,6 @@
 # BACKLOG.md — Tumraigin YWC21 Implementation Backlog
 
-> Created: **2026-10-29**; shadcn/ui task added **2026-10-30**, Thailand time. Interview: **2026-10-31**.  
+> Created: **2026-10-29**; map-first product direction revised **2026-10-31**, Thailand time. Interview: **2026-10-31**.
 > Method: **SDLC with very short, dependency-ordered vertical slices**.  
 > Product and domain authority: `document.md`. Supporting feature/API/UI/test references: `docs/specification.md`, `docs/api-spec.md`, `docs/ui-specs.md`, and `docs/tests.md`. Codex rules: `AGENTS.md`.
 
@@ -17,12 +17,12 @@
 | Gate | SDLC phase | Required result | Target |
 | --- | --- | --- | --- |
 | G0 | Requirements/design | Agreement on P0, data truth labels and core data contracts | Oct 29 night |
-| G1 | Implementation, vertical slice | Core calculation journey works on screen; shadcn/ui primitives initialized and verified | Oct 30 early |
-| G2 | Implementation, integration | Preferences, source labels, demo area and store candidate flow | Oct 30 |
+| G1 | Implementation, vertical slice | Map-first saved locations, core meal calculations, shopping list, shadcn/ui foundation | Oct 30 early |
+| G2 | Implementation, integration | Skippable preferences, source labels, selected-place store candidates and fallback states | Oct 30 |
 | G3 | Verification/deployment | Test/build pass, mobile smoke test, real public HTTPS URL and GitHub repo | Before Oct 31 interview |
 | G4 | Presentation | Owner can explain core math, architecture, provenance, trade-offs and limitations | Interview day |
 
-**Critical-path feature freeze:** If G1 or G2 is delayed, cut all P1 work. If a live map fails, present store cards and external directions. If product data is incomplete, display coverage/unknown rather than inventing totals. Under no circumstance abandon the end-to-end vertical slice.
+**Critical-path feature freeze:** If G1 or G2 is delayed, cut all P1 work. The map-first saved-location step is P0; if its tiles fail, show the saved-location list and named demo-area fallback so meal planning can continue. If product data is incomplete, display coverage/unknown rather than inventing totals. Under no circumstance abandon the end-to-end vertical slice.
 
 ---
 
@@ -34,6 +34,7 @@
 - **Acceptance:** Owner agrees that demo prices/stock are not real branch facts; budget means checkout cash; GPS is optional; at least 8 recipes and 20 ingredients planned.
 - **Review questions:** What is the problem? Who is Mr. A? What is *not* supported?
 - **Completed (2026-10-30):** Owner explicitly agreed (“I agree, you may start now”) to the scope in `document.md` §14: Phaya Thai work/current demo area and On Nut home demo area; checkout cash budget; optional GPS; minimum 8 recipes/20 ingredients; simulated offers with unknown branch stock.
+- **Current status:** The named demo-anchor-first journey and optional-map decision were superseded by the owner's REQ-03 amendment on 2026-10-31; the 8-recipe/20-ingredient and data-honesty requirements remain.
 - **Verification evidence:** Read `AGENTS.md`, `document.md`, and `BACKLOG.md`; inspected all workspace files. Only these three documents exist. `README.md` is absent and `git status --short` reports that this is not a Git repository. No application/package scripts exist, so lint, typecheck, tests, build and browser smoke checks are not applicable to this requirements-only change. Reviewed proposal against REQ-01 acceptance criteria; each required decision is explicitly listed for agreement.
 - **Owner understanding / trade-off:** Mr. A selects an affordable meal and buys pantry-adjusted whole packs. Local fixtures provide a reproducible demo with real calculations; simulated catalog coverage cannot guarantee real shop prices or stock.
 
@@ -43,6 +44,13 @@
 - **Acceptance:** Every critical action maps to visible screen/state and acceptance criteria in the spec; P1 extras separated.
 - **Verification evidence (2026-10-30):** Added `document.md` §5 REQ-02 interaction contract: route/action/visible-result matrix linked to requirement IDs, six-step golden path, edge-state/recovery matrix, shared-session behavior and explicit P1 boundaries. Reviewed coverage for discovery, filters, details, selection/removal, pantry, pack basket, store directions and disclosures, including GPS-denied, no-offer and empty-filter scenarios. Read back the edited sections. No application/package scripts exist; lint/typecheck/test/build and browser verification are not applicable yet. This verifies written requirements, not implemented UI behavior.
 - **Owner understanding / trade-off:** Shared session inputs feed the same calculations across screens, so pantry edits change both eligibility and checkout. Refresh persistence is deferred; QA will verify actual behavior during implementation.
+
+### [x] REQ-03 (P0) Reframe Tumraigin as a home-cooking planning helper
+- **Dependencies:** REQ-02.
+- **Deliverables:** Update the product promise, visible hero copy, map-first four-step journey, local saved-location privacy rule, supporting UI/API/test references, and backlog sequence.
+- **Acceptance:** The visible product promise and `document.md` agree and stay consistent with `AGENTS.md`, `README.md`, and `docs/`; map pins are manual user choices, preferences are skippable, the map has an explicit fallback, and a user pin is never confused with a store or verified inventory.
+- **Verification evidence (2026-10-31):** Read the current source of truth and supporting requirements before editing. Updated the main document, privacy instructions, UI routes/states, API boundary, manual QA flow, README positioning, visible hero copy, and backlog. Cross-checked the four requested steps and saved-location rules across all files. Read the official OSM tile usage and copyright pages to document visible attribution, policy compliance, and the fact that the tile provider sees the viewed map area. Ran `pnpm lint`, `pnpm typecheck`, `pnpm test` (11 passed), and `pnpm build` after the copy change.
+- **Owner teach-back:** Product input is the owner's four-step journey; it becomes a current user promise, requirements, privacy boundary, and ordered backlog. Explicitly saved map pins stay in browser storage; a map pin is not a store. No domain calculations changed, so numeric tests do not apply to this requirements-and-copy change. The trade-off is an external tile dependency for map viewing, mitigated by a saved-list/demo-area fallback.
 
 # Phase 1 — System and data design
 
@@ -75,6 +83,13 @@
 - **Progress (2026-10-31):** Added typed domain contracts in `src/types/` and pure runtime validators in `src/lib/data/`; no new dependency or production fixture values were introduced.
 - **Verification evidence (2026-10-31):** `pnpm install --offline --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` passed in the isolated DES-02 worktree. Vitest ran 11 tests and printed the existing Vite config-loader warning. Coverage includes pack size, coordinates, duplicate IDs, unknown recipe/offer/planning references, integer satang, unknown nutrients, stock status, and invalid pantry/budget inputs.
 - **Owner teach-back:** Raw fixture or planning input enters as `unknown`; parsing checks shape, units, provenance and numeric bounds, then a reference pass checks IDs and links. Success returns typed records; failure returns path-specific issues and no partial dataset. Unknown nutrient values stay `null`. Validation is linear in entities plus references, using `Set` lookups for uniqueness and links; tests prove both accepted unknowns and rejected malformed values/links.
+
+### [ ] LOC-01 (P0) Interactive map and saved user locations
+- **Dependencies:** REQ-03, DES-UI-01.
+- **Deliverables:** Client-rendered, interactive map on the first screen; manual map pin or keyboard coordinate entry; name and save locations in browser `localStorage`; select, rename, delete-one, and clear-all actions; a neutral demo-area fallback.
+- **Acceptance:** Map appears first without GPS. Reload retains explicitly saved locations on the same browser. Saved pins remain separate from `Store` fixtures and never imply a retailer or stock. OSM attribution/ODbL link is visible if OSM data is used; tile requests follow the provider policy and request only the visible map. Tile failure leaves saved locations and the demo area usable.
+- **Tests:** Coordinate bounds; pin selection and naming; reload persistence; selection/edit/delete/clear; no `navigator.geolocation` call; map failure fallback; no horizontal overflow or keyboard dead-end.
+- **Privacy:** Tile requests disclose the viewed viewport to the provider; app APIs and analytics receive no saved-location record. No geocoding/autocomplete.
 
 ### [ ] DAT-01 (P0) Curate seed data with provenance
 - **Dependencies:** DES-02.
@@ -113,22 +128,22 @@
 - **Tests:** Budget threshold, protein threshold, exclusions, unknown data, stable ties and empty results.
 
 ### [ ] UX-01 (P0) End-to-end vertical slice: discover -> recipe -> plan
-- **Dependencies:** DES-01, DES-UI-01, ENG-01, ENG-02, ENG-03, ENG-04.
-- **Deliverables:** Mobile-first Discover and Recipe Details screens, preference controls, selection, pantry editor, and shopping basket UI, composed from the shared shadcn/ui primitives.
-- **Acceptance:** A new visitor without sign-up can change budget/protein -> choose a recipe -> change owned ingredient quantities -> see **recomputed** nutrients/shortages/checkout packs and cost. No fake precomputed totals. Form controls are labeled and keyboard-operable; design remains Thai-first and branded, not a default shadcn demo.
+- **Dependencies:** REQ-03, LOC-01, DAT-01, ENG-01, ENG-02, ENG-03, ENG-04.
+- **Deliverables:** Mobile-first optional Preferences, Meal Choices/Plans, Recipe Details, and Shopping List UI, composed from the shared shadcn/ui primitives.
+- **Acceptance:** A new visitor without sign-up can skip preferences or set budget/protein/exclusions -> compare meal choices -> inspect details -> choose a plan -> change owned ingredient quantities -> see **recomputed** nutrients/shortages/checkout packs and cost. Skipping means no hidden constraint. No fake precomputed totals. Form controls are labeled and keyboard-operable; design remains Thai-first and branded, not a default shadcn demo.
 - **Tests:** Manual golden path on phone and desktop; controls labeled; no hydration/console errors.
 - **Owner teach-back:** Trace data from fixture -> pure function -> UI state.
 
 # Phase 3 — Stores, provenance and product polish
 
 ### [ ] GEO-01 (P0) Demo-area store discovery and directions
-- **Dependencies:** UX-01, DAT-01.
-- **Deliverables:** Two named Bangkok demo location anchors (work/current and home), candidate store cards per anchor, approximate straight-line distances and external directions links; optional map (only after list works).
-- **Acceptance:** No geolocation prompt at launch; user can switch demo work/current vs home anchors; no false branch-stock claims; store fixture location provenance explicit; directions link uses valid coordinates.
+- **Dependencies:** UX-01, LOC-01, DAT-01.
+- **Deliverables:** Candidate store cards for the selected saved location or named demo area, approximate straight-line distances and external directions links.
+- **Acceptance:** No geolocation prompt at launch; saved user pins and physical store fixtures are distinct; no false branch-stock claims; store fixture provenance is explicit; directions link uses validated coordinates. Tile/map failure never hides the store list.
 - **Tests:** Coordinates validated; link opens intended map; no API connection needed for demo.
 
 ### [ ] UX-02 (P0) Data transparency, fallback states and accessibility
-- **Dependencies:** UX-01, GEO-01.
+- **Dependencies:** UX-01, GEO-01, LOC-01.
 - **Deliverables:** Visible "Demo prices" label, `/about` data explanation, nutrition source/unknown flags, empty/filter/unpriced/error/permission fallback states; mobile polish.
 - **Acceptance:** A reviewer can identify what is real vs simulated within one minute. List remains useful if map fails. Keyboard navigation, input labels, readable contrast, focus indicators and reduced motion are supported.
 - **Tests:** Manual accessibility/error checklist; no misleading stock/price labels.
@@ -160,7 +175,7 @@
 # Phase 4 — Verification, deployment and handoff
 
 ### [ ] QA-01 (P0) Full verification and regression
-- **Dependencies:** UX-02, ENG-01..04, GEO-01.
+- **Dependencies:** UX-02, ENG-01..04, LOC-01, GEO-01.
 - **Deliverables:** Passing lint, typecheck, unit tests and production build; complete manual golden path; fix blockers.
 - **Acceptance:** No major console errors; mobile end-to-end flow works; arithmetic and provenance labels correct; offline/location-denied fallback demonstrated.
 - **Record evidence:** Commands run, result, browser/device tested, known limitations.
@@ -197,24 +212,20 @@
 ## Dependency overview
 
 ```text
-REQ-01
-  |-- REQ-02 (user journeys)
-  +-- DES-01 (Next.js bootstrap)
-        |-- DES-UI-01 (shadcn/ui primitives) --+
-        +-- DES-02 (data contracts)            |
-              +-- DAT-01 (curated data)        |
-                    |-- ENG-01 (nutrition)     |
-                    +-- ENG-02 (pantry)        |
-                          +-- ENG-03 (packs)   |
-                                +-- ENG-04 (ranking)
-                                       |       |
-                                       +-------+--> UX-01 (vertical slice)
-                                                        |
-                                                      GEO-01
-                                                        |
-                                                      UX-02
-                                                        |
-                                                      QA-01 -> REL-01 -> REL-02
+REQ-01 -> REQ-02 -> REQ-03 (product promise and map-first journey)
+                         |
+                         +--> LOC-01 (map and local saved locations) ----+
+                                                                         |
+DES-01 -> DES-UI-01 ----------------------------------------------------+--> UX-01
+  |                                                                      ^
+  +--> DES-02 -> DAT-01 -> ENG-01 (nutrition)                            |
+                       +-> ENG-02 (pantry) -> ENG-03 (packs) -> ENG-04 --+
+                                                                         |
+                                                              GEO-01 (candidate stores)
+                                                                         |
+                                                                      UX-02
+                                                                         |
+                                                  QA-01 -> REL-01 -> REL-02
 
 P1 tasks GEO-02, ENG-05, ENG-06, NUT-01 begin only after the core slice is stable.
 ```
