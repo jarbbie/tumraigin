@@ -30,7 +30,7 @@ function validFixtureDataset() {
         minutes: 10,
         ingredientItems: [{ ingredientId: "ingredient:test-rice", edibleGrams: 100 }],
         tags: [],
-        exclusionTags: [],
+        exclusionTags: ["poultry"],
         instructions: ["ข้อมูลทดสอบเท่านั้น"],
         sourceNote: "Test fixture only",
       },
@@ -155,12 +155,32 @@ describe("validatePlanningInput", () => {
       {
         recipeIds: ["recipe:test-rice"],
         pantry: [{ ingredientId: "ingredient:test-rice", edibleGrams: 0 }],
+        excludedTags: ["poultry"],
         maxCheckoutBudgetSatang: 0,
       },
       checkedFixtureDataset(),
     );
 
     expect(result.success).toBe(true);
+    if (result.success) expect(result.data.excludedTags).toEqual(["poultry"]);
+  });
+
+  it("rejects duplicate and unsupported exclusion tags", () => {
+    const result = validatePlanningInput(
+      {
+        recipeIds: ["recipe:test-rice"],
+        pantry: [],
+        excludedTags: ["poultry", "poultry", "unsupported"],
+      },
+      checkedFixtureDataset(),
+    );
+
+    expect(result.success).toBe(false);
+    if (result.success) return;
+
+    expect(result.issues.map((issue) => issue.path)).toEqual(
+      expect.arrayContaining(["excludedTags[1]", "excludedTags[2]"]),
+    );
   });
 
   it("rejects negative pantry amounts and non-integer checkout budgets", () => {

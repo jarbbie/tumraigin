@@ -387,6 +387,7 @@ export type PantryItem = { ingredientId: string; edibleGrams: number };
 export type PlanningInput = {
   recipeIds: string[];
   pantry: PantryItem[];
+  excludedTags?: string[];
   maxCheckoutBudgetSatang?: number;
   minProteinGPerServing?: number;
 };
