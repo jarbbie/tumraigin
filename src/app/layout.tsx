@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Tumraigin (ทำไรกิน)",
-  description: "วางแผนมื้ออาหารและรายการซื้อของจากวัตถุดิบที่มี",
+  description: "ตัวช่วยวางแผนทำอาหารกินเอง ตั้งแต่เลือกพื้นที่จนถึงรายการซื้อของ",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
