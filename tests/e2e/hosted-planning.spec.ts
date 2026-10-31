@@ -34,10 +34,10 @@ test("map-first planning journey reaches a calculated shopping list", async ({ p
   await expect(page.getByText("โหลดแผนที่ไม่ครบ — ยังค้นหาชื่อสถานที่ เลือกจากรายการที่บันทึก หรือใช้พื้นที่สาธิตได้")).toBeVisible();
   await expect(page.getByLabel("ละติจูด")).toHaveCount(0);
   await expect(page.getByLabel("ลองจิจูด")).toHaveCount(0);
-  await page.getByLabel("ชื่อสถานที่ที่ต้องการค้นหา").fill("ตลาดวโรรส");
+  await page.getByLabel("ค้นหาชื่อสถานที่").fill("ตลาดวโรรส");
   await page.getByRole("button", { name: "ค้นหา" }).click();
   await page.getByRole("button", { name: /เลือก ตลาดวโรรส/ }).click();
-  await expect(page.getByLabel("ชื่อที่จะแสดงในรายการ")).toHaveValue("ตลาดวโรรส");
+  await expect(page.getByLabel("ชื่อในรายการ")).toHaveValue("ตลาดวโรรส");
   await page.getByRole("button", { name: "บันทึกสถานที่" }).click();
   const savedLocation = page.getByRole("list", { name: "สถานที่ของฉัน" })
     .getByRole("listitem").filter({ hasText: "ตลาดวโรรส" })

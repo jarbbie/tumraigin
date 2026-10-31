@@ -17,7 +17,7 @@
 ## Visible behavior
 
 - Open `/` with a map centered on a neutral, labeled demo area. Never request GPS on launch.
-- Let the user submit a place name and choose a result, or pin the map, then enter a display name and explicitly save it. Never show manual latitude/longitude inputs. Show multiple saved locations on the same screen with select, rename, delete-one, and clear-all actions.
+- Keep the map as the primary visual and group two clear add paths beside it on desktop or below it on phones: search by place name and choose a result, or tap the map to pin a point. Reveal the name-and-save form after a point is selected. Show saved locations in their own list with selection, rename, delete-one, and clear-all actions. Coordinates remain internal and are never shown or entered.
 - The home screen carries the promise **“ตัวช่วยการวางแผนทำอาหารกินเองของคุณ”** and an explicit continue action after the map and saved-place controls.
 - Store only explicitly saved search-result/map-pin names and coordinates in this browser. Send a place-name query to Photon only after form submission; explain that the query goes to Photon, the tile provider receives requests for the visible map area, and no saved-location record is sent to the app server. Offer map pinning when a user does not want to send a sensitive name or address.
 - Current implementation uses Leaflet 1.9.4 directly in a client-only module and the OpenStreetMap standard tile endpoint. It does not prefetch or download offline tiles and shows Leaflet's visible attribution link to the OpenStreetMap copyright/ODbL page.
