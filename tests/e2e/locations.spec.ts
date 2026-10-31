@@ -2,9 +2,28 @@ import { expect, test } from "@playwright/test";
 
 test("search and map pin add multiple named places without editable coordinates", async ({ page }) => {
   let photonRequests = 0;
+  let releaseStaleSearch: () => void = () => {};
+  const staleSearchGate = new Promise<void>((resolve) => {
+    releaseStaleSearch = resolve;
+  });
   await page.route(/^https:\/\/photon\.komoot\.io\/api\//, async (route) => {
     photonRequests += 1;
     const url = new URL(route.request().url());
+    if (url.searchParams.get("q") === "ค้นหาก่อนแตะหมุด") {
+      await staleSearchGate;
+      await route.fulfill({
+        contentType: "application/geo+json",
+        body: JSON.stringify({
+          type: "FeatureCollection",
+          features: [{
+            type: "Feature",
+            geometry: { type: "Point", coordinates: [100.5, 13.7] },
+            properties: { osm_type: "node", osm_id: "late-result", name: "ผลค้นหาที่มาช้า" },
+          }],
+        }),
+      });
+      return;
+    }
     if (url.searchParams.get("q") === "ค้นหาสถานที่ที่ใช้ทดสอบไม่ได้") {
       await route.fulfill({ status: 503, body: "Photon temporarily unavailable" });
       return;
@@ -63,6 +82,19 @@ test("search and map pin add multiple named places without editable coordinates"
   await expect(savedPlaces.getByRole("listitem")).toHaveCount(2);
   await expect(savedPlaces).not.toContainText(/\d{2,}\.\d{3,}/);
 
+  const staleRequest = page.waitForRequest((request) =>
+    new URL(request.url()).searchParams.get("q") === "ค้นหาก่อนแตะหมุด",
+  );
+  await page.getByLabel("ชื่อสถานที่ที่ต้องการค้นหา").fill("ค้นหาก่อนแตะหมุด");
+  expect(photonRequests).toBe(1);
+  await page.getByRole("button", { name: "ค้นหา" }).click();
+  await staleRequest;
+  await page.getByRole("button", { name: "เลือกตำแหน่งตรงกลางแผนที่" }).click();
+  releaseStaleSearch();
+  await expect(page.getByText("เลือกจุดบนแผนที่แล้ว")).toBeVisible();
+  await expect(page.getByRole("heading", { name: /ผลค้นหาสำหรับ/ })).toHaveCount(0);
+  expect(photonRequests).toBe(2);
+
   const searchedPlace = savedPlaces.getByRole("listitem")
     .filter({ hasText: "ตลาดวโรรส" })
     .getByRole("button", { name: /^ตลาดวโรรส(?: เลือกอยู่)?$/ });
@@ -80,10 +112,10 @@ test("search and map pin add multiple named places without editable coordinates"
   await expect(page.getByText("เลือกจุดบนแผนที่แล้ว")).toBeVisible();
 
   await page.getByLabel("ชื่อสถานที่ที่ต้องการค้นหา").fill("ค้นหาสถานที่ที่ใช้ทดสอบไม่ได้");
-  expect(photonRequests).toBe(1);
+  expect(photonRequests).toBe(2);
   await page.getByRole("button", { name: "ค้นหา" }).click();
   await expect(page.getByText("ค้นหาไม่สำเร็จ ลองใหม่หรือแตะแผนที่เพื่อวางหมุด", { exact: true })).toBeVisible();
-  expect(photonRequests).toBe(2);
+  expect(photonRequests).toBe(3);
   await centerPin.click();
   await expect(page.getByText("เลือกจุดบนแผนที่แล้ว")).toBeVisible();
 });

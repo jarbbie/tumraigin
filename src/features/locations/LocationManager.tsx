@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { MapPin, Pencil, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,6 +66,7 @@ export function LocationManager() {
   const [editingLabel, setEditingLabel] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const searchRequestId = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -121,6 +122,7 @@ export function LocationManager() {
   const mapCenter = draftPoint ?? selectedLocation ?? DEMO_AREA;
 
   function setMapDraft(point: Coordinate) {
+    searchRequestId.current += 1;
     setDraftPoint(point);
     setDraftSource("map");
     setSearchResults([]);
@@ -131,6 +133,7 @@ export function LocationManager() {
 
   async function searchForPlace(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const requestId = ++searchRequestId.current;
     const query = searchQuery.trim().replace(/\s+/g, " ");
     if (query.length < 2 || query.length > 120) {
       setSearchedQuery(query);
@@ -146,16 +149,19 @@ export function LocationManager() {
     setSearchResults([]);
     try {
       const results = await searchPlaces(query);
+      if (requestId !== searchRequestId.current) return;
       setSearchResults(results);
       setSearchStatus(results.length === 0 ? "empty" : "idle");
       setSearchMessage(results.length === 0 ? "ไม่พบสถานที่ ลองเพิ่มชื่อเขตหรือจังหวัด หรือแตะแผนที่เพื่อวางหมุด" : null);
     } catch {
+      if (requestId !== searchRequestId.current) return;
       setSearchStatus("error");
       setSearchMessage("ค้นหาไม่สำเร็จ ลองใหม่หรือแตะแผนที่เพื่อวางหมุด");
     }
   }
 
   function chooseSearchResult(result: PlaceSearchResult) {
+    searchRequestId.current += 1;
     setDraftPoint({ lat: result.lat, lon: result.lon });
     setDraftSource("search");
     setLabel(result.name.slice(0, 80));
@@ -199,6 +205,7 @@ export function LocationManager() {
   }
 
   function selectLocation(locationId: string) {
+    searchRequestId.current += 1;
     setSavedState((current) => ({ ...current, selectedLocationId: locationId }));
     setDraftPoint(null);
     setDraftSource(null);
@@ -250,6 +257,7 @@ export function LocationManager() {
   }
 
   function useDemoArea() {
+    searchRequestId.current += 1;
     setSavedState((current) => ({ ...current, selectedLocationId: null }));
     setDraftPoint(null);
     setDraftSource(null);
@@ -327,6 +335,7 @@ export function LocationManager() {
                   maxLength={120}
                   disabled={searchStatus === "loading"}
                   onChange={(event) => {
+                    searchRequestId.current += 1;
                     setSearchQuery(event.target.value);
                     setSearchResults([]);
                     setSearchStatus("idle");
