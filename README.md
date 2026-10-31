@@ -62,14 +62,17 @@ pnpm test:e2e
 pnpm build
 ```
 
-Vitest runs the repository unit tests under `src/`. `pnpm test:e2e` builds the static export with the `/tumraigin` base path and uses Playwright Chromium against the production preview server; it verifies meal filtering, selection, pantry subtraction, pack rounding and recalculated checkout totals. Install the Playwright browser once with the command above; the GitHub Actions workflow installs it automatically. The runner builds and serves on loopback, and its smoke path does not load map tiles. Add focused domain and interaction coverage as each backlog item is implemented.
+Vitest runs the repository unit tests under `src/`. `pnpm test:e2e` builds the static export with the `/tumraigin` base path and uses Playwright Chromium against the production preview server; it verifies meal filtering, selection, pantry subtraction, pack rounding and recalculated checkout totals. Install the Playwright browser once with the command above; the GitHub Actions workflow installs it automatically. The runner builds and serves on loopback, and its smoke path does not load map tiles. The smoke test has not yet been run against the public Sites deployment. Add focused domain and interaction coverage as each backlog item is implemented.
 
 The lockfile is present. Lint, typecheck, 80 unit tests, the Playwright production-browser smoke test, and the Webpack production build have been verified; see [`docs/tests.md`](./docs/tests.md) for task-specific evidence.
 
-## Static deployment
+## Deployment
 
-The production build exports the App Router pages to `out/` for static hosting. Recipe slugs are rendered at build time from the reviewed fixture list; the app has no runtime server API or database. GitHub Pages deployment is defined by [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml) and runs only from `main` (or when started manually). The workflow prefixes routes and assets with `/tumraigin` for the account Pages URL. Set `GITHUB_PAGES_BASE_PATH` to another path only when publishing under a different project subpath. Hosting is not live until the repository and Pages settings are explicitly enabled and a deployment succeeds.
+The public interview prototype is available at [tumraigin.peeranat-0709.chatgpt.site](https://tumraigin.peeranat-0709.chatgpt.site). The Sites service reports the Site as public with version 1 live; an unauthenticated HTTPS HEAD request returned HTTP 200 on 2026-10-31.
 
+The published app is a static Next.js export built at the root path (without a GitHub Pages base path). Its Site artifact commit contains only generated public assets and the hosting manifest; it is not the canonical GitHub source tree. The canonical source repository remains private while its existing history and issue/PR records are reviewed for a safe public source path.
+
+The GitHub Pages workflow remains in the repository, but its latest release run stopped at Pages configuration because no Pages site is enabled. The public Sites URL is the current demo. The hosted interactive golden path has not yet been browser-tested; the checked-in E2E suite currently tests the local production preview. REL-01 remains partial until the public source and hosted interaction requirements are verified.
 ## Data and limitations
 
 Fixture data lives under `src/data/` and is runtime-validated against shared contracts in `src/types/` and `src/lib/data/`. Most nutrition values are curated from the Concise ASEAN Food Composition Tables (2014); one generic oil estimate uses USDA SR28. Unknown nutrients remain `null`, including source entries marked presumed-zero or missing. The source and reuse terms are documented in [`src/data/README.md`](./src/data/README.md). Prices and pack sizes are invented, visibly simulated inputs and do not represent current retailer prices or branch stock. The demo-store point is fictitious. Do not interpret the prototype as evidence of live prices, stock, medically precise nutrition or allergy safety.
