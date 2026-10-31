@@ -28,6 +28,11 @@ const sourceLinks = [
     detail: "ข้อมูลแผนที่ฐานมี attribution บนแผนที่; ใบอนุญาตข้อมูล ODbL แยกจากนโยบายการให้บริการแผนที่",
   },
   {
+    title: "Photon · place-name search",
+    href: "https://github.com/komoot/photon",
+    detail: "ค้นหาจากข้อมูล OpenStreetMap เมื่อผู้ใช้กดส่งคำค้น; public demo ใช้ได้ในปริมาณเหมาะสมและไม่มีการรับประกัน uptime",
+  },
+  {
     title: "OpenStreetMap · tile usage policy",
     href: "https://operations.osmfoundation.org/policies/tiles/",
     detail: "ผู้ให้บริการแผนที่เห็นคำขอ tile สำหรับบริเวณแผนที่ที่เปิดดู; tile อาจโหลดไม่ได้และไม่จำเป็นต่อการคำนวณอาหาร",
@@ -136,6 +141,7 @@ export function AboutScreen() {
           </div>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
             <li>แอปไม่ขอพิกัด GPS ไม่ต้องสมัครสมาชิก และไม่ส่งชื่อหรือหมุดที่บันทึกไว้ไปยังเซิร์ฟเวอร์ของทำไรกิน สถานที่ที่บันทึกเก็บใน localStorage ของเบราว์เซอร์นี้เท่านั้น</li>
+            <li>คำค้นชื่อสถานที่จะส่งไปยัง Photon/Komoot เมื่อกดปุ่มค้นหาเท่านั้น หากไม่ต้องการส่งชื่อหรือที่อยู่ส่วนตัว ให้แตะแผนที่วางหมุดเอง ระบบไม่ค้นหาระหว่างพิมพ์</li>
             <li>ผู้ให้บริการแผนที่ได้รับคำขอ tile สำหรับบริเวณที่คุณเปิดดู รายการบันทึกยังใช้ได้หาก tile โหลดไม่สำเร็จ</li>
             <li>หากกดลิงก์นำทาง พิกัดต้นทางและปลายทางจะถูกส่งให้ Google Maps เพื่อเปิดเส้นทาง การกดลิงก์เป็นการเลือกใช้บริการภายนอก</li>
           </ul>

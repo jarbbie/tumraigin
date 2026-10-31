@@ -58,7 +58,9 @@ pnpm build
 - `pnpm build`: passed with Webpack.
 - No production fixture data was added; test-only data is explicitly labeled as test/simulated.
 
-## LOC-01 map and saved-location verification (2026-10-31)
+## LOC-01 original map and saved-location verification (superseded 2026-10-31)
+
+The original interaction below accepted coordinate entry. The location redesign replaces that UI with explicit place-name search or map pinning; no coordinate entry is part of the current flow.
 
 - Added ten validator tests for empty and populated state, trimmed labels, valid coordinate boundaries, wrong schema version, duplicate IDs, invalid latitude/longitude, non-finite coordinates, blank labels, missing selected IDs, and malformed input.
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 21 total tests. `pnpm build`: passed with Webpack.
@@ -67,6 +69,14 @@ pnpm build
 - Keyboard walkthrough: Tab reached the map region/zoom controls and coordinate fields. Typed a coordinate value through browser keyboard actions and observed the visible focus ring.
 - At a 390 px phone viewport, document scroll width was 378 px, so the page had no horizontal overflow. Reviewed a phone screenshot with loaded tiles and the OpenStreetMap attribution link visible.
 - Remaining UI walkthrough coverage: after the later preferences, meal, recipe, store and shopping-list tasks are implemented, run the complete golden path in the P0 UI checklist below.
+
+## LOC-01 place-search redesign verification (2026-10-31)
+
+- Replaced coordinate-entry controls with an explicit place-name form and selectable results, retaining map click pinning and adding a keyboard-accessible map-center pin button. Multiple named places remain manageable in the browser-only saved-location list.
+- Unit coverage validates Photon GeoJSON coordinate order, display-field parsing, malformed responses, invalid bounds, duplicate result IDs, the five-result cap, and normalized-query cache reuse.
+- Playwright mocks Photon and verifies typing makes no network request, submit makes one request, a search result can be named and saved, a second pin can be added from the map, both places persist, the selected location persists after reload, keyboard center pin works, Photon failure leaves pinning usable, there are no coordinate fields or displayed coordinate values, and the 390 px layout has no horizontal overflow. Tile requests are blocked to verify map fallback behavior.
+- `pnpm lint`, `pnpm typecheck`, `pnpm test` (85 tests across 9 files), `pnpm build`, and `pnpm test:e2e` (3 browser tests) passed. Vitest prints the existing Vite config-loader warning.
+- Browser tests use mocked place search, so they verify request behavior and UI parsing without depending on Photon availability. The public Photon demo remains best-effort and does not provide a shared cross-visitor rate limit.
 
 ## DAT-01 curated seed-data verification (2026-10-31)
 
@@ -194,7 +204,7 @@ pnpm build
 ## P0 UI and manual coverage
 
 - Golden path: open map -> choose/name/save a place -> reload and select it -> skip or set preferences -> compare meal choices/plans -> inspect details -> generate shopping list.
-- Location controls: map click sets a marker; coordinate entry works by keyboard; saved place can be selected, renamed, deleted, and cleared. Verify the app stores the pin locally and does not call geolocation or send the saved-location list to an app API.
+- Location controls: submit a place name and select a result or click the map to set a marker; no manual coordinate fields are shown. Save multiple places, select, rename, delete one, and clear all. Verify saved names/coordinates stay in this browser and the app does not call geolocation or send the saved-location list to an app API. Search is sent to Photon only on explicit submit.
 - Map failure/offline: show a clear tile failure message, retain saved places, and allow the demo area and later meal-planning steps.
 - Empty filters, missing offer, unknown nutrients, invalid pantry/budget values, no selection, no complete store candidate and data loading/error states.
 - GPS is not used in the P0 map-first flow. If a separate P1 current-location action is later added, test denied, unavailable, and timeout recovery.
