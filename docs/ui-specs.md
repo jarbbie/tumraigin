@@ -41,7 +41,7 @@
 - The current store fixture is explicitly a fictitious demo point, not a physical branch. Its offer coverage describes simulated fixture prices only; branch stock remains unknown. A saved pin is only a user-selected origin.
 - Opening a Google Maps directions link shares the selected origin and demo destination coordinates with Google Maps. The app does not call a directions API or report driving distance/time.
 - Keep a shared “ข้อมูลและแหล่งอ้างอิง” link on every route, including cost and store views. `/about` is outside the four-step journey and explains fixture counts, source types and reuse terms, nutrition calculation/unknown handling, simulated prices and store point, local location storage, external map sharing, and limitations.
-- The full demo notice must say prices and assumed products are simulated, the current point is fictitious and not a branch, stock is unknown, and nutrition values are approximate rather than medical/allergen guidance. ASEANFOODS educational/commercial reuse caveats remain visible.
+- The full demo notice must say prices and assumed products are simulated, the current point is fictitious and not a branch, stock is unknown, and nutrition values are approximate rather than medical/allergen guidance. `/about` must link USDA FoodData Central SR Legacy, disclose the FDC ID and exact record description for each ingredient, identify the nine proxy ingredients, and summarize the CC0 1.0 attribution.
 - No geolocation API is used in the current flow, so no location-permission prompt or permission-denied state is needed. The saved-location and demo-area fallback remains the recovery path.
 
 ## Visual and accessibility rules

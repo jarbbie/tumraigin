@@ -95,6 +95,49 @@ describe("validateFixtureDataset", () => {
     expect(result.data.stores).toHaveLength(1);
   });
 
+  it("validates the exact FDC record used by a curated proxy", () => {
+    const input = validFixtureDataset();
+    Object.assign(first(input.ingredients, "ingredient"), {
+      nutritionSource: {
+        kind: "curated_estimate",
+        checkedAt: "2026-10-31",
+        explanation: "FDC record used as a proxy; the target ingredient may differ.",
+        reference: {
+          fdcId: 169756,
+          recordDescription: "Rice, white, long-grain, regular, raw, unenriched",
+          sourceUrl: "https://fdc.nal.usda.gov/download-datasets/",
+        },
+      },
+    });
+
+    const result = validateFixtureDataset(input);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.ingredients[0]?.nutritionSource).toMatchObject({
+        kind: "curated_estimate",
+        reference: { fdcId: 169756 },
+      });
+    }
+  });
+
+  it("rejects an exact USDA source without a record description", () => {
+    const input = validFixtureDataset();
+    Object.assign(first(input.ingredients, "ingredient"), {
+      nutritionSource: {
+        kind: "usda",
+        fdcId: 171474,
+        sourceUrl: "https://fdc.nal.usda.gov/download-datasets/",
+        checkedAt: "2026-10-31",
+      },
+    });
+
+    expectIssueAt(
+      validateFixtureDataset(input),
+      "ingredients[0].nutritionSource.recordDescription",
+    );
+  });
+
   it("rejects an offer with a zero-sized pack", () => {
     const input = validFixtureDataset();
     first(input.productOffers, "offer").edibleQuantityGrams = 0;

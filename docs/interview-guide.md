@@ -55,7 +55,7 @@ flowchart LR
 
 4. **Why round packs up, and why separate costs?** `ceil(shortageGrams / packGrams)` buys enough whole packs, so any positive shortage needs at least one. Checkout cash is what the shopper pays for full packs; consumed cost estimates only the portion used. The budget uses checkout cash.
 
-5. **Where does nutrition come from?** Most curated values use ASEANFOODS 2014; the generic oil profile cites USDA SR28 as a proxy. The calculator scales per-100-g values and divides by servings. Unknown source nutrients remain `null` and lower completeness; cooking yield and nutrient retention are not modeled.
+5. **Where does nutrition come from?** The 23 ingredient profiles use USDA FoodData Central SR Legacy (April 2018), and each carries its FDC ID and record description. Fourteen are direct generic records and nine are explicitly labeled proxies copied without adjustment. The calculator scales per-100-g values and divides by servings. Unknown or assumed-zero source nutrients remain `null`; cooking yield and nutrient retention are not modeled.
 
 6. **How does ranking handle constraints?** Exclusion tags are hard exclusions. A known protein value below the minimum or checkout above budget is ineligible; incomplete evidence is `unknown`, never a pass. Eligible recipes rank before unknown and ineligible recipes, then by the configured protein preference, checkout cost, and a stable recipe ID. Skipping preferences applies no hidden filter.
 

@@ -79,14 +79,26 @@ The original interaction below accepted coordinate entry. The location redesign 
 - `pnpm lint`, `pnpm typecheck`, `pnpm test` (85 tests across 9 files), `pnpm build`, and `pnpm test:e2e` (3 browser tests) passed. Vitest prints the existing Vite config-loader warning.
 - Browser tests use mocked place search, so they verify request behavior and UI parsing without depending on Photon availability. The public Photon demo remains best-effort and does not provide a shared cross-visitor rate limit.
 
-## DAT-01 curated seed-data verification (2026-10-31)
+## DAT-01 curated seed-data verification (2026-10-31; initial source basis superseded)
+
+The following source checks describe the first DAT-01 implementation. Its ASEANFOODS/SR28 nutrient values were replaced during REL-01 preparation before creating a new public source snapshot.
 
 - Added 23 runtime-validated ingredient records, eight two-serving Thai-oriented recipe examples, simulated integer-satang pack offers, three distinct preference input profiles, and one visibly fictitious demo-store point. Every recipe-used ingredient has a simulated offer; no recommendation or nutrition output is stored.
 - Cross-checked the ASEAN Food IDs and values used in the fixtures against the official Concise ASEAN Food Composition Tables (2014). Per-100-mL light soy sauce is converted to per-100-g with the recorded density; presumed-zero (`0p`), trace, and missing fields remain `null` when not measured/reported.
 - Added fixture tests for entity counts, references, raw ingredient weights per serving, nullable nutrient coverage, simulated price/unknown stock labels, demo-store label, offer coverage, and distinct scenario inputs.
 - Documented source attribution and reuse terms in `src/data/README.md`; no USDA FDC ID is claimed. The generic cooking oil estimate cites USDA SR28 NDB No. 42289.
 - `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 27 tests across 3 files. Vitest printed the existing Vite config-loader warning. `pnpm build`: passed with Webpack.
-- Remaining limitation: before commercial or broader redistribution, confirm permission or replace the ASEANFOODS values; its source notes that educational product/service use may incur fees. Recipe instructions are editorial prototype examples and have not undergone independent recipe review.
+- Historical limitation at the initial seed: before commercial or broader redistribution, ASEANFOODS reuse permission needed confirmation because educational product/service use may incur fees. That nutrient source set is superseded in the current release candidate by the REL-01 FDC SR Legacy data source. Recipe instructions remain editorial prototype examples and have not undergone independent recipe review.
+
+## REL-01 data source correction (2026-10-31; source audit and local verification complete)
+
+- Replaced the initial ASEANFOODS 2014 and USDA SR28 ingredient nutrient profiles with per-100-g values from USDA FoodData Central SR Legacy (April 2018). The app uses the static download; no API key is needed or exposed.
+- Added structured FDC record references to exact and proxy provenance. Each ingredient carries its FDC ID, exact source-record description, official dataset URL and review date. The 14 direct generic matches use `usda` provenance; the nine non-exact Thai cultivar/product-form matches use `curated_estimate` with a typed FDC reference and a visible proxy limitation.
+- Updated `/about`, recipe source references, README, `document.md`, interview notes and UI requirements to identify SR Legacy, its CC0 1.0/public-domain status, attribution, and the proxy limitations.
+- Official source review: USDA's download page lists SR Legacy April 2018 as downloadable JSON; USDA's API guide states FDC data are public domain under CC0 1.0 and requests source attribution. The prototype uses no live USDA API request.
+- Compared all 22 distinct FDC IDs and exact descriptions against the downloaded official JSON archive; all match. Compared eight nutrient fields for all 23 ingredient rows (184 values), preserving assumed-zero/missing values as `null` and rounding reported values to two decimal places; no mismatches were found.
+- `pnpm lint`: passed. `pnpm typecheck`: passed. `pnpm test`: passed, 88 tests across 9 files (Vitest printed its existing config-loader warning). `GITHUB_PAGES_BASE_PATH=/tumraigin pnpm build`: passed and generated all static routes. `pnpm test:e2e`: passed, 3 production-browser tests; the meal-details test confirms a direct FDC ID and a visible proxy label. The sandbox initially denied loopback server startup; rerunning with local-server permission passed all three tests.
+- This verifies the source data, provenance validator, source disclosure and local production build. The still-public Site version 2 has not yet been replaced, and the sanitized public source repository/exact deployed commit gate remains open under REL-01.
 
 ## ENG-01 nutrition calculation verification (2026-10-31)
 
@@ -167,7 +179,7 @@ The original interaction below accepted coordinate entry. The location redesign 
 - The public Sites service reports version 1 live with public access at [https://tumraigin.peeranat-0709.chatgpt.site](https://tumraigin.peeranat-0709.chatgpt.site). An unauthenticated HTTPS HEAD request returned HTTP 200. The deployed static artifact was built with the root path, is 2.4 MiB, contains the generated assets and Site manifest only, has no source maps, and had no matches for the high-confidence credential-pattern scan. Its Site artifact commit is `bbcbda5917492ff62c758ce06a869cf8a43f722d`.
 - The Site artifact was generated from the reviewed staging app code, but its artifact commit is not the canonical GitHub commit and does not make the canonical source public. GitHub main still contains personal author metadata and the repo's private issues/PR history, so it remains private.
 - At the time of the initial deployment note, the public Site had not been browser-tested. The hosted verification below now covers the root-path public deployment.
-- The ASEANFOODS table retains its copyright and reuse terms. The project has source attribution, but its repository does not grant a separate open-data license; commercial use and educational products/services require reviewing the source terms and may incur fees.
+- The public version 2 Site still contains the initial ASEANFOODS/SR28 data because no later artifact has been published yet. The current REL-01 source correction removes those values from the next release candidate; do not describe Site version 2 as using the replacement data.
 
 ## REL-01 hosted Site browser verification (2026-10-31)
 

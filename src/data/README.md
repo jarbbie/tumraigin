@@ -4,18 +4,17 @@
 
 ## Nutrition sources and limits
 
-Most per-100-g nutrient values are transcribed from the **Concise ASEAN Food Composition Tables (2014)**, Institute of Nutrition, Mahidol University. Each record carries its ASEAN Food ID and the source URL in `nutritionSource.explanation`. This source presents typical population food values, not measurements of a particular person's meal. Parenthesized calculated values are retained as curated estimates. A source value of `0p`, `T` (trace), or `-` is represented as `null` where it means presumed zero, trace, or unreported; it is never silently turned into measured zero. For the light soy sauce row AAN98, the source gives values per 100 mL and density 1.207 g/mL, so the stored per-100-g values are divided by 1.207. The record explicitly states this conversion.
+All 23 per-100-g nutrient profiles were transcribed from the USDA FoodData Central **SR Legacy April 2018** JSON release. Each ingredient carries an FDC ID, the exact record description, the dataset source URL, and the date it was reviewed in `nutritionSource`. Fourteen ingredients use a direct generic-record match; nine use a clearly identified proxy because the release does not contain the exact Thai cultivar or product form. Proxy values are copied without adjustment, so the actual Thai ingredient may differ. The proxy record ID, source description, and target ingredient are recorded as structured provenance rather than parsed from display text.
 
-The generic cooking-oil profile uses USDA SR28 report entry NDB No. 42289 (corn and canola oil) as a proxy. No USDA FoodData Central ID has been verified or stored. The USDA describes FoodData Central data as public domain/CC0; the report URL, SR28 release, and NDB number are recorded in the ingredient's provenance explanation. This proxy is not a claim about a specific Thai retail oil.
+Reported nutrients are copied in the dataset's per-100-g basis. Nutrients not reported in the source or marked as assumed zero are kept as `null`; a reported numeric zero remains zero. These are generic food composition values, not measurements of a user's ingredients or the cooked recipe. Cooking yield and nutrient retention are not modeled.
 
 ### Reuse terms
 
-The ASEANFOODS 2014 source states that copyright is retained, noncommercial users may use the data with appropriate acknowledgement, and reproduction for resale or other commercial uses (including educational purposes) may incur fees. This dataset is attributed for the noncommercial interview prototype. Confirm reuse permission with the Institute of Nutrition, Mahidol University, or replace these values before a commercial or educational product/service or broader redistribution. The USDA source states its data are CC0 1.0.
+USDA states that FoodData Central data are public domain and published under **CC0 1.0 Universal**. It requests that applications list FoodData Central as the data source. The application uses the downloadable SR Legacy data and does not make API calls or require a USDA key.
 
 Sources:
 
-- Institute of Nutrition, Mahidol University / ASEANFOODS, [The Concise ASEAN Food Composition Tables (2014)](https://inmu.mahidol.ac.th/aseanfoods/doc/OnlineASEAN_FCD_V1_2014.pdf) and its [composition-data page](https://inmu.mahidol.ac.th/aseanfoods/composition_data.html).
-- USDA Agricultural Research Service, [SR28 fats and oils report](https://www.ars.usda.gov/ARSUserFiles/80400535/Data/SR/SR28/reports/sr28fg04.pdf) and [FoodData Central API/data guide](https://fdc.nal.usda.gov/api-guide/).
+- USDA Agricultural Research Service, [FoodData Central downloadable datasets](https://fdc.nal.usda.gov/download-datasets/) (SR Legacy release date: April 2018) and [FoodData Central API/data guide, including licensing](https://fdc.nal.usda.gov/api-guide/).
 
 ## Synthetic offers and store point
 
