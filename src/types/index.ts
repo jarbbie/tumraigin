@@ -1,4 +1,5 @@
 export type {
+  FoodDataCentralRecord,
   FixtureDataset,
   Ingredient,
   NutrientsPer100g,

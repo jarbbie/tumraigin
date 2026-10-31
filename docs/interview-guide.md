@@ -43,7 +43,7 @@ flowchart LR
 
 **Calculation path:** source nutrients per 100 g are scaled by each recipe ingredient’s raw edible grams, then divided by servings. Required ingredient grams are aggregated before pantry subtraction; shortages clamp at zero. Positive shortages use whole-pack ceiling arithmetic. Checkout cash is the sum of pack prices in satang; consumed-portion cost is a separate estimate. Recipe ranking applies exclusions and the optional checkout/protein thresholds; missing price or nutrient evidence remains `unknown`, not a pass.
 
-**Runtime and trade-off:** the v0.1 app is a Next.js modular monolith with browser-local planning state and reviewed static fixtures. No app database, GPS call, or business API is required. The release candidate is configured for static export because its routes use build-time fixtures; this keeps hosting simple and the core flow reproducible. The trade-off is that fixtures are limited and not fresh retailer data. OpenStreetMap tile requests reveal the viewed area to the tile provider; if tiles fail, coordinate entry, saved places, and the demo area remain available.
+**Runtime and trade-off:** the v0.1 app is a Next.js modular monolith with browser-local planning state and reviewed static fixtures. No app database or GPS call is required. The release candidate is configured for static export because its routes use build-time fixtures; place-name search calls Photon directly from the browser only after submit. The Photon demo is best-effort, so map pinning, saved places, and the demo area remain available if it fails. Place queries go to Photon and tile requests reveal the viewed area to the tile provider. The trade-off is that fixtures and free public search are not a production data service.
 
 ## Ten interview answers
 
@@ -55,7 +55,7 @@ flowchart LR
 
 4. **Why round packs up, and why separate costs?** `ceil(shortageGrams / packGrams)` buys enough whole packs, so any positive shortage needs at least one. Checkout cash is what the shopper pays for full packs; consumed cost estimates only the portion used. The budget uses checkout cash.
 
-5. **Where does nutrition come from?** Most curated values use ASEANFOODS 2014; the generic oil profile cites USDA SR28 as a proxy. The calculator scales per-100-g values and divides by servings. Unknown source nutrients remain `null` and lower completeness; cooking yield and nutrient retention are not modeled.
+5. **Where does nutrition come from?** The 23 ingredient profiles use USDA FoodData Central SR Legacy (April 2018), and each carries its FDC ID and record description. Fourteen are direct generic records and nine are explicitly labeled proxies copied without adjustment. The calculator scales per-100-g values and divides by servings. Unknown or assumed-zero source nutrients remain `null`; cooking yield and nutrient retention are not modeled.
 
 6. **How does ranking handle constraints?** Exclusion tags are hard exclusions. A known protein value below the minimum or checkout above budget is ineligible; incomplete evidence is `unknown`, never a pass. Eligible recipes rank before unknown and ineligible recipes, then by the configured protein preference, checkout cost, and a stable recipe ID. Skipping preferences applies no hidden filter.
 
@@ -63,9 +63,9 @@ flowchart LR
 
 8. **Why is straight-line distance not a route estimate?** `haversineMeters` computes the great-circle distance between two coordinates. It does not include streets, traffic, transit, travel time, or a route. The directions link opens Google Maps only after the user chooses it.
 
-9. **What happens to saved places if map tiles fail?** Named pins and the selected ID are validated in versioned `localStorage`; there is no GPS prompt or app-server upload. Coordinate entry, saved locations, and the demo-area option remain usable without tiles. The tile provider sees the visible map area, and Google Maps receives coordinates only if directions are opened.
+9. **How do people add places, and what happens if providers fail?** They can submit a name and choose a Photon result, or place a pin on the map; coordinates are never typed. Only explicitly saved places and the selected ID go in versioned `localStorage`; no GPS prompt or app-server upload is used. Search queries go to Photon, while map tile requests reveal the view area to the tile provider. Pinning and the demo-area option remain available if either provider fails. Google Maps receives coordinates only if directions are opened.
 
-10. **What tests protect the calculations, and what changes for production?** The current suite has 80 unit tests across eight files for validation, nutrition, pantry, packs, baskets, ranking, and geospatial helpers. A 390 × 844 browser walkthrough checked the map-to-shopping flow and static export. Production needs the unresolved data-reuse review, authorized fresh data sources, a public release path that protects private Git history, deployed smoke verification, and ongoing privacy/security checks.
+10. **What tests protect the calculations, and what changes for production?** The current suite has 85 unit tests across nine files for validation, nutrition, pantry, packs, baskets, ranking, geospatial helpers, and Photon place-result handling. Three production-browser tests cover location selection and map-to-shopping flows at desktop and phone sizes. Production needs the unresolved data-reuse review, authorized fresh data sources, a public release path that protects private Git history, deployed smoke verification, and ongoing privacy/security checks.
 
 ### Teach-back shortcut
 

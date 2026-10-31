@@ -1,18 +1,21 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
-import { MapPin, Pencil, Trash2 } from "lucide-react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { MapPin, Pencil, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { SavedLocation, SavedLocationState } from "@/types";
 import { validateSavedLocationState } from "@/lib/data/validate-saved-locations";
 import { SAVED_LOCATIONS_STORAGE_KEY } from "./constants";
+import { searchPlaces, type PlaceSearchResult } from "./place-search";
 
 type Coordinate = { lat: number; lon: number };
+type DraftSource = "map" | "search";
 type PersistenceMode = "loading" | "ready" | "unavailable" | "invalid" | "failed";
 type TileStatus = "loading" | "ready" | "failed";
+type SearchStatus = "idle" | "loading" | "empty" | "error";
 
 const LocationMap = dynamic(() => import("./LeafletMap"), {
   ssr: false,
@@ -29,27 +32,6 @@ const EMPTY_STATE: SavedLocationState = {
   locations: [],
   selectedLocationId: null,
 };
-
-function formatCoordinate(value: number): string {
-  return value.toFixed(6);
-}
-
-function readCoordinatePair(latitude: string, longitude: string): Coordinate | null {
-  if (!latitude.trim() || !longitude.trim()) return null;
-  const lat = Number(latitude);
-  const lon = Number(longitude);
-  if (
-    !Number.isFinite(lat) ||
-    !Number.isFinite(lon) ||
-    lat < -90 ||
-    lat > 90 ||
-    lon < -180 ||
-    lon > 180
-  ) {
-    return null;
-  }
-  return { lat, lon };
-}
 
 function getPersistenceMessage(mode: PersistenceMode): string {
   switch (mode) {
@@ -70,15 +52,21 @@ export function LocationManager() {
   const [savedState, setSavedState] = useState<SavedLocationState>(EMPTY_STATE);
   const [storageMode, setStorageMode] = useState<PersistenceMode>("loading");
   const [hydrated, setHydrated] = useState(false);
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
+  const [draftPoint, setDraftPoint] = useState<Coordinate | null>(null);
+  const [draftSource, setDraftSource] = useState<DraftSource | null>(null);
   const [label, setLabel] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchedQuery, setSearchedQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<PlaceSearchResult[]>([]);
+  const [searchStatus, setSearchStatus] = useState<SearchStatus>("idle");
+  const [searchMessage, setSearchMessage] = useState<string | null>(null);
   const [tileStatus, setTileStatus] = useState<TileStatus>("loading");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingLabel, setEditingLabel] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const searchRequestId = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -131,25 +119,61 @@ export function LocationManager() {
     () => savedState.locations.find((location) => location.id === savedState.selectedLocationId) ?? null,
     [savedState.locations, savedState.selectedLocationId],
   );
-  const coordinatesForDraft = readCoordinatePair(latitude, longitude);
-  const mapCenter = coordinatesForDraft ?? selectedLocation ?? DEMO_AREA;
+  const mapCenter = draftPoint ?? selectedLocation ?? DEMO_AREA;
 
-  function setCoordinates(point: Coordinate) {
-    setLatitude(formatCoordinate(point.lat));
-    setLongitude(formatCoordinate(point.lon));
+  function setMapDraft(point: Coordinate) {
+    searchRequestId.current += 1;
+    setDraftPoint(point);
+    setDraftSource("map");
+    setSearchResults([]);
+    setSearchStatus("idle");
+    setSearchMessage(null);
     setFormError(null);
   }
 
-  function updateCoordinates(nextLatitude: string, nextLongitude: string) {
-    setLatitude(nextLatitude);
-    setLongitude(nextLongitude);
+  async function searchForPlace(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const requestId = ++searchRequestId.current;
+    const query = searchQuery.trim().replace(/\s+/g, " ");
+    if (query.length < 2 || query.length > 120) {
+      setSearchedQuery(query);
+      setSearchResults([]);
+      setSearchStatus("error");
+      setSearchMessage("พิมพ์ชื่อสถานที่ 2–120 ตัวอักษร แล้วลองค้นหาอีกครั้ง");
+      return;
+    }
+
+    setSearchedQuery(query);
+    setSearchStatus("loading");
+    setSearchMessage(null);
+    setSearchResults([]);
+    try {
+      const results = await searchPlaces(query);
+      if (requestId !== searchRequestId.current) return;
+      setSearchResults(results);
+      setSearchStatus(results.length === 0 ? "empty" : "idle");
+      setSearchMessage(results.length === 0 ? "ไม่พบสถานที่ ลองเพิ่มชื่อเขตหรือจังหวัด หรือแตะแผนที่เพื่อวางหมุด" : null);
+    } catch {
+      if (requestId !== searchRequestId.current) return;
+      setSearchStatus("error");
+      setSearchMessage("ค้นหาไม่สำเร็จ ลองใหม่หรือแตะแผนที่เพื่อวางหมุด");
+    }
+  }
+
+  function chooseSearchResult(result: PlaceSearchResult) {
+    searchRequestId.current += 1;
+    setDraftPoint({ lat: result.lat, lon: result.lon });
+    setDraftSource("search");
+    setLabel(result.name.slice(0, 80));
+    setSearchResults([]);
+    setSearchStatus("idle");
+    setSearchMessage(null);
     setFormError(null);
   }
 
   function saveLocation(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const name = label.trim();
-    const coordinates = readCoordinatePair(latitude, longitude);
 
     if (!name) {
       setFormError("ใส่ชื่อสถานที่ก่อนบันทึก เช่น บ้านหรือที่ทำงาน");
@@ -159,15 +183,15 @@ export function LocationManager() {
       setFormError("ชื่อสถานที่ยาวได้ไม่เกิน 80 ตัวอักษร");
       return;
     }
-    if (!coordinates) {
-      setFormError("ใส่ละติจูดระหว่าง −90 ถึง 90 และลองจิจูดระหว่าง −180 ถึง 180");
+    if (!draftPoint) {
+      setFormError("ค้นหาแล้วเลือกสถานที่ หรือแตะแผนที่เพื่อวางหมุดก่อนบันทึก");
       return;
     }
 
     const location: SavedLocation = {
       id: window.crypto.randomUUID(),
       label: name,
-      ...coordinates,
+      ...draftPoint,
     };
     setSavedState((current) => ({
       ...current,
@@ -175,16 +199,21 @@ export function LocationManager() {
       selectedLocationId: location.id,
     }));
     setLabel("");
-    setLatitude("");
-    setLongitude("");
+    setDraftPoint(null);
+    setDraftSource(null);
     setFormError(null);
   }
 
   function selectLocation(locationId: string) {
+    searchRequestId.current += 1;
     setSavedState((current) => ({ ...current, selectedLocationId: locationId }));
-    setLatitude("");
-    setLongitude("");
+    setDraftPoint(null);
+    setDraftSource(null);
+    setLabel("");
     setFormError(null);
+    setSearchResults([]);
+    setSearchStatus("idle");
+    setSearchMessage(null);
   }
 
   function startEditing(location: SavedLocation) {
@@ -228,24 +257,29 @@ export function LocationManager() {
   }
 
   function useDemoArea() {
+    searchRequestId.current += 1;
     setSavedState((current) => ({ ...current, selectedLocationId: null }));
-    setLatitude("");
-    setLongitude("");
+    setDraftPoint(null);
+    setDraftSource(null);
+    setLabel("");
     setFormError(null);
+    setSearchResults([]);
+    setSearchStatus("idle");
+    setSearchMessage(null);
   }
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(19rem,0.8fr)] lg:items-start">
+    <div className="space-y-7">
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(18rem,0.85fr)] lg:items-start">
         <div className="min-w-0 space-y-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="text-xl font-semibold tracking-tight" id="map-heading">เลือกตำแหน่งบนแผนที่</h2>
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                แตะแผนที่เพื่อปักหมุด หรือกรอกพิกัดด้านล่าง
+                ค้นหาชื่อสถานที่ หรือแตะแผนที่เพื่อปักหมุด
               </p>
               <p className="text-xs leading-5 text-muted-foreground">
-                ข้อมูลแผนที่: <a className="underline underline-offset-2" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors · ODbL</a>
+                <a className="underline underline-offset-2" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors · ODbL</a>
               </p>
             </div>
             <Button type="button" variant="outline" size="sm" onClick={useDemoArea}>
@@ -257,188 +291,241 @@ export function LocationManager() {
             <LocationMap
               center={mapCenter}
               locations={savedState.locations}
-              draft={coordinatesForDraft}
+              draft={draftPoint}
               selectedLocationId={savedState.selectedLocationId}
-              onPointSelected={setCoordinates}
+              onPointSelected={setMapDraft}
               onSavedLocationSelected={selectLocation}
               onTileStatusChange={setTileStatus}
             />
             <div className="tm-map-caption" aria-hidden="true">
-              {coordinatesForDraft
+              {draftPoint
                 ? "ตำแหน่งที่กำลังเพิ่ม"
                 : selectedLocation
                   ? `กำลังเลือก · ${selectedLocation.label}`
-                  : "เริ่มต้นที่พื้นที่สาธิต · กรุงเทพฯ"}
+                  : "พื้นที่สาธิต · กรุงเทพฯ"}
             </div>
           </div>
 
+          <p className="text-sm leading-6 text-muted-foreground">
+            แตะแผนที่หรือใช้ปุ่ม “ปักหมุดกลางแผนที่” เพื่อเลือกจุด แล้วตั้งชื่อก่อนบันทึก
+          </p>
           {tileStatus === "failed" ? (
             <p className="tm-map-notice" role="status">
-              โหลดแผนที่ไม่ครบ — เลือกสถานที่ที่บันทึกไว้ หรือกรอกพิกัดได้ตามปกติ
+              โหลดแผนที่ไม่ครบ — ยังค้นหาชื่อสถานที่ เลือกจากรายการที่บันทึก หรือใช้พื้นที่สาธิตได้
             </p>
           ) : tileStatus === "loading" ? (
             <p className="text-sm text-muted-foreground" role="status">กำลังโหลดแผนที่</p>
           ) : null}
           <p className="max-w-3xl text-xs leading-5 text-muted-foreground">
-            ผู้ให้บริการแผนที่จะเห็นบริเวณที่เปิดดู สถานที่ที่บันทึกจะไม่ถูกส่งไปยังเซิร์ฟเวอร์ของทำไรกิน
+            ผู้ให้บริการแผนที่จะเห็นบริเวณที่เปิดดู ส่วนสถานที่ที่บันทึกอยู่ในเบราว์เซอร์นี้
           </p>
         </div>
 
-        <aside className="space-y-5 border-t border-border pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-          <form className="space-y-4" onSubmit={saveLocation} aria-labelledby="add-location-heading">
+        <aside className="space-y-5 border-t border-border pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-1">
+          <section className="space-y-4" aria-labelledby="add-location-heading">
             <div className="space-y-1">
               <h2 className="text-lg font-semibold" id="add-location-heading">เพิ่มสถานที่</h2>
-              <p className="text-sm leading-6 text-muted-foreground">ตั้งชื่อแล้วบันทึกไว้ใช้ครั้งหน้า</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="location-name">ชื่อสถานที่</Label>
-              <Input
-                id="location-name"
-                value={label}
-                maxLength={80}
-                onChange={(event) => setLabel(event.target.value)}
-                placeholder="เช่น บ้าน ที่ทำงาน"
-                aria-describedby="location-name-note"
-                className="h-10 bg-card"
-              />
-              <p id="location-name-note" className="text-xs leading-5 text-muted-foreground">
-                พิกัดของจุดที่เลือกด้านล่าง
+              <p className="text-sm leading-6 text-muted-foreground">
+                ค้นหาด้วยชื่อแล้วเลือกผลลัพธ์ หรือเลือกจุดบนแผนที่
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="location-latitude">ละติจูด</Label>
+            <form className="space-y-2" onSubmit={searchForPlace} role="search">
+              <Label htmlFor="place-search">ค้นหาชื่อสถานที่</Label>
+              <div className="flex gap-2">
                 <Input
-                  id="location-latitude"
-                  type="number"
-                  inputMode="decimal"
-                  step="any"
-                  min="-90"
-                  max="90"
-                  value={latitude}
-                  onChange={(event) => updateCoordinates(event.target.value, longitude)}
-                  placeholder="13.756300"
-                  aria-invalid={Boolean(latitude && (Number(latitude) < -90 || Number(latitude) > 90))}
-                  className="h-10 bg-card tabular-nums"
+                  id="place-search"
+                  type="search"
+                  value={searchQuery}
+                  maxLength={120}
+                  disabled={searchStatus === "loading"}
+                  onChange={(event) => {
+                    searchRequestId.current += 1;
+                    setSearchQuery(event.target.value);
+                    setSearchResults([]);
+                    setSearchStatus("idle");
+                    setSearchMessage(null);
+                  }}
+                  placeholder="เช่น ตลาดวโรรส เชียงใหม่"
+                  aria-describedby="place-search-note"
+                  className="h-10 min-w-0 bg-card"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="location-longitude">ลองจิจูด</Label>
-                <Input
-                  id="location-longitude"
-                  type="number"
-                  inputMode="decimal"
-                  step="any"
-                  min="-180"
-                  max="180"
-                  value={longitude}
-                  onChange={(event) => updateCoordinates(latitude, event.target.value)}
-                  placeholder="100.501800"
-                  aria-invalid={Boolean(longitude && (Number(longitude) < -180 || Number(longitude) > 180))}
-                  className="h-10 bg-card tabular-nums"
-                />
-              </div>
-            </div>
-
-            {formError ? <p className="text-sm text-destructive" role="alert">{formError}</p> : null}
-            <Button type="submit" className="h-10 w-full" disabled={storageMode === "loading" || storageMode === "invalid"}>
-              บันทึกสถานที่
-            </Button>
-          </form>
-
-          <div className="border-t border-border pt-4">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold" id="saved-locations-heading">สถานที่ของฉัน</h2>
-              {savedState.locations.length > 0 && !confirmClear ? (
-                <Button type="button" size="sm" variant="ghost" onClick={() => setConfirmClear(true)}>
-                  ล้างทั้งหมด
+                <Button type="submit" className="h-10 shrink-0" disabled={searchStatus === "loading" || searchQuery.trim().length < 2}>
+                  <Search aria-hidden="true" />
+                  <span>{searchStatus === "loading" ? "กำลังค้นหา" : "ค้นหา"}</span>
                 </Button>
-              ) : null}
-            </div>
+              </div>
+            </form>
 
-            <p className="mt-1 text-sm leading-6 text-muted-foreground" aria-live="polite">
-              {getPersistenceMessage(storageMode)}
+            <p id="place-search-note" className="text-xs leading-5 text-muted-foreground">
+              เมื่อกดค้นหา ชื่อที่พิมพ์จะส่งไปยัง <a className="underline underline-offset-2" href="https://github.com/komoot/photon" target="_blank" rel="noopener noreferrer">Photon</a> เพื่อค้นหาข้อมูล OpenStreetMap
+              หากไม่ต้องการส่งชื่อหรือที่อยู่ ให้เลือกจุดบนแผนที่แทน
             </p>
 
-            {storageMode === "invalid" ? (
-              <Button type="button" variant="outline" size="sm" className="mt-3" onClick={clearLocations}>
-                ล้างรายการที่อ่านไม่ได้
-              </Button>
+            {searchStatus === "loading" ? (
+              <p className="text-sm text-muted-foreground" role="status">กำลังค้นหา “{searchedQuery}”</p>
+            ) : searchMessage ? (
+              <p className={`text-sm leading-6 ${searchStatus === "error" ? "text-destructive" : "text-muted-foreground"}`} role={searchStatus === "error" ? "alert" : "status"}>
+                {searchMessage}
+              </p>
             ) : null}
 
-            {confirmClear ? (
-              <div className="mt-3 rounded-lg border border-border bg-muted/50 p-3" role="group" aria-label="ยืนยันล้างสถานที่ทั้งหมด">
-                <p className="text-sm">ลบสถานที่ที่บันทึกไว้ทั้งหมดหรือไม่?</p>
-                <div className="mt-3 flex gap-2">
-                  <Button type="button" variant="destructive" size="sm" onClick={clearLocations}>ลบทั้งหมด</Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => setConfirmClear(false)}>ยกเลิก</Button>
-                </div>
+            {searchResults.length > 0 ? (
+              <div className="overflow-hidden border-y border-border" role="region" aria-live="polite" aria-labelledby="place-search-results-heading">
+                <h3 className="py-2 text-sm font-semibold" id="place-search-results-heading">ผลค้นหาสำหรับ “{searchedQuery}”</h3>
+                <ul aria-label="ผลการค้นหาสถานที่" className="divide-y divide-border">
+                  {searchResults.map((result) => (
+                    <li key={result.id}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="h-auto w-full justify-start gap-3 rounded-none px-2 py-3 text-left"
+                        aria-label={`เลือก ${result.name}${result.context ? `, ${result.context}` : ""}`}
+                        onClick={() => chooseSearchResult(result)}
+                      >
+                        <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-foreground" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-medium">{result.name}</span>
+                          {result.context ? <span className="mt-0.5 block truncate text-xs font-normal text-muted-foreground">{result.context}</span> : null}
+                        </span>
+                        <span className="shrink-0 text-xs font-medium text-primary">เลือก</span>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ) : null}
 
-            {savedState.locations.length === 0 ? (
-              <p className="mt-4 border-t border-border py-4 text-sm leading-6 text-muted-foreground">
-                ยังไม่มีสถานที่ แตะแผนที่หรือกรอกพิกัดเพื่อเพิ่มจุดแรก
+            <div className="border-t border-border pt-3">
+              <p className="font-medium">หรือปักหมุดบนแผนที่</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                แตะจุดที่ต้องการบนแผนที่ หรือเลือกตำแหน่งตรงกลางแผนที่จากปุ่มด้านล่างซ้าย
               </p>
+            </div>
+
+            {draftPoint ? (
+              <form className="space-y-3 border-t border-border pt-4" onSubmit={saveLocation} aria-labelledby="save-location-heading">
+                <div className="flex items-start gap-3">
+                  <MapPin aria-hidden="true" className="mt-1 size-5 shrink-0 text-primary" />
+                  <div className="space-y-1">
+                    <h3 className="font-semibold" id="save-location-heading">ตั้งชื่อสถานที่</h3>
+                    <p className="text-sm leading-6 text-muted-foreground">
+                      {draftSource === "search" ? "เลือกผลค้นหาแล้ว ตั้งชื่อที่จำง่ายก่อนบันทึก" : "เลือกจุดบนแผนที่แล้ว ตั้งชื่อที่จำง่ายก่อนบันทึก"}
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location-name">ชื่อในรายการ</Label>
+                  <Input
+                    id="location-name"
+                    value={label}
+                    maxLength={80}
+                    onChange={(event) => setLabel(event.target.value)}
+                    placeholder="เช่น บ้าน ที่ทำงาน ตลาดใกล้บ้าน"
+                    className="h-10 bg-card"
+                  />
+                </div>
+                {formError ? <p className="text-sm text-destructive" role="alert">{formError}</p> : null}
+                <Button type="submit" className="h-10 w-full" disabled={storageMode === "loading" || storageMode === "invalid"}>
+                  บันทึกสถานที่
+                </Button>
+              </form>
             ) : (
-              <ul className="mt-3 divide-y divide-border" aria-labelledby="saved-locations-heading">
-                {savedState.locations.map((location) => {
-                  const selected = location.id === savedState.selectedLocationId;
-                  return (
-                    <li key={location.id} className={`py-3 ${selected ? "tm-saved-place--selected" : ""}`}>
-                      {editingId === location.id ? (
-                        <form onSubmit={renameLocation} className="space-y-2">
-                          <Label htmlFor={`rename-${location.id}`}>ชื่อใหม่สำหรับ {location.label}</Label>
-                          <Input
-                            id={`rename-${location.id}`}
-                            value={editingLabel}
-                            maxLength={80}
-                            onChange={(event) => setEditingLabel(event.target.value)}
-                            className="h-9 bg-card"
-                          />
-                          {editError ? <p className="text-sm text-destructive" role="alert">{editError}</p> : null}
-                          <div className="flex gap-2">
-                            <Button type="submit" size="sm">บันทึกชื่อ</Button>
-                            <Button type="button" size="sm" variant="outline" onClick={() => setEditingId(null)}>ยกเลิก</Button>
-                          </div>
-                        </form>
-                      ) : (
-                        <div className="space-y-2">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            className="h-auto w-full justify-start px-2 py-2 text-left"
-                            aria-pressed={selected}
-                            onClick={() => selectLocation(location.id)}
-                          >
-                            <MapPin aria-hidden="true" className={selected ? "text-primary" : "text-muted-foreground"} />
-                            <span className="min-w-0 flex-1">
-                              <span className="block truncate font-medium">{location.label}</span>
-                              <span className="mt-0.5 block text-xs font-normal tabular-nums text-muted-foreground">
-                                {location.lat.toFixed(5)}, {location.lon.toFixed(5)}
-                              </span>
-                            </span>
-                            {selected ? <span className="text-xs font-medium text-primary">เลือกอยู่</span> : null}
-                          </Button>
-                          <div className="flex gap-1 pl-2">
-                            <Button type="button" size="sm" variant="ghost" onClick={() => startEditing(location)} aria-label={`เปลี่ยนชื่อ ${location.label}`}>
-                              <Pencil aria-hidden="true" /> เปลี่ยนชื่อ
-                            </Button>
-                            <Button type="button" size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => deleteLocation(location.id)} aria-label={`ลบ ${location.label}`}>
-                              <Trash2 aria-hidden="true" /> ลบ
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+              <p className="border-t border-border pt-3 text-sm leading-6 text-muted-foreground" role="status">
+                เลือกผลค้นหาหรือแตะแผนที่ก่อน แล้วจึงตั้งชื่อและบันทึก
+              </p>
             )}
-          </div>
+          </section>
         </aside>
+      </section>
+
+      <section className="space-y-3 border-t border-border pt-5" aria-labelledby="saved-locations-heading">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold" id="saved-locations-heading">สถานที่ของฉัน</h2>
+            <p className="text-sm text-muted-foreground">{savedState.locations.length} สถานที่ที่บันทึกไว้</p>
+          </div>
+          {savedState.locations.length > 0 && !confirmClear ? (
+            <Button type="button" size="sm" variant="ghost" onClick={() => setConfirmClear(true)}>
+              ล้างทั้งหมด
+            </Button>
+          ) : null}
+        </div>
+
+        <p className="text-sm leading-6 text-muted-foreground" aria-live="polite">
+          {getPersistenceMessage(storageMode)}
+        </p>
+
+        {storageMode === "invalid" ? (
+          <Button type="button" variant="outline" size="sm" onClick={clearLocations}>
+            ล้างรายการที่อ่านไม่ได้
+          </Button>
+        ) : null}
+
+        {confirmClear ? (
+          <div className="rounded-lg border border-border bg-muted/50 p-3" role="group" aria-label="ยืนยันล้างสถานที่ทั้งหมด">
+            <p className="text-sm">ลบสถานที่ที่บันทึกไว้ทั้งหมดหรือไม่?</p>
+            <div className="mt-3 flex gap-2">
+              <Button type="button" variant="destructive" size="sm" onClick={clearLocations}>ลบทั้งหมด</Button>
+              <Button type="button" size="sm" variant="outline" onClick={() => setConfirmClear(false)}>ยกเลิก</Button>
+            </div>
+          </div>
+        ) : null}
+
+        {savedState.locations.length === 0 ? (
+          <p className="border-t border-border py-4 text-sm leading-6 text-muted-foreground">
+            ยังไม่มีสถานที่ ค้นหาชื่อหรือแตะแผนที่เพื่อเพิ่มจุดแรก
+          </p>
+        ) : (
+          <ul className="grid gap-x-8 sm:grid-cols-2" aria-labelledby="saved-locations-heading">
+            {savedState.locations.map((location) => {
+              const selected = location.id === savedState.selectedLocationId;
+              return (
+                <li key={location.id} className={`border-t border-border py-3 ${selected ? "tm-saved-place--selected" : ""}`}>
+                  {editingId === location.id ? (
+                    <form onSubmit={renameLocation} className="space-y-2">
+                      <Label htmlFor={`rename-${location.id}`}>ชื่อใหม่สำหรับ {location.label}</Label>
+                      <Input
+                        id={`rename-${location.id}`}
+                        value={editingLabel}
+                        maxLength={80}
+                        onChange={(event) => setEditingLabel(event.target.value)}
+                        className="h-9 bg-card"
+                      />
+                      {editError ? <p className="text-sm text-destructive" role="alert">{editError}</p> : null}
+                      <div className="flex gap-2">
+                        <Button type="submit" size="sm">บันทึกชื่อ</Button>
+                        <Button type="button" size="sm" variant="outline" onClick={() => setEditingId(null)}>ยกเลิก</Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="h-auto min-w-0 flex-1 justify-start gap-2 px-2 py-2 text-left"
+                        aria-pressed={selected}
+                        onClick={() => selectLocation(location.id)}
+                      >
+                        <MapPin aria-hidden="true" className={selected ? "shrink-0 text-primary" : "shrink-0 text-muted-foreground"} />
+                        <span className="min-w-0 truncate font-medium">{location.label}</span>
+                        {selected ? <span className="shrink-0 text-xs font-medium text-primary">เลือกอยู่</span> : null}
+                      </Button>
+                      <div className="flex shrink-0 gap-1">
+                        <Button type="button" size="sm" variant="ghost" onClick={() => startEditing(location)} aria-label={`เปลี่ยนชื่อ ${location.label}`}>
+                          <Pencil aria-hidden="true" /> เปลี่ยนชื่อ
+                        </Button>
+                        <Button type="button" size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => deleteLocation(location.id)} aria-label={`ลบ ${location.label}`}>
+                          <Trash2 aria-hidden="true" /> ลบ
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
 
       <p className="border-t border-border pt-4 text-xs leading-5 text-muted-foreground">

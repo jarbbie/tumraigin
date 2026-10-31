@@ -6,7 +6,7 @@
 
 | Route | Purpose |
 | --- | --- |
-| `/` | First-step interactive map, choose/name/save locations, and saved-location list. |
+| `/` | First-step map, explicit place-name search, map pinning, and multiple saved locations. |
 | `/preferences` | Optional budget, protein, exclusions, and pantry preferences, with a skip action. |
 | `/meals` | Meal choices and plan options; results are unfiltered if preferences were skipped. |
 | `/recipes/[slug]` | Recipe servings, ingredient weights, nutrition estimates and provenance. |
@@ -17,13 +17,13 @@
 ## Visible behavior
 
 - Open `/` with a map centered on a neutral, labeled demo area. Never request GPS on launch.
-- Let the user choose a map point, enter a name, and explicitly save it. Show saved locations on the same screen with select, rename, delete-one, and clear-all actions.
+- Keep the map as the primary visual and group two clear add paths beside it on desktop or below it on phones: search by place name and choose a result, or tap the map to pin a point. Reveal the name-and-save form after a point is selected. Show saved locations in their own list with selection, rename, delete-one, and clear-all actions. Coordinates remain internal and are never shown or entered.
 - The home screen carries the promise **“ตัวช่วยการวางแผนทำอาหารกินเองของคุณ”** and an explicit continue action after the map and saved-place controls.
-- Store only user-submitted names and manually selected coordinates in this browser. Explain that the tile provider receives requests for the visible map area; no saved-location record is sent to the app server.
+- Store only explicitly saved search-result/map-pin names and coordinates in this browser. Send a place-name query to Photon only after form submission; explain that the query goes to Photon, the tile provider receives requests for the visible map area, and no saved-location record is sent to the app server. Offer map pinning when a user does not want to send a sensitive name or address.
 - Current implementation uses Leaflet 1.9.4 directly in a client-only module and the OpenStreetMap standard tile endpoint. It does not prefetch or download offline tiles and shows Leaflet's visible attribution link to the OpenStreetMap copyright/ODbL page.
-- Current implementation stores versioned `SavedLocationState` at `tumraigin.saved-locations.v1`. If storage is unavailable or malformed, the screen reports the state and keeps coordinate entry available; malformed prior data can be explicitly cleared.
-- If tiles fail, keep saved locations and a demo-area path visible. The map must not block preferences, meal choices, or the shopping list.
-- Give keyboard users a labeled coordinate-entry option alongside map clicking; validate latitude and longitude before saving.
+- Current implementation stores versioned `SavedLocationState` at `tumraigin.saved-locations.v1`. If storage is unavailable or malformed, the screen reports the state and keeps search, map pinning, and the demo-area path available; malformed prior data can be explicitly cleared.
+- If tiles or Photon search fail, keep saved locations and a demo-area path visible. The map must not block preferences, meal choices, or the shopping list.
+- Give keyboard users labeled place search and a keyboard-accessible map-center pin action. Validate external result coordinates before saving; never expose coordinate fields.
 - Preferences are skippable. If skipped, show all available meal choices without silently applying default budget, protein, exclusions, or pantry quantities.
 - Meal choices are calculated from recipe and offer fixtures. Show why each result fits or why constrained evidence is unknown. Hide known ineligible recipes while keeping a currently selected recipe visible. When preferences are skipped, show all available choices without a hidden filter.
 - Recipe details show per-serving nutrient estimates, null/partial coverage, the raw edible ingredient weights used for calculations, preparation instructions, and grouped source references before a plan is selected.
@@ -41,13 +41,13 @@
 - The current store fixture is explicitly a fictitious demo point, not a physical branch. Its offer coverage describes simulated fixture prices only; branch stock remains unknown. A saved pin is only a user-selected origin.
 - Opening a Google Maps directions link shares the selected origin and demo destination coordinates with Google Maps. The app does not call a directions API or report driving distance/time.
 - Keep a shared “ข้อมูลและแหล่งอ้างอิง” link on every route, including cost and store views. `/about` is outside the four-step journey and explains fixture counts, source types and reuse terms, nutrition calculation/unknown handling, simulated prices and store point, local location storage, external map sharing, and limitations.
-- The full demo notice must say prices and assumed products are simulated, the current point is fictitious and not a branch, stock is unknown, and nutrition values are approximate rather than medical/allergen guidance. ASEANFOODS educational/commercial reuse caveats remain visible.
+- The full demo notice must say prices and assumed products are simulated, the current point is fictitious and not a branch, stock is unknown, and nutrition values are approximate rather than medical/allergen guidance. `/about` must link USDA FoodData Central SR Legacy, disclose the FDC ID and exact record description for each ingredient, identify the nine proxy ingredients, and summarize the CC0 1.0 attribution.
 - No geolocation API is used in the current flow, so no location-permission prompt or permission-denied state is needed. The saved-location and demo-area fallback remains the recovery path.
 
 ## Visual and accessibility rules
 
 - Thai-first copy, mobile-first layout, semantic links/buttons/forms, visible keyboard focus, clear labels and readable contrast.
-- Map attribution/license is visible and remains on screen; map controls work by touch and keyboard, and non-map location entry stays available.
+- Map and Photon/OpenStreetMap attribution/license are visible; map controls work by touch and keyboard, and place-name search remains available without map tiles.
 - Keep the map as a purposeful full-width first step rather than a generic dashboard card. Use map markers for saved choices and clear focus/selection state.
 - No horizontal overflow on small phones. Errors and status must be understandable without color alone. Respect reduced-motion preferences.
 - Use Tailwind theme tokens and shadcn/ui primitives after `DES-UI-01` is complete. Keep product calculations out of generic UI components.

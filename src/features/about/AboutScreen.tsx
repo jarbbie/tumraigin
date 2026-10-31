@@ -13,19 +13,24 @@ const fixtureCounts = {
 
 const sourceLinks = [
   {
-    title: "ASEANFOODS · The Concise ASEAN Food Composition Tables (2014)",
-    href: "https://inmu.mahidol.ac.th/aseanfoods/doc/OnlineASEAN_FCD_V1_2014.pdf",
-    detail: "แหล่งค่าประกอบอาหารส่วนใหญ่ในชุดข้อมูลนี้; เป็นค่าประเมินจากข้อมูลอาหารทั่วไป ไม่ใช่การวัดอาหารจานที่คุณทำ",
+    title: "USDA FoodData Central · SR Legacy (April 2018)",
+    href: "https://fdc.nal.usda.gov/download-datasets/",
+    detail: "ชุดข้อมูลที่ดาวน์โหลดมาใช้ในต้นแบบ มี FDC ID และคำอธิบายระเบียนกำกับไว้กับวัตถุดิบแต่ละรายการ; ค่าเป็นองค์ประกอบอาหารทั่วไป ไม่ใช่การวัดวัตถุดิบของผู้ใช้",
   },
   {
-    title: "USDA Agricultural Research Service · SR28 fats and oils report",
-    href: "https://www.ars.usda.gov/ARSUserFiles/80400535/Data/SR/SR28/reports/sr28fg04.pdf",
-    detail: "ใช้เป็น proxy สำหรับน้ำมันปรุงอาหารทั่วไปเท่านั้น; ไม่ได้ยืนยัน USDA FoodData Central ID และไม่ใช่ผลิตภัณฑ์น้ำมันไทยที่ระบุยี่ห้อ",
+    title: "USDA FoodData Central · API guide and CC0 license",
+    href: "https://fdc.nal.usda.gov/api-guide/",
+    detail: "USDA ระบุว่าข้อมูล FoodData Central เป็น public domain ภายใต้ CC0 1.0 และขอให้อ้างอิง FoodData Central เป็นแหล่งข้อมูล; ต้นแบบนี้ใช้ไฟล์ดาวน์โหลดและไม่เรียก API",
   },
   {
     title: "OpenStreetMap · copyright and ODbL",
     href: "https://www.openstreetmap.org/copyright",
     detail: "ข้อมูลแผนที่ฐานมี attribution บนแผนที่; ใบอนุญาตข้อมูล ODbL แยกจากนโยบายการให้บริการแผนที่",
+  },
+  {
+    title: "Photon · place-name search",
+    href: "https://github.com/komoot/photon",
+    detail: "ค้นหาจากข้อมูล OpenStreetMap เมื่อผู้ใช้กดส่งคำค้น; public demo ใช้ได้ในปริมาณเหมาะสมและไม่มีการรับประกัน uptime",
   },
   {
     title: "OpenStreetMap · tile usage policy",
@@ -92,8 +97,8 @@ export function AboutScreen() {
             <h2 id="nutrition-data-heading" className="text-xl font-semibold">ที่มาและความไม่แน่นอนของโภชนาการ</h2>
           </div>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>ค่าของวัตถุดิบส่วนใหญ่มาจากตาราง ASEANFOODS ปี 2014 และระบุรหัสอาหารต้นทางไว้กับข้อมูล ค่าดังกล่าวเป็นข้อมูลอาหารทั่วไปและใช้เป็นค่าประเมิน ไม่ใช่ค่าที่วัดจากวัตถุดิบของผู้ใช้</li>
-            <li>ค่าน้ำมันปรุงอาหารทั่วไปใช้รายงาน USDA SR28 เป็นตัวแทน ไม่ได้ยืนยัน FDC ID และไม่ได้แทนน้ำมันยี่ห้อหรือสูตรใดโดยเฉพาะ</li>
+            <li>ค่าต่อ 100 g ของวัตถุดิบทั้ง 23 รายการถอดจาก USDA FoodData Central SR Legacy (ชุดเผยแพร่เดือนเมษายน 2018); แต่ละรายการระบุ FDC ID และคำอธิบายระเบียนต้นทางไว้ สำหรับวัตถุดิบที่ไม่มีระเบียนตรง ใช้ระเบียนใกล้เคียงเป็น proxy 9 รายการโดยไม่ปรับค่าต้นทาง และระบุข้อจำกัดไว้กับแหล่งข้อมูล</li>
+            <li>FoodData Central เป็นฐานข้อมูลองค์ประกอบอาหารทั่วไป ไม่ใช่ค่าที่วัดจากวัตถุดิบเฉพาะในไทยหรืออาหารจานที่คุณทำ ค่าที่ใช้เป็น proxy อาจต่างจากวัตถุดิบจริง</li>
             <li>ระบบคูณค่าต่อ 100 g ด้วยกรัมส่วนที่กินได้ของวัตถุดิบแต่ละรายการ รวมเป็นทั้งสูตร แล้วหารด้วยจำนวนที่ระบุในสูตร น้ำหนักเป็นน้ำหนักดิบก่อนปรุงและไม่ได้จำลองการสูญเสียน้ำหรือสารอาหารจากการปรุง</li>
             <li>เมื่อค่าแหล่งข้อมูลไม่มีหรือไม่แน่ชัด ค่าจะแสดงเป็น “ไม่ทราบ” หรือ “ข้อมูลไม่ครบ” ไม่แทนด้วยศูนย์โดยอัตโนมัติ สัดส่วนต่อหนึ่งที่จึงเป็นค่าประมาณ</li>
           </ul>
@@ -125,7 +130,7 @@ export function AboutScreen() {
             ))}
           </ul>
           <p className="mt-4 text-sm leading-6 text-muted-foreground">
-            ASEANFOODS ระบุเงื่อนไขการใช้แบบไม่แสวงหากำไรพร้อมการอ้างอิง และการนำไปขายต่อหรือใช้ในผลิตภัณฑ์/บริการเพื่อการศึกษาอาจมีค่าใช้จ่าย ต้นแบบนี้จึงไม่ยืนยันสิทธิ์สำหรับการใช้งานเชิงพาณิชย์หรือเผยแพร่ต่อในวงกว้าง ควรขออนุญาตหรือเปลี่ยนชุดข้อมูลก่อนใช้ในกรณีดังกล่าว ส่วนข้อมูล USDA ระบุสัญญาอนุญาต CC0
+            USDA ระบุว่าข้อมูล FoodData Central เป็น public domain ภายใต้ CC0 1.0 และขอให้อ้างอิง FoodData Central เป็นแหล่งที่มา ต้นแบบนี้เก็บค่าที่ตรวจทานจากไฟล์ SR Legacy ไว้ในชุดข้อมูลภายใน ไม่เรียก USDA API และไม่ใช้ API key
           </p>
         </section>
 
@@ -136,6 +141,7 @@ export function AboutScreen() {
           </div>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
             <li>แอปไม่ขอพิกัด GPS ไม่ต้องสมัครสมาชิก และไม่ส่งชื่อหรือหมุดที่บันทึกไว้ไปยังเซิร์ฟเวอร์ของทำไรกิน สถานที่ที่บันทึกเก็บใน localStorage ของเบราว์เซอร์นี้เท่านั้น</li>
+            <li>คำค้นชื่อสถานที่จะส่งไปยัง Photon/Komoot เมื่อกดปุ่มค้นหาเท่านั้น หากไม่ต้องการส่งชื่อหรือที่อยู่ส่วนตัว ให้แตะแผนที่วางหมุดเอง ระบบไม่ค้นหาระหว่างพิมพ์</li>
             <li>ผู้ให้บริการแผนที่ได้รับคำขอ tile สำหรับบริเวณที่คุณเปิดดู รายการบันทึกยังใช้ได้หาก tile โหลดไม่สำเร็จ</li>
             <li>หากกดลิงก์นำทาง พิกัดต้นทางและปลายทางจะถูกส่งให้ Google Maps เพื่อเปิดเส้นทาง การกดลิงก์เป็นการเลือกใช้บริการภายนอก</li>
           </ul>

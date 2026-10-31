@@ -29,17 +29,55 @@ describe("curated prototype fixtures", () => {
     }
   });
 
-  it("accepts null nutrient coverage and never encodes 0p as a measured zero", () => {
+  it("preserves unavailable nutrient values as null and retains reported values", () => {
     const chicken = fixtureDataset.ingredients.find(
       (ingredient) => ingredient.id === "ingredient:chicken-breast",
     );
     const oysterMushroom = fixtureDataset.ingredients.find(
       (ingredient) => ingredient.id === "ingredient:oyster-mushroom",
     );
+    const lemongrass = fixtureDataset.ingredients.find(
+      (ingredient) => ingredient.id === "ingredient:lemongrass",
+    );
 
     expect(chicken?.nutrientsPer100g.carbG).toBeNull();
     expect(chicken?.nutrientsPer100g.fiberG).toBeNull();
-    expect(oysterMushroom?.nutrientsPer100g.fiberG).toBeNull();
+    expect(oysterMushroom?.nutrientsPer100g.fiberG).toBe(2.3);
+    expect(lemongrass?.nutrientsPer100g.fiberG).toBeNull();
+  });
+
+  it("traces every ingredient to a reviewed USDA FDC SR Legacy record", () => {
+    const expectedFdcIds = new Set([
+      169756, 171474, 168312, 171287, 169230, 172232, 170106, 170379,
+      169979, 169975, 168580, 169961, 169231, 168573, 174529, 174277,
+      171605, 170499, 172476, 170393, 168409, 172370,
+    ]);
+    const direct = fixtureDataset.ingredients.filter(
+      (ingredient) => ingredient.nutritionSource.kind === "usda",
+    );
+    const proxies = fixtureDataset.ingredients.filter(
+      (ingredient) => ingredient.nutritionSource.kind === "curated_estimate",
+    );
+
+    expect(direct).toHaveLength(14);
+    expect(proxies).toHaveLength(9);
+
+    for (const ingredient of fixtureDataset.ingredients) {
+      const source = ingredient.nutritionSource;
+      const reference = source.kind === "usda"
+        ? source
+        : source.kind === "curated_estimate" ? source.reference : undefined;
+
+      expect(reference).toBeDefined();
+      if (!reference) continue;
+      expect(expectedFdcIds.has(reference.fdcId)).toBe(true);
+      expect(reference.recordDescription.trim().length).toBeGreaterThan(0);
+      expect(reference.sourceUrl).toBe("https://fdc.nal.usda.gov/download-datasets/");
+      if (source.kind === "curated_estimate") {
+        expect(source.explanation).toContain("proxy");
+        expect(source.explanation).toContain("may differ");
+      }
+    }
   });
 
   it("labels every offer simulated with unknown stock and keeps the demo point fictitious", () => {

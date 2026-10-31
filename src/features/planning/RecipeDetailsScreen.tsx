@@ -32,8 +32,8 @@ type SourceDisplay = { key: string; label: string; itemLabel: string; url?: stri
 function sourceDisplay(provenance: Provenance): SourceDisplay {
   switch (provenance.kind) {
     case "usda": return {
-      key: provenance.sourceUrl,
-      label: "USDA FoodData Central",
+      key: `usda:${provenance.fdcId}`,
+      label: `USDA FDC SR Legacy · ${provenance.recordDescription}`,
       itemLabel: `FDC #${provenance.fdcId}`,
       url: provenance.sourceUrl,
     };
@@ -44,16 +44,14 @@ function sourceDisplay(provenance: Provenance): SourceDisplay {
       url: provenance.sourceUrl,
     };
     case "curated_estimate": {
-      const aseanId = provenance.explanation.match(/ASEAN Food ID ([^,]+)/)?.[1];
-      const sourceUrl = provenance.explanation.match(/Source:\s*(https:\/\/\S+)/)?.[1]?.replace(/[),.;]+$/, "");
-      const usdaProxy = provenance.explanation.includes("USDA SR28");
+      const reference = provenance.reference;
       return {
-        key: sourceUrl ?? provenance.explanation,
-        label: aseanId
-          ? "The Concise ASEAN Food Composition Tables (2014)"
-          : usdaProxy ? "USDA SR28 · ค่าประเมินน้ำมันทั่วไป" : "ค่าประเมินที่เรียบเรียง",
-        itemLabel: aseanId ? `ASEAN Food ID ${aseanId}` : usdaProxy ? "proxy · ไม่ได้ยืนยัน FDC ID" : "ค่าประเมิน",
-        ...(sourceUrl ? { url: sourceUrl } : {}),
+        key: reference ? `usda:${reference.fdcId}` : provenance.explanation,
+        label: reference
+          ? `USDA FDC SR Legacy · proxy · ${reference.recordDescription}`
+          : "ค่าประเมินที่เรียบเรียง",
+        itemLabel: reference ? `FDC #${reference.fdcId}` : "ค่าประเมิน",
+        ...(reference ? { url: reference.sourceUrl } : {}),
       };
     }
     case "simulated": return {
