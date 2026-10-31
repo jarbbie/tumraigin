@@ -21,6 +21,7 @@ Examples: `feature/des-01-nextjs-bootstrap`, `feature/eng-01-nutrition-engine`.
 5. Open a pull request from `feature/*` into `staging`. Include the backlog ID, behavior changed, verification commands and observed results, and remaining limitations.
 6. After review and successful verification, merge the feature pull request into `staging`. Re-run integration checks there.
 7. When the release candidate on `staging` passes the release checklist, open a separate pull request from `staging` into `main`. Merge and deploy only with the required owner approval.
+8. After a release PR is merged, sync the new `main` history back into `staging` through a dedicated feature branch and PR before the next release promotion. Create the sync branch from the latest `staging`, merge the latest `main` into it, resolve any documentation conflicts using the most recent verified state, then merge its PR into `staging`. Never update the shared `staging` branch directly.
 
 ## Guardrails
 

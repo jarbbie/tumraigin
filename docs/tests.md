@@ -155,8 +155,17 @@ pnpm build
 - GitHub Pages run #41146472684 passed lint, typecheck, all 80 unit tests, and static generation, then failed at `actions/configure-pages@v5` with `Resource not accessible by integration`. Artifact upload and deploy were skipped. The job log showed the build token had only `contents:read` and `metadata:read`. PR #47 added `pages:read` to the build job. The follow-up Pages run (#41147279285) returned `404 Not Found` at `Configure Pages`; Pages still is not configured, and artifact upload/deploy were skipped.
 - The public Sites service reports version 1 live with public access at [https://tumraigin.peeranat-0709.chatgpt.site](https://tumraigin.peeranat-0709.chatgpt.site). An unauthenticated HTTPS HEAD request returned HTTP 200. The deployed static artifact was built with the root path, is 2.4 MiB, contains the generated assets and Site manifest only, has no source maps, and had no matches for the high-confidence credential-pattern scan. Its Site artifact commit is `bbcbda5917492ff62c758ce06a869cf8a43f722d`.
 - The Site artifact was generated from the reviewed staging app code, but its artifact commit is not the canonical GitHub commit and does not make the canonical source public. GitHub main still contains personal author metadata and the repo's private issues/PR history, so it remains private.
-- The interactive golden path has not been browser-tested on the public Site because the CUA browser host is unavailable. The existing local production-preview E2E passes, but it uses the GitHub Pages `/tumraigin` base path; do not treat it as proof of hosted Site interaction.
+- At the time of the initial deployment note, the public Site had not been browser-tested. The hosted verification below now covers the root-path public deployment.
 - The ASEANFOODS table retains its copyright and reuse terms. The project has source attribution, but its repository does not grant a separate open-data license; commercial use and educational products/services require reviewing the source terms and may incur fees.
+
+## REL-01 hosted Site browser verification (2026-10-31)
+
+- Confirmed the public root URL returned HTTP 200 and the Tumraigin page title and current product promise in its HTML.
+- Added `tests/e2e/hosted-planning.spec.ts`, `playwright.hosted.config.ts`, `pnpm test:e2e:hosted`, and a GitHub Actions workflow for release PRs to `main` and pushes to `main`.
+- Playwright Chromium passed the full hosted journey against `https://tumraigin.peeranat-0709.chatgpt.site`: click the map, name/save a location, reload and confirm it persists locally, skip preferences, see all eight meal choices, inspect recipe details and provenance, select the plan, and verify that 100 g owned rice leaves 20 g to buy in one simulated 1,000 g pack with 980 g remaining and ฿160.00 checkout.
+- OpenStreetMap tile requests are deliberately aborted by the browser test. The test verifies the visible tile-failure fallback and that Leaflet still accepts a map click; it does not test the external tile service. No uncaught page errors were observed.
+- `pnpm lint`, `pnpm typecheck`, `pnpm test` (80 tests / 8 files), and `pnpm test:e2e` (2 browser tests) passed. The hosted Playwright command also passed against the public Site. Vitest retains its existing Vite config-loader warning.
+- This proves the deployed user flow is interactive at the tested URL. It does not establish that the generated Site artifact corresponds to an exact public GitHub source commit; REL-01 remains partial for that source-publication and provenance requirement.
 
 ## REL-03 automated production-browser smoke test (2026-10-31)
 
