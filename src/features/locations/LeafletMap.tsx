@@ -68,6 +68,23 @@ export default function LeafletMap({
     mapRef.current = map;
     L.control.zoom({ position: "topright" }).addTo(map);
 
+    const pinCenterControl = new L.Control({ position: "bottomleft" });
+    pinCenterControl.onAdd = () => {
+      const button = L.DomUtil.create("button", "tm-map-pin-center");
+      button.type = "button";
+      button.textContent = "ปักหมุดกลางแผนที่";
+      button.setAttribute("aria-label", "เลือกตำแหน่งตรงกลางแผนที่");
+      button.title = "เลือกตำแหน่งตรงกลางแผนที่";
+      L.DomEvent.disableClickPropagation(button);
+      L.DomEvent.disableScrollPropagation(button);
+      L.DomEvent.on(button, "click", () => {
+        const mapCenter = map.getCenter();
+        onPointSelectedRef.current({ lat: mapCenter.lat, lon: mapCenter.lng });
+      });
+      return button;
+    };
+    pinCenterControl.addTo(map);
+
     const tiles = L.tileLayer(OSM_TILE_URL, {
       attribution: OSM_ATTRIBUTION,
       maxZoom: 19,

@@ -42,7 +42,7 @@ People who cook at home juggle where they shop, what they like to eat, what they
 
 **Product journey:** open to a map -> choose a point and save one or more named locations -> optionally add or skip preferences -> compare meal choices and plans, then inspect recipe details -> generate a consolidated shopping list from the selected plan and pantry.
 
-**YWC v0.1 journey:** view a map centered on a neutral Bangkok demo area -> add, name, save, select, rename, or remove manually chosen map locations -> optionally set budget, protein, exclusions, and pantry (or skip) -> compare available meal choices and inspect plan and recipe details -> calculate ingredient, nutrition, and pack estimates -> produce a shopping list with missing prices and simulated offers clearly marked.
+**YWC v0.1 journey:** view a map centered on a neutral Bangkok demo area -> find places by submitted name or map pin, then name, save, select, rename, or remove multiple locations -> optionally set budget, protein, exclusions, and pantry (or skip) -> compare available meal choices and inspect plan and recipe details -> calculate ingredient, nutrition, and pack estimates -> produce a shopping list with missing prices and simulated offers clearly marked.
 
 ### 1.4 Jobs to be done
 - "Help me plan the meals I want to cook at home."
@@ -57,7 +57,7 @@ People who cook at home juggle where they shop, what they like to eat, what they
 
 ### 2.1 Release success (must be observable)
 - Public HTTPS URL reachable without an account; source repo available on GitHub.
-- First visit opens on an interactive map centered on a neutral demo area. The user can add, name, select, edit, and remove manually chosen locations and reuse saved locations in the same browser.
+- First visit opens on an interactive map centered on a neutral demo area. The user can submit a place name and choose a search result or pin the map, then name, save, select, edit, and remove multiple locations in the same browser. Coordinates are never typed by the user.
 - Location permission is not requested on launch. A first-time visitor can continue with the demo area if they skip adding a location or map tiles fail.
 - At least **8 reviewed Thai-inspired recipes** and **20 normalized ingredients**; real calculations using quantities rather than fixed recipe nutrition/cost totals.
 - User can optionally adjust **budget**, **minimum protein**, **exclusions**, and **pantry**, or skip preferences and see unfiltered choices.
@@ -74,7 +74,7 @@ People who cook at home juggle where they shop, what they like to eat, what they
 | Pantry | Quantities of common owned ingredients | Pantry editing/persistence | Inventory expiration tracking |
 | Nutrition | Calories, protein, carbs, fat | A few traceable micro-nutrients with unknown handling | Full nutrient coverage / cooking yield models |
 | Pricing | Curated **demo offers**, package purchasing arithmetic | Compare 1-store vs up to 2-store plans | Real authorized retail integrations |
-| Location | Interactive map; manually chosen named locations saved locally; demo-area fallback | Explicit geolocation, sourced store lookup | Real commute-route optimization |
+| Location | Interactive map; submitted place-name search or map pin; multiple named locations saved locally; demo-area fallback | Explicit geolocation, sourced store lookup | Real commute-route optimization |
 | Data | Local static source-attributed fixtures | Optional cached OSM discovery | Scheduled ingestion / versioned catalog |
 | Account | None; saved locations stay in this browser | Optional local preference memory | Auth/profile sync |
 
@@ -89,7 +89,7 @@ People who cook at home juggle where they shop, what they like to eat, what they
 
 | ID | Requirement | Acceptance criterion |
 | --- | --- | --- |
-| FR-01 | Choose and save locations | The first screen shows an interactive map; the user can add, name, select, edit, and remove map-picked locations saved in this browser. No GPS prompt is required. |
+| FR-01 | Find and save locations | The first screen shows an interactive map. The user can submit a place name and choose a search result, or pin a point on the map, then name and save it in this browser. Never ask the user to type latitude or longitude. No GPS prompt is required. |
 | FR-02 | Skippable preferences | Budget, protein, exclusions, and pantry can be entered or skipped; skipping imposes no hidden filter. |
 | FR-03 | Explore meal choices and details | Show available meal choices and plans; recipe details include standardized ingredient amounts, servings, nutrient estimates, and source coverage. |
 | FR-04 | Pantry awareness | Entering 100 g of owned rice reduces required purchased rice by 100 g, never below zero. |
@@ -101,23 +101,23 @@ People who cook at home juggle where they shop, what they like to eat, what they
 | FR-11 | Deployable | Production build, deployment, and README/setup instructions verified. |
 | FR-12 | Map and location fallback | Map tiles are client-rendered and attributed; saved-location and demo-area choices remain usable if map tiles fail. |
 | FR-13 | Candidate stores | Candidate cards use the selected location or demo area; saved pins remain separate from store records and stock claims. Directions URLs use validated coordinates; opening one shares those coordinates with the external map provider. |
-| NFR-01 | Reliability | Meal calculations and shopping lists use local data; tile failure does not block saved locations, demo-area fallback, or later planning. |
-| NFR-02 | Privacy | No account, GPS-on-launch, telemetry, or server sync for saved locations. Explicitly saved map pins and names stay in browser storage and can be edited or deleted. Opening an external directions link sends its origin and destination coordinates to that map provider. |
+| NFR-01 | Reliability | Meal calculations and shopping lists use local data; tile or place-search failure does not block saved locations, map pinning, demo-area fallback, or later planning. |
+| NFR-02 | Privacy | No account, GPS-on-launch, telemetry, or app-server sync for saved locations. Explicitly saved search results or map pins and their names stay in browser storage and can be edited or deleted. A submitted place-name query is sent to Photon; users can pin a sensitive place without sending its name. Opening an external directions link sends its origin and destination coordinates to that map provider. |
 | NFR-03 | Correctness | Money in integer satang; amounts in standardized grams/mL; automated edge-case tests. |
 | NFR-04 | Accessibility | Semantic buttons/forms, keyboard flow, labels, contrast, focus feedback, reduced-motion support. |
 | NFR-05 | Security | Validate inputs, avoid secrets in frontend, render user text safely, avoid untrusted URL injection. |
 
 ### 3.1 Acceptance walkthrough (golden path)
-1. Open the app and see an interactive map. Choose a point, add a name, and save it; return later and select, rename, or remove a saved location.
+1. Open the app and see an interactive map. Find a place by submitting its name or pinning the map; name and save it, then return later to select, rename, or remove saved locations.
 2. Continue to preferences. Enter budget, protein, exclusions, or pantry quantities, or skip the step without hidden constraints.
 3. Compare the available meal choices and plans; open details to review portions, ingredients, nutrition estimates, and provenance before choosing.
 4. Generate the shopping list. Verify quantities, pantry deductions, whole-pack checkout estimates, leftovers, and incomplete-price labels.
-5. If map tiles fail or the app is offline, continue from saved locations or the named demo area; no GPS or account is needed.
+5. If map tiles, place search, or network access fail, continue from saved locations or the named demo area; no GPS or account is needed.
 
 ## 4. UX / information architecture
 
 **Primary sections (mobile-first):**
-1. **Places** `/`: an interactive map, map-picked location editor, and saved-location list. Start centered on a named demo area without requesting GPS.
+1. **Places** `/`: an interactive map, place-name search, map-pin editor, and multi-location saved list. Start centered on a named demo area without requesting GPS.
 2. **Preferences** `/preferences`: optional budget, protein, exclusions, and pantry controls with a clear skip action.
 3. **Meal choices and plans** `/meals`: browsable eligible meals and plan options, with an unfiltered state when preferences are skipped.
 4. **Meal details** `/recipes/[slug]`: servings, raw-ingredient quantities, macros, known micro-nutrient coverage, and cost estimate.
@@ -177,23 +177,24 @@ Shared session state consists of the selected demo anchor, valid budget/protein/
 
 ### REQ-03 current interaction contract — 2026-10-31
 
-The first screen is Places (`/`) and opens with an interactive map centered on a neutral, clearly named demo area. The map lets the user choose a point, name it, and save it to a local list. Saved locations can be selected, renamed, and deleted. The map pin is a user-selected coordinate, not device GPS, a verified store, or evidence of retailer inventory. Do not add geocoding or an account requirement.
+The first screen is Places (`/`) and opens with an interactive map centered on a neutral, clearly named demo area. A user can submit a place name and choose a Photon/OpenStreetMap result, or place a pin on the map; the user then names and explicitly saves that place to the browser list. Coordinates are resolved by search or captured from the map, never typed. Saved locations can be selected, renamed, and deleted. A saved result or pin is not device GPS, a verified store, or evidence of retailer inventory. Do not add an account requirement.
 
 The ordered flow is: **map and saved locations -> optional preferences -> meal choices, plans and details -> shopping list**. Preferences include checkout budget, minimum protein, exclusions, and pantry quantities. Skipping preferences leaves constraints unset and displays all available choices. Meal calculations and shopping amounts continue to come from validated fixtures and pure domain functions.
 
 | Step / route | Visible result and acceptance check |
 | --- | --- |
 | Open Places `/` | Show the map first, a neutral demo-area label, saved-location list, and a clear add-location action. Do not request GPS. Include OSM attribution and a link to its license when OSM data is shown. |
-| Select and save a map point | A user can place a marker, enter a human-readable name, and save it. Explain that the name and coordinates stay in this browser. The saved entry can be selected, renamed, and removed. |
-| Continue when the map fails | Keep saved locations and the demo-area choice visible; allow the user to continue planning. A first-time visitor can use the named demo area without saving a point. |
+| Search or select a place | Submit a name explicitly; show up to five matching places with OSM attribution. Selecting a result moves the draft pin and proposes a display name. Do not autocomplete, show editable coordinates, or send saved coordinates as search bias. |
+| Pin and save a place | A user can click the map or use its keyboard-accessible center-pin control, enter a human-readable name, and save it. Explain that the name and coordinates stay in this browser. The saved entry can be selected, renamed, and removed; multiple entries are supported. |
+| Continue when a provider fails | Keep saved locations and the demo-area choice visible; allow the user to continue planning if tiles, Photon search, or network access fail. A first-time visitor can use the named demo area without saving a point. |
 | Open Preferences `/preferences` | Show budget, protein, exclusions, and pantry as optional controls. “ข้ามก่อน” continues with no hidden filter; invalid values are not applied. |
 | Open Meal choices `/meals` | Show available choices, eligibility reasons when preferences were set, and plan actions. If preferences were skipped, label that results are unfiltered. |
 | Inspect `/recipes/[slug]` | Show servings, ingredient amounts, estimated nutrition with provenance/unknown flags, and a selection action. An unknown slug has a useful return path. |
 | Open Shopping list `/shopping-list` | Recompute required and pantry quantities, shortage, whole packs, estimated checkout cash, and leftovers. Missing offers keep the basket visibly incomplete. |
 | Return to Places or another step | Keep the saved-location list in browser storage and the current planning session intact. Selecting a different saved location does not silently replace the chosen meals or pantry. |
-| Use any step on phone or keyboard | Controls remain labeled and focusable; map selection also has a keyboard-accessible location-entry fallback; no horizontal overflow or color-only status. |
+| Use any step on phone or keyboard | Controls remain labeled and focusable; name search works by keyboard, and the map exposes a keyboard-accessible center-pin action; no coordinate input, horizontal overflow, or color-only status. |
 
-**Privacy and map fallback:** only a user-submitted map pin and its name are saved in `localStorage`; the app does not send the saved-location record to its server or log it. Map tile requests reveal the viewed map area to the tile provider, so disclose external tiles. Provide edit, delete-one, and clear-all controls. Never request `navigator.geolocation` on launch. Request only tiles for the visible map, honor the selected tile provider's usage policy, and do not offer tile downloads or prefetch. If tiles are unavailable, saved-location selection and the named demo area still work.
+**Privacy and map fallback:** only a user-selected search result or map pin that is explicitly named and saved is stored in `localStorage`; search queries are not retained or sent to the app server. A submitted query is sent to Photon, so disclose this and let users pin sensitive places without submitting their name. Map tile requests reveal the viewed map area to the tile provider, so disclose external tiles. Provide edit, delete-one, and clear-all controls. Never request `navigator.geolocation` on launch. Request only tiles for the visible map, honor the selected tile provider's usage policy, and do not offer tile downloads or prefetch. If tiles or search are unavailable, saved-location selection, map pinning, and the named demo area remain usable.
 
 **Design trade-off:** the map is now the first screen as requested, but tile delivery remains an external dependency. Keeping saved pins and the meal-planning data local means a tile outage does not erase locations or block the rest of the flow.
 
@@ -202,8 +203,8 @@ The ordered flow is: **map and saved locations -> optional preferences -> meal c
 - Use shadcn/ui as **owned component source** generated into the repository, not as a remotely hosted theme or a replacement for the calculation engine. Adapt components to the product design, but keep domain logic separate.
 - **Deterministic domain functions** under `src/lib/domain/` independent of React and network APIs.
 - **Static reviewed JSON/TS fixtures** for recipe, ingredient, nutrient and offer records: easiest to test and deploy without a database.
-- **Local React state** for preferences, selected meals, and pantry; `localStorage` stores only explicitly saved, manually map-picked location names and coordinates plus the selected saved-location ID. No server sync or telemetry.
-- **Leaflet / react-leaflet** for the first-step location map; load client-side to avoid SSR issues. Request only visible tiles, display provider attribution/license, and follow the provider's usage policy. No geocoding is needed to save a pin.
+- **Local React state** for preferences, selected meals, and pantry; `localStorage` stores only explicitly saved search-result/map-pin names and coordinates plus the selected saved-location ID. Search queries are ephemeral; no server sync or telemetry.
+- **Leaflet** for the first-step location map and explicit Photon search for place names; load the map client-side to avoid SSR issues. Search only on submit, serialize requests, cache results in memory, cap visible results, display OSM attribution, and disclose the external query. Map pinning remains available if the provider fails.
 - **Optional Next.js Route Handler** for OSM/Overpass store discovery with explicit endpoint validation, bounded radius, caching and graceful fallback. This is P1 if it threatens P0.
 - **Vitest** for numeric domain tests; TypeScript strict; ESLint. E2E may be a stretch goal.
 - Set a small, consistent design system using Tailwind CSS variables (background/foreground, primary, muted, border, destructive) and shadcn/ui components. Focus on mobile-first, Thai text legibility, accessibility, and visible estimates/provenance; do not simply copy a generic dashboard style.
@@ -465,6 +466,7 @@ Never create a `verified_catalog` claim without an actual retrievable URL, obser
 - **ASEANFOODS Concise ASEAN Food Composition Tables (2014)**: DAT-01 uses selected, source-coded typical food values with attribution and `curated_estimate` provenance; no FDC IDs are claimed for these records. The source states noncommercial use is allowed with acknowledgement; reproduction for resale or other commercial uses, including educational purposes, may incur fees. Confirm permission or replace these values before commercial/educational product use or broader redistribution. https://inmu.mahidol.ac.th/aseanfoods/doc/OnlineASEAN_FCD_V1_2014.pdf
 - **OpenStreetMap data**: ODbL attribution and license notice; distinguish data license from map tile service policy. https://www.openstreetmap.org/copyright
 - **OSM tiles**: obey tile usage and attribution; do not bulk prefetch/scrape. https://operations.osmfoundation.org/policies/tiles/
+- **Photon**: user-triggered place-name lookup based on OpenStreetMap; use the public demo only at reasonable low volume, with explicit-submit requests, page-runtime in-memory caching, a short request interval, visible attribution, and a map-pin fallback. The demo service provides no uptime guarantee, and the browser cannot enforce a shared cross-visitor rate limit. https://github.com/komoot/photon
 - **Overpass**: small, throttled bounded queries only and fallbacks; public instances are best-effort. https://wiki.openstreetmap.org/wiki/Overpass_API
 - **Nominatim public service**: do **not** implement client-side autocomplete; strict application-wide aggregate limit (max 1 rps), proper identification, caching; preferably avoid it for the demo by using a predetermined area. https://operations.osmfoundation.org/policies/nominatim/
 - **Retailers**: public pages are **not** automatically authorized APIs or permission to scrape/redistribute; no automated bulk extraction without reviewing terms/permissions. Never imply affiliation with Lotus's, Makro, Tops, 7-Eleven, or independent stores.
@@ -476,14 +478,14 @@ Show a shortened version on cards/plan and a complete version on `/about`.
 
 ## 9. Security, privacy, safety, and reliability
 
-- Never request geolocation on launch. The user may manually choose a map point and explicitly save its name and coordinates in browser `localStorage` for future use. Provide rename, delete-one, and clear-all actions. Do not send saved-location records to the app server or log them; do not store device GPS coordinates. Tile requests reveal the viewed area to the map provider, as disclosed in §5. Keep a named demo-area option for visitors who skip location setup.
+- Never request geolocation on launch. The user may submit a place name and choose a search result or manually choose a map point, then explicitly save its name and coordinates in browser `localStorage` for future use. Provide rename, delete-one, and clear-all actions. Search queries are sent to Photon only after submit; do not retain or log them. Do not send saved-location records to the app server or store device GPS coordinates. Tile requests reveal the viewed area to the map provider, as disclosed in §5. Keep map pinning and a named demo-area option when search or tiles fail.
 - Validate and clamp numeric constraints (`budget`, `grams`, `radius`, `lat`, `lon`, `servings`) with Zod at input/API boundaries. Reject NaN, infinities, negative masses/prices, zero pack sizes/servings, unreasonable search radius.
 - Use server-side proxy only for external calls that need security/usage controls. Keep API keys in private environment variables; never expose a USDA key via `NEXT_PUBLIC_`.
 - Do not treat client-supplied product prices as authoritative when serving computations from an API; P0 pure client domain functions only consume immutable reviewed fixture records.
 - Safely build external navigation URLs; validate numeric lat/lon; default to HTTPS; do not interpolate unchecked values into HTML.
 - Keep unit conversions explicit; handle incomplete nutrition and unpriced ingredients gracefully.
 - Support reduced motion and readable contrast; avoid medical claims or unsupported allergen guarantees.
-- Meal calculations use local fixtures without live API dependencies. Map tiles may require network access; on failure show the saved-location list and demo-area fallback with a clear recovery message.
+- Meal calculations use local fixtures without live API dependencies. Place search and map tiles may require network access; on failure show saved locations, map pinning, and the demo-area fallback with a clear recovery message.
 
 ## 10. Verification plan
 
@@ -583,8 +585,8 @@ The owner agreed to the then-current scope and two demo areas on 2026-10-30 (“
 
 The owner revised the product promise to **“ตัวช่วยการวางแผนทำอาหารกินเองของคุณ”** (“your helper for planning home-cooked meals”) and specified this ordered journey: **(1) open to a map, choose and save named locations for future use; (2) ask preferences, but allow skipping; (3) offer choices, plans, and details; (4) produce the shopping list.** This supersedes the earlier demo-anchor-first flow.
 
-- **Location choice:** map points are manually selected and named by the user; no launch-time GPS. The browser retains only the saved names and coordinates and the selected saved-location ID. The user can select, rename, delete one, or clear all saved locations. The app does not send the saved-location record to its server or log it. Map tile requests reveal the viewed map area to the tile provider.
-- **Map fallback:** show a neutral demo-area map on first visit. If map tiles fail, the saved list and demo-area option remain usable, and the user can continue. Tile requests are limited to the visible map; provider policies and attribution/licensing are mandatory. No geocoding is required.
+- **Location choice:** the user can submit a place name and choose a result or manually place a map pin, then name and save it; no launch-time GPS. The browser retains only explicitly saved names/coordinates and the selected saved-location ID. The user can select, rename, delete one, or clear all saved locations. Place-name queries are sent to Photon on submit and are not retained or sent to the app server. Map tile requests reveal the viewed map area to the tile provider.
+- **Map fallback:** show a neutral demo-area map on first visit. If tiles or Photon search fail, the saved list, map-pin control, and demo-area option remain usable, and the user can continue. Tile requests are limited to the visible map; provider policies and attribution/licensing are mandatory. Place-name search is user-triggered, not autocomplete.
 - **Preferences:** budget, minimum protein, exclusions, and pantry can be set or skipped; skip means no hidden filter.
 - **Choices and plans:** show recipe choices, explain eligibility when preferences exist, and expose servings, ingredients, nutrition estimates, and provenance before a plan is selected.
 - **Shopping list:** compute quantities from selected meals and pantry, then show whole-pack purchase estimates, checkout cash, leftovers, and incomplete price coverage honestly.

@@ -167,6 +167,28 @@ body {
   color: var(--foreground);
 }
 
+.tm-map .tm-map-pin-center {
+  min-height: 2.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  background: var(--card);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tm-map .tm-map-pin-center:hover {
+  background: var(--secondary);
+}
+
+.tm-map .tm-map-pin-center:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
 .tm-map .leaflet-control-attribution {
   max-width: calc(100vw - 4rem);
   font-size: 0.68rem;

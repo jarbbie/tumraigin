@@ -28,10 +28,10 @@ If the codebase contradicts these documents, **report the conflict before changi
 - A **modular monolith**. No microservices, separate Rust/Go server, auth, payments, queues, Kafka, Kubernetes, model training, or managed DB in v0.1.
 - Domain functions under `src/lib/domain/` are **pure**, typed, deterministic, and independent of React, fetch, browser state, and external providers.
 - Static reviewed fixture data under `src/data/`; validate shape, uniqueness, references and provenance.
-- Client state is enough for v0.1. Per the owner's explicit updated requirement, browser `localStorage` may retain only locations that a user manually picked and explicitly named on the map, plus the selected saved-location ID; never retain device GPS coordinates. Provide rename, delete-one, and clear-all actions. Keep preferences and selected recipe IDs local as before.
+- Client state is enough for v0.1. Per the owner's updated requirement, browser `localStorage` may retain only locations that a user explicitly selected from place-name search or manually pinned on the map and then named/saved, plus the selected saved-location ID; never retain device GPS coordinates or unsaved search queries. Provide rename, delete-one, and clear-all actions. Keep preferences and selected recipe IDs local as before.
 - Use integer `priceSatang` internally and raw edible grams for calculations; convert for display at the edges.
 - Use `null` for unavailable nutrients, never automatic zero. Missing-priced ingredients cause an **incomplete** basket total.
-- The map is the P0 first step and must be client-rendered to avoid SSR issues. If Leaflet/tiles fail, render the saved-location list and named demo-area path so the user can continue; store cards remain available when relevant.
+- The map is the P0 first step and must be client-rendered to avoid SSR issues. Users add a place by submitting a name search and selecting a result, or by pinning the interactive map; never ask them to type coordinates. If Leaflet/tiles or place search fail, render the saved-location list and named demo-area path so the user can continue; store cards remain available when relevant.
 - Prefer no new dependency if a small, well-tested pure function suffices.
 
 ## 4. How to work on each backlog item
@@ -81,12 +81,12 @@ Core domain tests must cover these scenarios:
 If adding UI tests, assert visible labels and user interaction outcomes rather than internal implementation details.
 
 ## 7. External data and location safety
-- First screen opens on an interactive map centered on a named **demo area**, not an immediate geolocation prompt. The map is a P0 step; if tiles fail, keep the saved-location list and demo-area path usable.
-- `navigator.geolocation` is not used on launch. The owner explicitly requested that users may manually pick, name, and save map locations for future use. Store those user-submitted names and coordinates in browser `localStorage` only, with select, rename, delete-one, and clear-all controls. Do not sync or log saved locations. A map tile provider receives requests for the visible viewport; disclose that external map tiles are loaded.
+- First screen opens on an interactive map centered on a named **demo area**, not an immediate geolocation prompt. Users may submit a place name and select a result, or place a pin on the map; coordinates are internal and never manually entered. If tiles or search fail, keep saved locations and the demo-area path usable.
+- `navigator.geolocation` is not used on launch. The owner explicitly requested that users may search by place name or manually place a map pin, then name and save locations for future use. Store only explicitly saved result/pin names and coordinates in browser `localStorage`, with select, rename, delete-one, and clear-all controls. Do not sync or log saved locations or retain search queries. Disclose that a submitted place query is sent to Photon and that a map tile provider receives requests for the visible viewport.
 - Never store device GPS coordinates. If a current-location action is considered later, request it only on user click and provide denied/timeout fallbacks.
 - A user-saved pin is not a `Store` fixture and does not establish a retailer, offer, or inventory fact.
 - OSM requires attribution and ODbL license link. Public tile servers and Overpass/Nominatim have policies, best-effort availability, and request constraints.
-- **No client-side autocomplete against public Nominatim**; if ever used, identify the app, cache, obey aggregate 1 request/second limit and get explicit owner approval for the integration.
+- Do not use public Nominatim for client-side autocomplete. The user-approved Photon search is triggered only on submit, limited to five results, serialized with at least one second between requests per page runtime, and cached in memory. Do not send saved coordinates as location bias or retain query text. This is not a shared cross-visitor rate limit. Photon’s public demo has no uptime guarantee and is for reasonable low-volume use; keep map pinning as fallback and replace the provider before traffic grows.
 - Do not expose USDA or other API keys via `NEXT_PUBLIC_*` or commits. Review `.gitignore` and `.env.example`.
 - Do not hotlink arbitrary retailer product images or claim brand affiliation.
 
