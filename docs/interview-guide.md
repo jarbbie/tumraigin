@@ -1,14 +1,14 @@
 # YWC21 interview handoff (draft)
 
-**Status:** rehearsal draft. REL-01 is not yet deployed, so do not tell interviewers that a public demo URL is live. The owner still needs to rehearse the walkthrough and explain the trade-offs in their own words.
+**Status:** rehearsal draft. The public demo is live at [tumraigin.peeranat-0709.chatgpt.site](https://tumraigin.peeranat-0709.chatgpt.site), but its interactive golden path has not yet been browser-verified on the hosted site. The canonical GitHub source remains private while the release source-history issue is unresolved. The owner still needs to rehearse the walkthrough and explain the trade-offs in their own words.
 
 ## 90-second demo script
 
-> **0–15 sec — Places:** “ทำไรกินช่วยวางแผนทำอาหารกินเอง ตั้งแต่สถานที่ที่เราเลือก ไปจนถึงรายการที่ต้องซื้อ” (Tumraigin helps plan home cooking, from places you choose to the shopping list.) I click a place on the map, name it, and save it. The app does not ask for GPS; saved places stay in this browser.
+> **0–15 sec — Places:** “ทำไรกินเป็นตัวช่วยการวางแผนทำอาหารกินเองของคุณ เริ่มจากเลือกและบันทึกสถานที่บนแผนที่” (Tumraigin is your helper for planning home-cooked meals, starting with places you choose and save on a map.) I name the point and save it. The app does not ask for GPS; saved places stay in this browser.
 >
 > **15–30 sec — Preferences:** “ถ้ายังไม่อยากตั้งงบหรือข้อจำกัด ข้ามได้” (Preferences are optional.) I skip the preference step so the app shows all eight meal examples without a hidden filter.
 >
-> **30–45 sec — Choices and details:** I open a meal and show its servings, raw ingredient weights, calculated per-serving nutrition, source references, and any nutrients whose values are unknown.
+> **30–45 sec — Choices and details:** I compare the meal choices, open one plan's details, and show its servings, raw ingredient weights, calculated per-serving nutrition, source references, and any nutrients whose values are unknown.
 >
 > **45–70 sec — Shopping list:** I choose the meal. It needs 120 g of rice; entering 100 g in the pantry leaves 20 g to buy. The estimate rounds that shortage up to one simulated 1,000 g pack, with 980 g left after cooking. At 120 g owned, the rice pack disappears and checkout changes from ฿160.00 to ฿105.00.
 >
