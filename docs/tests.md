@@ -166,6 +166,8 @@ pnpm build
 - OpenStreetMap tile requests are deliberately aborted by the browser test. The test verifies the visible tile-failure fallback and that Leaflet still accepts a map click; it does not test the external tile service. No uncaught page errors were observed.
 - `pnpm lint`, `pnpm typecheck`, `pnpm test` (80 tests / 8 files), and `pnpm test:e2e` (2 browser tests) passed. The hosted Playwright command also passed against the public Site. Vitest retains its existing Vite config-loader warning.
 - This proves the deployed user flow is interactive at the tested URL. It does not establish that the generated Site artifact corresponds to an exact public GitHub source commit; REL-01 remains partial for that source-publication and provenance requirement.
+- Release PR #54 merged into main at `4ade64bbd70e22e08bf2c68d132afb8000a3e164`. The main-push production E2E run (#41160630385) and hosted Site smoke run (#41160630388) both passed. GitHub Pages run #41160630328 still failed at `Configure Pages`, so its deploy job was skipped; the separate public Sites deployment remained available and passed the hosted smoke test.
+- Post-release history sync PR #56 merged into staging at `8a7ad7c16c538b6052c00c38058978a627ac8d41` with no file changes. Its PR E2E run (#41160694285) and staging-push E2E run (#41160806416) passed. The resulting staging history contains the current main commit as an ancestor.
 
 ## REL-03 automated production-browser smoke test (2026-10-31)
 
