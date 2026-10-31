@@ -168,6 +168,8 @@ pnpm build
 - This proves the deployed user flow is interactive at the tested URL. It does not establish that the generated Site artifact corresponds to an exact public GitHub source commit; REL-01 remains partial for that source-publication and provenance requirement.
 - Release PR #54 merged into main at `4ade64bbd70e22e08bf2c68d132afb8000a3e164`. The main-push production E2E run (#41160630385) and hosted Site smoke run (#41160630388) both passed. GitHub Pages run #41160630328 still failed at `Configure Pages`, so its deploy job was skipped; the separate public Sites deployment remained available and passed the hosted smoke test.
 - Post-release history sync PR #56 merged into staging at `8a7ad7c16c538b6052c00c38058978a627ac8d41` with no file changes. Its PR E2E run (#41160694285) and staging-push E2E run (#41160806416) passed. The resulting staging history contains the current main commit as an ancestor.
+- Rebuilt the root-path static export from staging commit `23060acad9b21adfc1658d3c8df2292b934941c6` with `pnpm build`; all app routes and recipe pages were generated. Published Sites version 2 from artifact-repository commit `ac72f03f69b9bc4e69d1c9f46804c270b8154d03`. Sites reported the production deployment succeeded at the existing public URL, and confirmed the Site remains public and active.
+- After deployment, `rtk env PLAYWRIGHT_HOSTED_URL=https://tumraigin.peeranat-0709.chatgpt.site pnpm test:e2e:hosted` passed one Chromium journey in 10.7 seconds. The first default-sandbox attempt could not start Chromium (`Operation not permitted`); the same check passed when rerun with browser execution permission.
 
 ## REL-03 automated production-browser smoke test (2026-10-31)
 
