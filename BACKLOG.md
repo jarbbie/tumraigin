@@ -226,8 +226,8 @@
 - **Dependencies:** REL-01.
 - **Deliverables:** 90-second demo script, one-page architecture overview, answer sheet for 10 technical questions in `document.md` §13.
 - **Acceptance:** Owner personally demonstrates and explains: entity model, nutrition computation, pack rounding, pantry aggregation, rank rules, data provenance, mapping limitations, testing and trade-offs.
-- **Partial preparation (2026-10-31):** Drafted the Thai 90-second demo, a concise architecture/data-flow overview, and answers to all 10 questions in [`docs/interview-guide.md`](docs/interview-guide.md). It follows the four-step map → skippable preferences → meal choices/details → shopping-list flow and uses the QA-verified rice example.
-- **Remaining:** REL-01 has no public URL yet, and the owner has not personally rehearsed the demo or answered the questions. Keep this task partial until both occur.
+- **Partial preparation (2026-10-31):** Drafted the Thai 90-second demo, a concise architecture/data-flow overview, and answers to all 10 questions in [`docs/interview-guide.md`](docs/interview-guide.md). The script now uses the current product promise, links the live public demo, and follows the four-step map → skippable preferences → meal choices/plans/details → shopping-list flow with the QA-verified rice example.
+- **Remaining:** The public URL exists, but REL-01 is still partial because the hosted interactive flow and safe public GitHub source path are not verified. The owner also has not personally rehearsed the demo or answered the questions. Keep REL-02 partial until the release gates and owner rehearsal are complete.
 
 ### [x] REL-03 (P1) E2E automated smoke tests
 - **Dependencies:** QA-01.
