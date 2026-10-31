@@ -21,6 +21,8 @@ test("filters meal choices and recalculates the shopping list from pantry amount
 
   await expect(page.getByRole("heading", { name: "ข้าวผัดไข่ใบกะเพรา", level: 1 })).toBeVisible();
   await expect(page.getByRole("heading", { name: "ที่มาของข้อมูลโภชนาการ" })).toBeVisible();
+  await expect(page.getByText("ข้าวหอมมะลิ (ดิบ) · FDC #169756")).toBeVisible();
+  await expect(page.getByText("USDA FDC SR Legacy · proxy · Basil, fresh")).toBeVisible();
   await page.getByRole("button", { name: /เลือกเมนูนี้เป็นแผน/ }).click();
 
   await expect(page.getByRole("heading", { name: "ของที่ต้องซื้อสำหรับแผนนี้" })).toBeVisible();

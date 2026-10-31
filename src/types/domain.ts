@@ -1,7 +1,18 @@
+export type FoodDataCentralRecord = {
+  fdcId: number;
+  recordDescription: string;
+  sourceUrl: string;
+};
+
 export type Provenance =
-  | { kind: "usda"; fdcId: number; sourceUrl: string; checkedAt: string }
+  | ({ kind: "usda"; checkedAt: string } & FoodDataCentralRecord)
   | { kind: "verified_catalog"; sourceUrl: string; checkedAt: string }
-  | { kind: "curated_estimate"; explanation: string; checkedAt: string }
+  | {
+      kind: "curated_estimate";
+      explanation: string;
+      checkedAt: string;
+      reference?: FoodDataCentralRecord;
+    }
   | { kind: "simulated"; explanation: string };
 
 export type NutrientsPer100g = {

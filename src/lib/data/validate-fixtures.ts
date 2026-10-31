@@ -1,5 +1,6 @@
 import type {
   FixtureDataset,
+  FoodDataCentralRecord,
   Ingredient,
   NutrientsPer100g,
   PantryItem,
@@ -232,10 +233,11 @@ function parseProvenance(
       integer: true,
       positive: true,
     });
+    const recordDescription = readString(record, "recordDescription", `${path}.recordDescription`, issues);
     const sourceUrl = readHttpsUrl(record, "sourceUrl", `${path}.sourceUrl`, issues);
     const checkedAt = readCheckedAt(record, `${path}.checkedAt`, issues);
-    if (fdcId !== null && sourceUrl !== null && checkedAt !== null) {
-      provenance = { kind, fdcId, sourceUrl, checkedAt };
+    if (fdcId !== null && recordDescription !== null && sourceUrl !== null && checkedAt !== null) {
+      provenance = { kind, fdcId, recordDescription, sourceUrl, checkedAt };
     }
   } else if (kind === "verified_catalog") {
     const sourceUrl = readHttpsUrl(record, "sourceUrl", `${path}.sourceUrl`, issues);
@@ -246,8 +248,23 @@ function parseProvenance(
   } else if (kind === "curated_estimate") {
     const explanation = readString(record, "explanation", `${path}.explanation`, issues);
     const checkedAt = readCheckedAt(record, `${path}.checkedAt`, issues);
+    let reference: FoodDataCentralRecord | undefined;
+    if (hasOwn(record, "reference")) {
+      const referenceRecord = readRecord(record.reference, `${path}.reference`, issues);
+      if (referenceRecord) {
+        const fdcId = readNumber(referenceRecord, "fdcId", `${path}.reference.fdcId`, issues, {
+          integer: true,
+          positive: true,
+        });
+        const recordDescription = readString(referenceRecord, "recordDescription", `${path}.reference.recordDescription`, issues);
+        const sourceUrl = readHttpsUrl(referenceRecord, "sourceUrl", `${path}.reference.sourceUrl`, issues);
+        if (fdcId !== null && recordDescription !== null && sourceUrl !== null) {
+          reference = { fdcId, recordDescription, sourceUrl };
+        }
+      }
+    }
     if (explanation !== null && checkedAt !== null) {
-      provenance = { kind, explanation, checkedAt };
+      provenance = { kind, explanation, checkedAt, ...(reference ? { reference } : {}) };
     }
   } else if (kind === "simulated") {
     const explanation = readString(record, "explanation", `${path}.explanation`, issues);
