@@ -59,10 +59,11 @@ pnpm typecheck
 pnpm test
 pnpm exec playwright install chromium # one time before the browser test
 pnpm test:e2e
+PLAYWRIGHT_HOSTED_URL=https://tumraigin.peeranat-0709.chatgpt.site pnpm test:e2e:hosted
 pnpm build
 ```
 
-Vitest runs the repository unit tests under `src/`. `pnpm test:e2e` builds the static export with the `/tumraigin` base path and uses Playwright Chromium against the production preview server; it verifies meal filtering, selection, pantry subtraction, pack rounding and recalculated checkout totals. Install the Playwright browser once with the command above; the GitHub Actions workflow installs it automatically. The runner builds and serves on loopback, and its smoke path does not load map tiles. The smoke test has not yet been run against the public Sites deployment. Add focused domain and interaction coverage as each backlog item is implemented.
+Vitest runs the repository unit tests under `src/`. `pnpm test:e2e` builds the static export with the `/tumraigin` base path and uses Playwright Chromium against the production preview server; it checks map-picked location saving, the skippable preferences, meal details, pantry subtraction, pack rounding and checkout totals. `pnpm test:e2e:hosted` uses a separate config to run the map-first journey against the public Site at its root path. The hosted test blocks OpenStreetMap tile requests so it can verify the fallback while still clicking the Leaflet map. GitHub Actions installs Chromium and runs this hosted check on release PRs to `main` and pushes to `main`. Add focused domain and interaction coverage as each backlog item is implemented.
 
 The lockfile is present. Lint, typecheck, 80 unit tests, the Playwright production-browser smoke test, and the Webpack production build have been verified; see [`docs/tests.md`](./docs/tests.md) for task-specific evidence.
 
@@ -72,7 +73,7 @@ The public interview prototype is available at [tumraigin.peeranat-0709.chatgpt.
 
 The published app is a static Next.js export built at the root path (without a GitHub Pages base path). Its Site artifact commit contains only generated public assets and the hosting manifest; it is not the canonical GitHub source tree. The canonical source repository remains private while its existing history and issue/PR records are reviewed for a safe public source path.
 
-The GitHub Pages workflow remains in the repository, but its latest release run stopped at Pages configuration because no Pages site is enabled. The public Sites URL is the current demo. The hosted interactive golden path has not yet been browser-tested; the checked-in E2E suite currently tests the local production preview. REL-01 remains partial until the public source and hosted interaction requirements are verified.
+The GitHub Pages workflow remains in the repository, but its observed release run stopped at Pages configuration because no Pages site is enabled. The public Sites URL is the current demo. The hosted map-to-shopping journey passed the checked-in Playwright smoke test on 2026-10-31. REL-01 remains partial because the canonical source repository is private and the public Site artifact does not yet prove an exact link to a public reviewed source commit.
 ## Data and limitations
 
 Fixture data lives under `src/data/` and is runtime-validated against shared contracts in `src/types/` and `src/lib/data/`. Most nutrition values are curated from the Concise ASEAN Food Composition Tables (2014); one generic oil estimate uses USDA SR28. Unknown nutrients remain `null`, including source entries marked presumed-zero or missing. The source and reuse terms are documented in [`src/data/README.md`](./src/data/README.md). Prices and pack sizes are invented, visibly simulated inputs and do not represent current retailer prices or branch stock. The demo-store point is fictitious. Do not interpret the prototype as evidence of live prices, stock, medically precise nutrition or allergy safety.

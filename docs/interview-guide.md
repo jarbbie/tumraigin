@@ -1,6 +1,6 @@
 # YWC21 interview handoff (draft)
 
-**Status:** rehearsal draft. The public demo is live at [tumraigin.peeranat-0709.chatgpt.site](https://tumraigin.peeranat-0709.chatgpt.site), but its interactive golden path has not yet been browser-verified on the hosted site. The canonical GitHub source remains private while the release source-history issue is unresolved. The owner still needs to rehearse the walkthrough and explain the trade-offs in their own words.
+**Status:** rehearsal draft. The public demo is live at [tumraigin.peeranat-0709.chatgpt.site](https://tumraigin.peeranat-0709.chatgpt.site), and its map-to-shopping journey passed the hosted Playwright smoke test on 2026-10-31. The canonical GitHub source remains private while a safe public source path is unresolved. The owner still needs to rehearse the walkthrough and explain the trade-offs in their own words.
 
 ## 90-second demo script
 

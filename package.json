@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:hosted": "playwright test --config=playwright.hosted.config.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
